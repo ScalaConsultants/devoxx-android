@@ -1,7 +1,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,56 +15,16 @@
         tools:context="io.scalac.degree.MainActivity" >
 
         <TextView
-            android:id="@+id/textTopic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textTimeEnd"
-            android:layout_marginTop="16dp"
-            android:text="Large Text"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textIsSelectable="true" />
-
-        <TextView
             android:id="@+id/textSpeakers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/textTopic"
-            android:layout_marginTop="4dp"
-            android:text="TextView"
+            android:layout_marginTop="8dp"
+            android:lineSpacingMultiplier="1.5"
+            android:text="Speakers"
             android:textIsSelectable="true"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textTimeStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="10:00"
-            android:textAppearance="?android:attr/textAppearance" />
-
-        <TextView
-            android:id="@+id/textTimeEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textTimeStart"
-            android:text="11:00"
-            android:textAppearance="?android:attr/textAppearance"
-            android:textColor="#FF888888" />
-
-        <CheckBox
-            android:id="@+id/checkBox1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="2dp"
-            android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-            android:text="@string/title_notification" />
 
         <TextView
             android:id="@+id/textDesc"
@@ -73,8 +35,79 @@
             android:layout_marginTop="32dp"
             android:lineSpacingMultiplier="1.5"
             android:linksClickable="true"
-            android:text="desc"
+            android:text="Description"
             android:textIsSelectable="true" />
+
+        <TextView
+            android:id="@+id/textNotifyOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textTimeStart"
+            android:layout_alignBottom="@+id/textTimeStart"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_toRightOf="@+id/textTimeStart"
+            android:text="–" />
+
+        <TextView
+            android:id="@+id/textTimeEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textNotifyOn"
+            android:layout_alignBottom="@+id/textNotifyOn"
+            android:layout_toRightOf="@+id/textNotifyOn"
+            android:text="11:00"
+            android:textAppearance="?android:attr/textAppearance" />
+
+        <TextView
+            android:id="@+id/textRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textTimeStart"
+            android:layout_marginTop="4dp"
+            android:text="Room" />
+
+        <TextView
+            android:id="@+id/textTopic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textRoom"
+            android:layout_marginTop="16dp"
+            android:text="Topic"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="true" />
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Date"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/textTimeStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textDate"
+            android:layout_marginTop="4dp"
+            android:text="10:00"
+            android:textAppearance="?android:attr/textAppearance" />
+
+        <CheckBox
+            android:id="@+id/checkBoxNotify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textTimeEnd"
+            android:layout_alignBottom="@+id/textTimeEnd"
+            android:layout_alignParentRight="true"
+            android:button="@null"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:text="@string/title_notification" />
 
     </RelativeLayout>
 

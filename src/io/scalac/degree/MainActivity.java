@@ -9,11 +9,14 @@ import io.scalac.degree.items.TimeslotItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +30,7 @@ public class MainActivity extends FragmentActivity {
 	ArrayList<SpeakerItem>	speakerItemsList	= new ArrayList<SpeakerItem>();
 	ArrayList<TimeslotItem>	timeslotItemsList	= new ArrayList<TimeslotItem>();
 	ArrayList<RoomItem>		roomItemsList		= new ArrayList<RoomItem>();
+	Map<String, ?>				notifyMap;
 	
 	public ArrayList<TalkItem> getTalkItemsList() {
 		return talkItemsList;
@@ -44,6 +48,14 @@ public class MainActivity extends FragmentActivity {
 		return roomItemsList;
 	}
 	
+	public Map<String, ?> getNotifyMap() {
+		return notifyMap;
+	}
+	
+	public void setNotifyMap(Map<String, ?> notifyMap) {
+		this.notifyMap = notifyMap;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,11 +69,14 @@ public class MainActivity extends FragmentActivity {
 			Collections.sort(talkItemsList, new TimeComparator());
 			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.speakers));
 			SpeakerItem.fillList(speakerItemsList, jsonArray);
+			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.rooms));
+			RoomItem.fillList(roomItemsList, jsonArray);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		setNotifyMap(Utils.getAlarms(getApplicationContext()));
 		// if (savedInstanceState == null)
 		replaceFragment(RoomsFragment.newInstance());
 	}
@@ -78,9 +93,14 @@ public class MainActivity extends FragmentActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		switch (item.getItemId()) {
+			case R.id.action_by_scalac:
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse("http://scalac.io/"));
+				startActivity(i);
+				return true;
+			case R.id.action_settings:
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

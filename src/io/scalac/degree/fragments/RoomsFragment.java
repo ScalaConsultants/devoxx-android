@@ -1,7 +1,10 @@
 package io.scalac.degree.fragments;
 
+import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
+import io.scalac.degree.items.RoomItem;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.ActionBar;
@@ -32,6 +35,8 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 	 */
 	ViewPager				mViewPager;
 	
+	ArrayList<RoomItem>	roomItemsList	= new ArrayList<RoomItem>();
+	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
@@ -47,7 +52,8 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
+		// setRetainInstance(true);
+		roomItemsList = getMainActivity().getRoomItemsList();
 	}
 	
 	@Override
@@ -115,35 +121,19 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 		public Fragment getItem(int position) {
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a TalksFragment (defined as a static inner class below).
-			return TalksFragment.newInstance(position + 1);
+			return TalksFragment.newInstance(roomItemsList.get(position).getId());
 		}
 		
 		@Override
 		public int getCount() {
-			// Show 7 total pages.
-			return 7;
+			// Show total pages.
+			return roomItemsList.size();
 		}
 		
 		@Override
 		public CharSequence getPageTitle(int position) {
 			Locale l = Locale.getDefault();
-			switch (position) {
-				case 0:
-					return getString(R.string.title_section1).toUpperCase(l);
-				case 1:
-					return getString(R.string.title_section2).toUpperCase(l);
-				case 2:
-					return getString(R.string.title_section3).toUpperCase(l);
-				case 3:
-					return getString(R.string.title_section4).toUpperCase(l);
-				case 4:
-					return getString(R.string.title_section5).toUpperCase(l);
-				case 5:
-					return getString(R.string.title_section6).toUpperCase(l);
-				case 6:
-					return getString(R.string.title_section7).toUpperCase(l);
-			}
-			return null;
+			return roomItemsList.get(position).getName().toUpperCase(l);
 		}
 	}
 	
@@ -159,4 +149,8 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 	
 	@Override
 	public void onTabReselected(Tab tab, android.app.FragmentTransaction ft) {}
+	
+	private MainActivity getMainActivity() {
+		return (MainActivity) getActivity();
+	}
 }

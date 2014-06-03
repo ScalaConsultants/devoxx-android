@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">33degree</string>
-    <string name="title_section1">Room 1 - Luxoft</string>
-    <string name="title_section2">Room 12</string>
-    <string name="title_section3">Room 5 - jLabs</string>
-    <string name="title_section4">Room 11</string>
-    <string name="title_section5">Room 2</string>
-    <string name="title_section6">Room 4 - Pragmatists</string>
-    <string name="title_section7">Room 3</string>
+    <string name="app_name">33rd Degree</string>
     <string name="title_notification">Notification</string>
+    <string name="toast_notification">Notification set at</string>
+    <string name="action_by_scalac">by Scalac</string>
     <string name="action_settings">Settings</string>
     <string name="and">and</string>
 

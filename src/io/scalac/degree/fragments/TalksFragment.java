@@ -2,6 +2,7 @@ package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
+import io.scalac.degree.Utils;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
 
@@ -12,10 +13,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -26,21 +30,21 @@ public class TalksFragment extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
-	private static final String	ARG_SECTION_NUMBER	= "section_number";
+	private static final String	ARG_ROOM_ID	= "room_id";
 	private ItemAdapter				listAdapter;
-	protected boolean					isCreated				= false;
-	private int							sectionNumber;
+	private int							roomID;
 	ArrayList<TalkItem>				talkItemsList;
 	ArrayList<SpeakerItem>			speakerItemsList;
 	DateFormat							timeFormat;
+	boolean								is12HourFormat;
 	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static TalksFragment newInstance(int sectionNumber) {
+	public static TalksFragment newInstance(int roomID) {
 		TalksFragment fragment = new TalksFragment();
 		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+		args.putInt(ARG_ROOM_ID, roomID);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -54,21 +58,30 @@ public class TalksFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-		talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), sectionNumber);
+		roomID = getArguments().getInt(ARG_ROOM_ID);
+		talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
 		speakerItemsList = getMainActivity().getSpeakerItemsList();
 		timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
+		is12HourFormat = !android.text.format.DateFormat.is24HourFormat(getActivity());
+		listAdapter = new ItemAdapter();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		listAdapter.notifyDataSetChanged();
 	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		final View rootView = inflater.inflate(R.layout.fragment_talks, container, false);
 		
-		if (!isCreated) {
-			listAdapter = new ItemAdapter();
-		}
-		
-		final ListView listViewTalks = (ListView) getView().findViewById(R.id.listView1);
+		final ListView listViewTalks = (ListView) rootView;
 		listViewTalks.setAdapter(listAdapter);
 		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -77,23 +90,17 @@ public class TalksFragment extends Fragment {
 				getMainActivity().replaceFragment(TalkFragment.newInstance(talkItemsList.get(position).getId()), true);
 			}
 		});
-		
-		isCreated = true;
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_talks, container, false);
 		return rootView;
 	}
 	
 	class ItemAdapter extends BaseAdapter {
 		
 		private class ViewHolder {
-			public TextView	textTitle;
-			public TextView	textSpeaker;
-			public TextView	textTimeStart;
-			public TextView	textTimeEnd;
+			public TextView		textTitle;
+			public TextView		textSpeaker;
+			public TextView		textTimeStart;
+			public TextView		textTimeEnd;
+			public ImageButton	imageButtonNotify;
 		}
 		
 		@Override
@@ -124,6 +131,12 @@ public class TalksFragment extends Fragment {
 				holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
 				holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
 				holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
+				holder.imageButtonNotify = (ImageButton) viewItem.findViewById(R.id.imageButtonNotify);
+				holder.imageButtonNotify.setOnClickListener(alarmOnClick);
+				if (is12HourFormat) {
+					LinearLayout linearLayoutTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
+					linearLayoutTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
+				}
 				viewItem.setTag(holder);
 			} else {
 				viewItem = convertView;
@@ -141,7 +154,30 @@ public class TalksFragment extends Fragment {
 			holder.textSpeaker.setText(speakers);
 			holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));
 			holder.textTimeEnd.setText(timeFormat.format(talkItem.getEndTime()));
+			boolean isAlarmSet = getMainActivity().getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
+			holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_device_access_alarms
+					: R.drawable.ic_action_alerts_and_states_add_alarm);
+			holder.imageButtonNotify.setTag(position);
 			return viewItem;
+		}
+		
+		private final AlarmOnClick	alarmOnClick	= new AlarmOnClick();
+		
+		private class AlarmOnClick implements OnClickListener {
+			
+			@Override
+			public void onClick(View v) {
+				int position = (Integer) v.getTag();
+				TalkItem talkItem = talkItemsList.get(position);
+				boolean isAlarmSet = getMainActivity().getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
+				if (isAlarmSet)
+					Utils.unsetNotify(getActivity().getApplicationContext(), talkItem.getId());
+				else
+					Utils.setNotify(getActivity().getApplicationContext(), talkItem.getId(), talkItem.getStartTime()
+							.getTime(), true);
+				getMainActivity().setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
+				listAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 }

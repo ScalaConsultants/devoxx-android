@@ -2,6 +2,8 @@ package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
+import io.scalac.degree.Utils;
+import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
 
@@ -13,6 +15,9 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 /**
@@ -82,13 +87,33 @@ public class TalkFragment extends Fragment {
 		textView.setText(talkItem.getDescription());
 		textView.setMovementMethod(LinkMovementMethod.getInstance());
 		
+		DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(getActivity().getApplicationContext());
 		DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
 		
+		textView = (TextView) rootView.findViewById(R.id.textDate);
+		textView.setText(dateFormat.format(talkItem.getStartTime()));
 		textView = (TextView) rootView.findViewById(R.id.textTimeStart);
 		textView.setText(timeFormat.format(talkItem.getStartTime()));
-		
 		textView = (TextView) rootView.findViewById(R.id.textTimeEnd);
 		textView.setText(timeFormat.format(talkItem.getEndTime()));
+		
+		textView = (TextView) rootView.findViewById(R.id.textRoom);
+		textView.setText(RoomItem.getByID(talkItem.getRoomID(), getMainActivity().getRoomItemsList()).getName());
+		
+		CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxNotify);
+		checkBox.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
+		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked)
+					Utils.setNotify(getActivity().getApplicationContext(), talkID, talkItem.getStartTime().getTime(), true);
+				else
+					Utils.unsetNotify(getActivity().getApplicationContext(), talkID);
+				getMainActivity().setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
+			}
+		});
+		
 		return rootView;
 	}
 }

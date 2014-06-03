@@ -3,6 +3,11 @@
     tools:context="io.scalac.degree.MainActivity" >
 
     <item
+        android:id="@+id/action_by_scalac"
+        android:orderInCategory="90"
+        android:showAsAction="always"
+        android:title="@string/action_by_scalac"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
