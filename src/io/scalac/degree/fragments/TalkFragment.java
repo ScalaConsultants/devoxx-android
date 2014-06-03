@@ -2,10 +2,11 @@ package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
-import io.scalac.degree.Utils;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
+import io.scalac.degree.utils.ItemNotFoundException;
+import io.scalac.degree.utils.Utils;
 
 import java.text.DateFormat;
 
@@ -85,6 +86,8 @@ public class TalkFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		getMainActivity().setDrawerIndicatorEnabled(false);
+		
 		View rootView = inflater.inflate(R.layout.fragment_talk, container, false);
 		
 		TextView textView;
@@ -111,7 +114,13 @@ public class TalkFragment extends Fragment {
 		textView.setText(timeFormat.format(talkItem.getEndTime()));
 		
 		textView = (TextView) rootView.findViewById(R.id.textRoom);
-		textView.setText(RoomItem.getByID(talkItem.getRoomID(), getMainActivity().getRoomItemsList()).getName());
+		try {
+			RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), getMainActivity().getRoomItemsList());
+			textView.setText(roomItem.getName());
+		} catch (ItemNotFoundException e) {
+			textView.setText("");
+			e.printStackTrace();
+		}
 		
 		CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxNotify);
 		checkBox.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));

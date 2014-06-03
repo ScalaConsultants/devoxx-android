@@ -2,12 +2,16 @@ package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
-import io.scalac.degree.Utils;
+import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
+import io.scalac.degree.items.TalkItem.TopicComparator;
+import io.scalac.degree.utils.ItemNotFoundException;
+import io.scalac.degree.utils.Utils;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,22 +34,41 @@ public class TalksFragment extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
-	private static final String	ARG_ROOM_ID	= "room_id";
+	private static final String	ARG_ROOM_ID			= "room_id";
+	private static final String	ARG_TIMESLOT_ID	= "timeslot_id";
 	private ItemAdapter				listAdapter;
 	private int							roomID;
+	private int							timeslotID;
 	ArrayList<TalkItem>				talkItemsList;
 	ArrayList<SpeakerItem>			speakerItemsList;
+	ArrayList<RoomItem>				roomItemsList;
 	DateFormat							timeFormat;
 	boolean								is12HourFormat;
 	boolean								isCreated;
+	TalksType							talksType			= TalksType.ALL;
+	int									itemLayoutID;
 	
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
-	public static TalksFragment newInstance(int roomID) {
+	public enum TalksType {
+		ALL, ROOM, TIME
+	}
+	
+	public static TalksFragment newInstance() {
+		TalksFragment fragment = new TalksFragment();
+		return fragment;
+	}
+	
+	public static TalksFragment newInstanceRoom(int roomID) {
 		TalksFragment fragment = new TalksFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_ROOM_ID, roomID);
+		fragment.setArguments(args);
+		return fragment;
+	}
+	
+	public static TalksFragment newInstanceTime(int timeslotID) {
+		TalksFragment fragment = new TalksFragment();
+		Bundle args = new Bundle();
+		args.putInt(ARG_TIMESLOT_ID, timeslotID);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -83,8 +106,24 @@ public class TalksFragment extends Fragment {
 	}
 	
 	private void init() {
-		roomID = getArguments().getInt(ARG_ROOM_ID);
-		talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
+		if (getArguments() != null && getArguments().containsKey(ARG_ROOM_ID)) {
+			roomID = getArguments().getInt(ARG_ROOM_ID);
+			talksType = TalksType.ROOM;
+			talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
+			itemLayoutID = R.layout.talks_room_list_item;
+		} else if (getArguments() != null && getArguments().containsKey(ARG_TIMESLOT_ID)) {
+			timeslotID = getArguments().getInt(ARG_TIMESLOT_ID);
+			talkItemsList = TalkItem.getTimeslotTalkList(getMainActivity().getTalkItemsList(), timeslotID);
+			roomItemsList = getMainActivity().getRoomItemsList();
+			talksType = TalksType.TIME;
+			itemLayoutID = R.layout.talks_time_list_item;
+		} else {
+			setRetainInstance(true);
+			talksType = TalksType.ALL;
+			talkItemsList = new ArrayList<TalkItem>(getMainActivity().getTalkItemsList());
+			Collections.sort(talkItemsList, new TopicComparator());
+			itemLayoutID = R.layout.talks_all_list_item;
+		}
 		speakerItemsList = getMainActivity().getSpeakerItemsList();
 		timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
 		is12HourFormat = !android.text.format.DateFormat.is24HourFormat(getActivity());
@@ -93,6 +132,9 @@ public class TalksFragment extends Fragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if (talksType == TalksType.ALL)
+			getMainActivity().setDrawerIndicatorEnabled(true);
+		
 		final View rootView = inflater.inflate(R.layout.fragment_talks, container, false);
 		
 		final ListView listViewTalks = (ListView) rootView;
@@ -110,7 +152,8 @@ public class TalksFragment extends Fragment {
 	class ItemAdapter extends BaseAdapter {
 		
 		private class ViewHolder {
-			public TextView		textTitle;
+			public TextView		textTopic;
+			public TextView		textRoom;
 			public TextView		textSpeaker;
 			public TextView		textTimeStart;
 			public TextView		textTimeEnd;
@@ -139,18 +182,22 @@ public class TalksFragment extends Fragment {
 			ViewHolder holder;
 			
 			if (convertView == null) {
-				viewItem = getActivity().getLayoutInflater().inflate(R.layout.talk_list_item, parent, false);
+				viewItem = getActivity().getLayoutInflater().inflate(itemLayoutID, parent, false);
 				holder = new ViewHolder();
-				holder.textTitle = (TextView) viewItem.findViewById(R.id.textTitle);
+				holder.textTopic = (TextView) viewItem.findViewById(R.id.textTopic);
 				holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
-				holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
-				holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
+				if (talksType == TalksType.ROOM) {
+					holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
+					holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
+					if (is12HourFormat) {
+						LinearLayout linearLayoutTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
+						linearLayoutTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
+					}
+				} else if (talksType == TalksType.TIME) {
+					holder.textRoom = (TextView) viewItem.findViewById(R.id.textRoom);
+				}
 				holder.imageButtonNotify = (ImageButton) viewItem.findViewById(R.id.imageButtonNotify);
 				holder.imageButtonNotify.setOnClickListener(alarmOnClick);
-				if (is12HourFormat) {
-					LinearLayout linearLayoutTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
-					linearLayoutTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
-				}
 				viewItem.setTag(holder);
 			} else {
 				viewItem = convertView;
@@ -164,10 +211,19 @@ public class TalksFragment extends Fragment {
 				if (speaker2Item != null)
 					speakers += " " + getString(R.string.and) + " " + speaker2Item.getName();
 			}
-			holder.textTitle.setText(talkItem.getTopic());
+			holder.textTopic.setText(talkItem.getTopic());
 			holder.textSpeaker.setText(speakers);
-			holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));
-			holder.textTimeEnd.setText(timeFormat.format(talkItem.getEndTime()));
+			if (talksType == TalksType.ROOM) {
+				holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));
+				holder.textTimeEnd.setText(timeFormat.format(talkItem.getEndTime()));
+			} else if (talksType == TalksType.TIME) {
+				try {
+					holder.textRoom.setText(RoomItem.getByID(talkItem.getRoomID(), roomItemsList).getName());
+				} catch (ItemNotFoundException e) {
+					// e.printStackTrace();
+					holder.textRoom.setText("");
+				}
+			}
 			boolean isAlarmSet = getMainActivity().getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
 			holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_device_access_alarms
 					: R.drawable.ic_action_alerts_and_states_add_alarm);

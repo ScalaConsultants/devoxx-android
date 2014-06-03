@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -62,5 +63,14 @@ public class TimeslotItem {
 	
 	public Date getEndTime() {
 		return endTime;
+	}
+	
+	public static class TimeslotComparator implements Comparator<TimeslotItem> {
+		
+		@Override
+		public final int compare(TimeslotItem lhs, TimeslotItem rhs) {
+			return Long.valueOf(lhs.getStartTime().getTime()).compareTo(Long.valueOf(rhs.getStartTime().getTime()));
+		}
+		
 	}
 }

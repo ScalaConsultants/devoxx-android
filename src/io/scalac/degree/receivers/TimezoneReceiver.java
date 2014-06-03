@@ -1,6 +1,6 @@
 package io.scalac.degree.receivers;
 
-import io.scalac.degree.Utils;
+import io.scalac.degree.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

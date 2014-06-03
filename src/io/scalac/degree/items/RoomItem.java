@@ -1,5 +1,7 @@
 package io.scalac.degree.items;
 
+import io.scalac.degree.utils.ItemNotFoundException;
+
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -25,12 +27,12 @@ public class RoomItem {
 		}
 	}
 	
-	public static RoomItem getByID(int id, ArrayList<RoomItem> roomItemsList) {
+	public static RoomItem getByID(int id, ArrayList<RoomItem> roomItemsList) throws ItemNotFoundException {
 		for (RoomItem roomItem : roomItemsList) {
 			if (roomItem.getId() == id)
 				return roomItem;
 		}
-		return null;
+		throw new ItemNotFoundException("There is no room with id: " + id);
 	}
 	
 	public RoomItem(JSONObject jsonObject) {

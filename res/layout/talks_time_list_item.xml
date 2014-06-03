@@ -4,32 +4,8 @@
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal"
-    android:paddingLeft="12dp"
+    android:paddingLeft="16dp"
     android:paddingRight="12dp" >
-
-    <LinearLayout
-        android:id="@+id/linearLayoutTime"
-        android:layout_width="@dimen/width_24h"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="4dp"
-        android:orientation="vertical"
-        android:paddingBottom="12dp"
-        android:paddingTop="12dp" >
-
-        <TextView
-            android:id="@+id/textTimeStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10:00" />
-
-        <TextView
-            android:id="@+id/textTimeEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10:00"
-            android:textColor="#FF888888" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -42,17 +18,25 @@
         android:paddingTop="12dp" >
 
         <TextView
+            android:id="@+id/textTopic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Topic"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/textSpeakers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Speakers" />
 
         <TextView
-            android:id="@+id/textTitle"
+            android:id="@+id/textRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
-            android:textStyle="bold" />
+            android:text="Room"
+            android:textStyle="italic" />
+
     </LinearLayout>
 
     <ImageButton

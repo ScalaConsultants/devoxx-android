@@ -14,6 +14,7 @@ public class TalkItem {
 	
 	private int			id;
 	private String		topic;
+	private String		type;
 	private String		description;
 	private int			roomID;
 	private int			speakerID;
@@ -73,19 +74,34 @@ public class TalkItem {
 		return roomTalkItemsList;
 	}
 	
+	public static ArrayList<TalkItem> getTimeslotTalkList(ArrayList<TalkItem> talkItemsList, int timeslotID) {
+		ArrayList<TalkItem> roomTalkItemsList = new ArrayList<TalkItem>();
+		for (TalkItem talkItem : talkItemsList) {
+			if (talkItem.getTimeslotID() == timeslotID)
+				roomTalkItemsList.add(talkItem);
+		}
+		return roomTalkItemsList;
+	}
+	
 	public TalkItem(JSONObject jsonObject, ArrayList<TimeslotItem> timeslotItemsList) {
 		this.id = jsonObject.optInt("id");
 		this.topic = jsonObject.optString("topic");
 		this.description = jsonObject.optString("description");
 		try {
+			this.type = jsonObject.getString("type");
+		} catch (JSONException e1) {
+			this.type = "Talk";
+			// e1.printStackTrace();
+		}
+		try {
 			this.roomID = jsonObject.getJSONObject("room").optInt("id");
 		} catch (JSONException e1) {
-			e1.printStackTrace();
+			// e1.printStackTrace();
 		}
 		try {
 			this.speakerID = jsonObject.getJSONObject("speaker").optInt("id");
 		} catch (JSONException e1) {
-			e1.printStackTrace();
+			// e1.printStackTrace();
 		}
 		try {
 			this.speaker2ID = jsonObject.getJSONObject("speaker2").optInt("id");
@@ -103,6 +119,15 @@ public class TalkItem {
 		}
 	}
 	
+	public static class TopicComparator implements Comparator<TalkItem> {
+		
+		@Override
+		public final int compare(TalkItem lhs, TalkItem rhs) {
+			return lhs.getTopicString().compareTo(rhs.getTopicString());
+		}
+		
+	}
+	
 	public static class TimeComparator implements Comparator<TalkItem> {
 		
 		@Override
@@ -116,8 +141,19 @@ public class TalkItem {
 		return id;
 	}
 	
+	public String getTopicString() {
+		if (getType().equalsIgnoreCase("Talk"))
+			return topic;
+		else
+			return getType() + ": " + topic;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	
 	public CharSequence getTopic() {
-		return Html.fromHtml(topic);
+		return Html.fromHtml(getTopicString());
 	}
 	
 	public CharSequence getDescription() {

@@ -1,5 +1,10 @@
-package io.scalac.degree;
+package io.scalac.degree.utils;
 
+import io.scalac.degree.MainActivity;
+import io.scalac.degree.R;
+import io.scalac.degree.R.drawable;
+import io.scalac.degree.R.raw;
+import io.scalac.degree.R.string;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.items.TimeslotItem;
@@ -39,7 +44,6 @@ public class Utils {
 		ArrayList<TalkItem> talkItemsList = getTalkItemsList(context, timeslotItemsList);
 		ArrayList<RoomItem> roomItemsList = getRoomItemsList(context);
 		TalkItem talkItem = TalkItem.getByID(talkID, talkItemsList);
-		RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), roomItemsList);
 		
 		Intent notificationIntent = new Intent(context, MainActivity.class);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -49,8 +53,14 @@ public class Utils {
 				PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-		notificationBuilder.setContentTitle(roomItem.getName());
-		notificationBuilder.setContentText(talkItem.getTopic());
+		try {
+			RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), roomItemsList);
+			notificationBuilder.setContentTitle(roomItem.getName());
+			notificationBuilder.setContentText(talkItem.getTopic());
+		} catch (ItemNotFoundException e) {
+			notificationBuilder.setContentTitle(talkItem.getTopic());
+			e.printStackTrace();
+		}
 		notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(talkItem.getTopic()));
 		notificationBuilder.setContentIntent(contentIntent);
 		notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
