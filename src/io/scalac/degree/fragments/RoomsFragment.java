@@ -4,6 +4,7 @@ import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
 import io.scalac.degree.items.RoomItem;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -36,6 +37,7 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 	ViewPager				mViewPager;
 	
 	ArrayList<RoomItem>	roomItemsList	= new ArrayList<RoomItem>();
+	boolean					isCreated;
 	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -52,15 +54,22 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// setRetainInstance(true);
-		roomItemsList = getMainActivity().getRoomItemsList();
+		setRetainInstance(true);
+		if (getActivity() != null) {
+			init();
+			isCreated = true;
+		} else
+			isCreated = false;
 	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		getActivity().setTitle(R.string.app_name);
+		if (!isCreated) {
+			init();
+			isCreated = true;
+		}
 		
 		// Set up the action bar.
 		final ActionBar actionBar = getActivity().getActionBar();
@@ -94,6 +103,10 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 		}
 	}
 	
+	private void init() {
+		roomItemsList = getMainActivity().getRoomItemsList();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_rooms, container, false);
@@ -106,6 +119,22 @@ public class RoomsFragment extends Fragment implements ActionBar.TabListener {
 		final ActionBar actionBar = getActivity().getActionBar();
 		actionBar.removeAllTabs();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		
+		try {
+			Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+			childFragmentManager.setAccessible(true);
+			childFragmentManager.set(this, null);
+			
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**

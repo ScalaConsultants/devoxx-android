@@ -77,8 +77,8 @@ public class MainActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		setNotifyMap(Utils.getAlarms(getApplicationContext()));
-		// if (savedInstanceState == null)
-		replaceFragment(RoomsFragment.newInstance());
+		if (savedInstanceState == null)
+			replaceFragment(RoomsFragment.newInstance());
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class MainActivity extends FragmentActivity {
 		
 		ft.setTransition(fragmentTransition);
 		ft.replace(android.R.id.content, fragment);
-		ft.attach(fragment);
+		// ft.attach(fragment);
 		if (backStackName != null)
 			ft.addToBackStack(backStackName);
 		ft.commit();

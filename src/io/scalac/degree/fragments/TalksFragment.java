@@ -37,6 +37,7 @@ public class TalksFragment extends Fragment {
 	ArrayList<SpeakerItem>			speakerItemsList;
 	DateFormat							timeFormat;
 	boolean								is12HourFormat;
+	boolean								isCreated;
 	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -58,12 +59,11 @@ public class TalksFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		roomID = getArguments().getInt(ARG_ROOM_ID);
-		talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
-		speakerItemsList = getMainActivity().getSpeakerItemsList();
-		timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
-		is12HourFormat = !android.text.format.DateFormat.is24HourFormat(getActivity());
-		listAdapter = new ItemAdapter();
+		if (getActivity() != null) {
+			init();
+			isCreated = true;
+		} else
+			isCreated = false;
 	}
 	
 	@Override
@@ -75,6 +75,20 @@ public class TalksFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		if (!isCreated) {
+			init();
+			isCreated = true;
+		}
+	}
+	
+	private void init() {
+		roomID = getArguments().getInt(ARG_ROOM_ID);
+		talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
+		speakerItemsList = getMainActivity().getSpeakerItemsList();
+		timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
+		is12HourFormat = !android.text.format.DateFormat.is24HourFormat(getActivity());
+		listAdapter = new ItemAdapter();
 	}
 	
 	@Override

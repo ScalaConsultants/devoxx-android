@@ -31,6 +31,7 @@ public class TalkFragment extends Fragment {
 	private int							talkID;
 	private TalkItem					talkItem;
 	private String						speakers;
+	boolean								isCreated;
 	
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -53,6 +54,23 @@ public class TalkFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
+		if (getActivity() != null) {
+			init();
+			isCreated = true;
+		} else
+			isCreated = false;
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		if (!isCreated) {
+			init();
+			isCreated = true;
+		}
+	}
+	
+	private void init() {
 		talkID = getArguments().getInt(ARG_TALK_ID);
 		talkItem = TalkItem.getByID(talkID, getMainActivity().getTalkItemsList());
 		SpeakerItem speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(), getMainActivity().getSpeakerItemsList());
@@ -63,11 +81,6 @@ public class TalkFragment extends Fragment {
 			if (speaker2Item != null)
 				speakers += "\n" + speaker2Item.getName();
 		}
-	}
-	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 	}
 	
 	@Override
