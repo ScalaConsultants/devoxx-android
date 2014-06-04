@@ -12,6 +12,7 @@ import io.scalac.degree.items.TalkItem.TimeComparator;
 import io.scalac.degree.items.TimeslotItem;
 import io.scalac.degree.items.TimeslotItem.TimeslotComparator;
 import io.scalac.degree.utils.Utils;
+import io.scalac.degree33.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

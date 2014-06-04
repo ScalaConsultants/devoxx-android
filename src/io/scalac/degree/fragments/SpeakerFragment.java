@@ -1,9 +1,9 @@
 package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
-import io.scalac.degree.R;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
+import io.scalac.degree33.R;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;

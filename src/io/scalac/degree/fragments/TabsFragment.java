@@ -1,9 +1,9 @@
 package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
-import io.scalac.degree.R;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.TimeslotItem;
+import io.scalac.degree33.R;
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;

@@ -1,11 +1,11 @@
 package io.scalac.degree.utils;
 
 import io.scalac.degree.MainActivity;
-import io.scalac.degree.R;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.items.TimeslotItem;
 import io.scalac.degree.receivers.AlarmReceiver;
+import io.scalac.degree33.R;
 
 import java.io.IOException;
 import java.io.InputStream;

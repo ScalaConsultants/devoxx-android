@@ -1,11 +1,11 @@
 package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
-import io.scalac.degree.R;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.SpeakerItem.NameComparator;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
+import io.scalac.degree33.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

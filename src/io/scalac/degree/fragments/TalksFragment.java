@@ -1,13 +1,13 @@
 package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
-import io.scalac.degree.R;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.items.TalkItem.TopicComparator;
 import io.scalac.degree.utils.ItemNotFoundException;
 import io.scalac.degree.utils.Utils;
+import io.scalac.degree33.R;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
