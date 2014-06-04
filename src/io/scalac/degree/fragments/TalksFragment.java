@@ -36,6 +36,7 @@ public class TalksFragment extends Fragment {
 	 */
 	private static final String	ARG_ROOM_ID			= "room_id";
 	private static final String	ARG_TIMESLOT_ID	= "timeslot_id";
+	private static final String	ARG_DATE_MS			= "date_ms";
 	private ItemAdapter				listAdapter;
 	private int							roomID;
 	private int							timeslotID;
@@ -57,10 +58,11 @@ public class TalksFragment extends Fragment {
 		return fragment;
 	}
 	
-	public static TalksFragment newInstanceRoom(int roomID) {
+	public static TalksFragment newInstanceRoom(int roomID, long dateMS) {
 		TalksFragment fragment = new TalksFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_ROOM_ID, roomID);
+		args.putLong(ARG_DATE_MS, dateMS);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -109,7 +111,9 @@ public class TalksFragment extends Fragment {
 		if (getArguments() != null && getArguments().containsKey(ARG_ROOM_ID)) {
 			roomID = getArguments().getInt(ARG_ROOM_ID);
 			talksType = TalksType.ROOM;
-			talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(), roomID);
+			talkItemsList = TalkItem.getRoomTalkList(getMainActivity().getTalkItemsList(),
+					roomID,
+					getArguments().getLong(ARG_DATE_MS));
 			itemLayoutID = R.layout.talks_room_list_item;
 		} else if (getArguments() != null && getArguments().containsKey(ARG_TIMESLOT_ID)) {
 			timeslotID = getArguments().getInt(ARG_TIMESLOT_ID);

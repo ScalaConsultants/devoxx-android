@@ -8,6 +8,7 @@ import io.scalac.degree.items.TimeslotItem;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import android.app.ActionBar;
@@ -20,6 +21,10 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,24 +43,33 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	 */
 	ViewPager							mViewPager;
 	
-	ArrayList<RoomItem>				roomItemsList		= new ArrayList<RoomItem>();
-	ArrayList<TimeslotItem>			timeslotItemsList	= new ArrayList<TimeslotItem>();
+	ArrayList<RoomItem>				roomItemsList;
+	ArrayList<TimeslotItem>			timeslotItemsList;
+	ArrayList<Date>					datesList;
+	ArrayList<String>					datesNamesList;
 	boolean								isCreated;
-	TabType								tabType				= TabType.ROOM;
+	TabType								tabType					= TabType.ROOM;
 	
-	private static final String	ARG_TAB_TYPE		= "tab_type";
+	int									currentDatePosition	= 0;
+	
+	private ArrayAdapter<String>	spinnerAbAdapter;
+	
+	private static final String	ARG_TAB_TYPE			= "tab_type";
+	private static final String	ARG_DATE_POSITION		= "date_position";
 	
 	public enum TabType {
 		ROOM, TIME
 	}
 	
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
 	public static TabsFragment newInstance(TabType tabType) {
+		return newInstance(tabType, 0);
+	}
+	
+	public static TabsFragment newInstance(TabType tabType, int datePosition) {
 		TabsFragment fragment = new TabsFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_TAB_TYPE, tabType.ordinal());
+		args.putInt(ARG_DATE_POSITION, datePosition);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -85,6 +99,29 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		// Set up the action bar.
 		final ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowCustomEnabled(true);
+		if (actionBar.getCustomView() == null)
+			actionBar.setCustomView(R.layout.date_ab_spinner);
+		
+		Spinner spinnerAB = (Spinner) actionBar.getCustomView().findViewById(R.id.date_ab_spinner);
+		spinnerAB.setAdapter(spinnerAbAdapter);
+		
+		spinnerAB.setOnItemSelectedListener(new OnItemSelectedListener() {
+			
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if (currentDatePosition != position) {
+					currentDatePosition = position;
+					getMainActivity().getSupportFragmentManager().popBackStack();
+					getMainActivity().replaceFragment(TabsFragment.newInstance(tabType, position));
+				}
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		
+		spinnerAB.setSelection(currentDatePosition);
 		
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
@@ -116,8 +153,19 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	
 	private void init() {
 		tabType = TabType.values()[getArguments().getInt(ARG_TAB_TYPE)];
+		currentDatePosition = getArguments().getInt(ARG_DATE_POSITION);
 		roomItemsList = getMainActivity().getRoomItemsList();
-		timeslotItemsList = getMainActivity().getTimeslotItemsList();
+		datesList = TimeslotItem.getDatesList(getMainActivity().getTimeslotItemsList());
+		timeslotItemsList = TimeslotItem.getTimeslotItemsList(getMainActivity().getTimeslotItemsList(),
+				datesList.get(currentDatePosition));
+		datesNamesList = new ArrayList<String>();
+		DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getActivity().getApplicationContext());
+		for (Date date : datesList) {
+			datesNamesList.add(dateFormat.format(date));
+		}
+		
+		spinnerAbAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, datesNamesList);
+		spinnerAbAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	}
 	
 	@Override
@@ -133,6 +181,8 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		final ActionBar actionBar = getActivity().getActionBar();
 		actionBar.removeAllTabs();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		actionBar.setCustomView(null);
+		actionBar.setDisplayShowCustomEnabled(false);
 	}
 	
 	@Override
@@ -168,7 +218,8 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 				case TIME:
 					return TalksFragment.newInstanceTime(timeslotItemsList.get(position).getId());
 				default:
-					return TalksFragment.newInstanceRoom(roomItemsList.get(position).getId());
+					return TalksFragment.newInstanceRoom(roomItemsList.get(position).getId(),
+							datesList.get(currentDatePosition).getTime());
 			}
 		}
 		
@@ -194,7 +245,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 					String time = timeFormat.format(timeslotItem.getStartTime()) + " - "
 							+ timeFormat.format(timeslotItem.getEndTime());
 					String date = dateFormat.format(timeslotItem.getStartTime());
-					return date + "\n" + time;
+					return time;
 				default:
 					return roomItemsList.get(position).getName().toUpperCase(l);
 			}

@@ -2,9 +2,6 @@ package io.scalac.degree.utils;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.R;
-import io.scalac.degree.R.drawable;
-import io.scalac.degree.R.raw;
-import io.scalac.degree.R.string;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.items.TimeslotItem;
@@ -46,6 +43,7 @@ public class Utils {
 		TalkItem talkItem = TalkItem.getByID(talkID, talkItemsList);
 		
 		Intent notificationIntent = new Intent(context, MainActivity.class);
+		notificationIntent.putExtra(EXTRA_TALK_ID, talkID);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent contentIntent = PendingIntent.getActivity(context,
 				talkID,

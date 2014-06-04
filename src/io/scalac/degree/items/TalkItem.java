@@ -22,6 +22,7 @@ public class TalkItem {
 	private int			timeslotID;
 	private Date		startTime;
 	private Date		endTime;
+	private Date		dateTime;
 	
 	public static void fillList(ArrayList<TalkItem> talkItemsList,
 			JSONArray jsonArray,
@@ -65,10 +66,10 @@ public class TalkItem {
 		return null;
 	}
 	
-	public static ArrayList<TalkItem> getRoomTalkList(ArrayList<TalkItem> talkItemsList, int roomID) {
+	public static ArrayList<TalkItem> getRoomTalkList(ArrayList<TalkItem> talkItemsList, int roomID, long dateMS) {
 		ArrayList<TalkItem> roomTalkItemsList = new ArrayList<TalkItem>();
 		for (TalkItem talkItem : talkItemsList) {
-			if (talkItem.getRoomID() == roomID)
+			if (talkItem.getRoomID() == roomID && talkItem.getDateTime().getTime() == dateMS)
 				roomTalkItemsList.add(talkItem);
 		}
 		return roomTalkItemsList;
@@ -114,6 +115,7 @@ public class TalkItem {
 			TimeslotItem timeslotItem = TimeslotItem.getByID(timeslotID, timeslotItemsList);
 			this.startTime = timeslotItem.getStartTime();
 			this.endTime = timeslotItem.getEndTime();
+			this.dateTime = timeslotItem.getDateTime();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -186,5 +188,9 @@ public class TalkItem {
 	
 	public Date getEndTime() {
 		return endTime;
+	}
+	
+	public Date getDateTime() {
+		return dateTime;
 	}
 }

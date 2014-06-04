@@ -2,6 +2,7 @@ package io.scalac.degree;
 
 import io.scalac.degree.fragments.TabsFragment;
 import io.scalac.degree.fragments.TabsFragment.TabType;
+import io.scalac.degree.fragments.TalkFragment;
 import io.scalac.degree.fragments.TalksFragment;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
@@ -78,6 +79,12 @@ public class MainActivity extends FragmentActivity {
 	
 	public void setNotifyMap(Map<String, ?> notifyMap) {
 		this.notifyMap = notifyMap;
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt("currentNavPosition", currentNavPosition);
+		super.onSaveInstanceState(outState);
 	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -170,11 +177,16 @@ public class MainActivity extends FragmentActivity {
 		}
 		setNotifyMap(Utils.getAlarms(getApplicationContext()));
 		if (savedInstanceState == null) {
-			mDrawerList.setItemChecked(currentNavPosition, true);
-			selectItem(currentNavPosition);
+			if (getIntent().hasExtra(Utils.EXTRA_TALK_ID)) {
+				currentNavPosition = -1;
+				replaceFragment(TalkFragment.newInstance(getIntent().getIntExtra(Utils.EXTRA_TALK_ID, 0)));
+			} else {
+				mDrawerList.setItemChecked(currentNavPosition, true);
+				selectItem(currentNavPosition);
+			}
+		} else {
+			currentNavPosition = savedInstanceState.getInt("currentNavPosition");
 		}
-		// replaceFragment(TalksFragment.newInstance());
-		// replaceFragment(TabsFragment.newInstance());
 	}
 	
 	@Override
