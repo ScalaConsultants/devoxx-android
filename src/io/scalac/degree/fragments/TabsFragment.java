@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		
 		// Set up the action bar.
 		final ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setDisplayShowTitleEnabled(getResources().getBoolean(R.bool.show_title));
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowCustomEnabled(true);
 		if (actionBar.getCustomView() == null)
@@ -183,6 +185,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setCustomView(null);
 		actionBar.setDisplayShowCustomEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(true);
 	}
 	
 	@Override
@@ -240,12 +243,10 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 			switch (tabType) {
 				case TIME:
 					TimeslotItem timeslotItem = timeslotItemsList.get(position);
-					DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getActivity().getApplicationContext());
 					DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
-					String time = timeFormat.format(timeslotItem.getStartTime()) + " - "
-							+ timeFormat.format(timeslotItem.getEndTime());
-					String date = dateFormat.format(timeslotItem.getStartTime());
-					return time;
+					String time = timeFormat.format(timeslotItem.getStartTime()).replaceAll(" AM", "").replaceAll(" PM", "") + " – "
+							+ timeFormat.format(timeslotItem.getEndTime()).replaceAll(" ", "&nbsp;");
+					return Html.fromHtml(time);
 				default:
 					return roomItemsList.get(position).getName().toUpperCase(l);
 			}

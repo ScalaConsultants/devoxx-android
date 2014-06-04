@@ -39,47 +39,52 @@ public class Utils {
 	public static void showNotification(Context context, int talkID) {
 		ArrayList<TimeslotItem> timeslotItemsList = getTimeslotItemsList(context);
 		ArrayList<TalkItem> talkItemsList = getTalkItemsList(context, timeslotItemsList);
-		ArrayList<RoomItem> roomItemsList = getRoomItemsList(context);
 		TalkItem talkItem = TalkItem.getByID(talkID, talkItemsList);
 		
-		Intent notificationIntent = new Intent(context, MainActivity.class);
-		notificationIntent.putExtra(EXTRA_TALK_ID, talkID);
-		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		PendingIntent contentIntent = PendingIntent.getActivity(context,
-				talkID,
-				notificationIntent,
-				PendingIntent.FLAG_CANCEL_CURRENT);
-		
-		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-		try {
-			RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), roomItemsList);
-			notificationBuilder.setContentTitle(roomItem.getName());
-			notificationBuilder.setContentText(talkItem.getTopic());
-		} catch (ItemNotFoundException e) {
-			notificationBuilder.setContentTitle(talkItem.getTopic());
-			e.printStackTrace();
+		if (talkItem.getStartTime().getTime() < System.currentTimeMillis() - 600000) {
+			unsetNotify(context, talkID);
+		} else {
+			ArrayList<RoomItem> roomItemsList = getRoomItemsList(context);
+			Intent notificationIntent = new Intent(context, MainActivity.class);
+			notificationIntent.putExtra(EXTRA_TALK_ID, talkID);
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			PendingIntent contentIntent = PendingIntent.getActivity(context,
+					talkID,
+					notificationIntent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
+			
+			NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+			try {
+				RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), roomItemsList);
+				notificationBuilder.setContentTitle(roomItem.getName());
+				notificationBuilder.setContentText(talkItem.getTopic());
+			} catch (ItemNotFoundException e) {
+				notificationBuilder.setContentTitle(talkItem.getTopic());
+				e.printStackTrace();
+			}
+			notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(talkItem.getTopic()));
+			notificationBuilder.setContentIntent(contentIntent);
+			notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+			// notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconLarge));
+			notificationBuilder.setWhen(talkItem.getStartTime().getTime());
+			notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+			notificationBuilder.setTicker(talkItem.getTopic());
+			// notificationBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+			
+			Notification notification = notificationBuilder.build();
+			
+			// notification.flags |= Notification.FLAG_ONGOING_EVENT;
+			// notification.flags |= Notification.FLAG_NO_CLEAR;
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			
+			notification.defaults |= Notification.DEFAULT_SOUND;
+			notification.defaults |= Notification.DEFAULT_VIBRATE;
+			notification.defaults |= Notification.DEFAULT_LIGHTS;
+			
+			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+			mNotificationManager.notify(talkID, notification);
+			// unsetNotify(context, talkID);
 		}
-		notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(talkItem.getTopic()));
-		notificationBuilder.setContentIntent(contentIntent);
-		notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-		// notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconLarge));
-		notificationBuilder.setWhen(talkItem.getStartTime().getTime());
-		notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-		notificationBuilder.setTicker(talkItem.getTopic());
-		// notificationBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-		
-		Notification notification = notificationBuilder.build();
-		
-		// notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		// notification.flags |= Notification.FLAG_NO_CLEAR;
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.defaults |= Notification.DEFAULT_VIBRATE;
-		notification.defaults |= Notification.DEFAULT_LIGHTS;
-		
-		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(talkID, notification);
 	}
 	
 	public static ArrayList<TimeslotItem> getTimeslotItemsList(Context context) {

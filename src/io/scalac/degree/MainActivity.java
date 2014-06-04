@@ -42,8 +42,6 @@ public class MainActivity extends FragmentActivity {
 	private DrawerLayout				mDrawerLayout;
 	private ListView					mDrawerList;
 	private ActionBarDrawerToggle	mDrawerToggle;
-	private CharSequence				mDrawerTitle;
-	private CharSequence				mTitle;
 	private int							currentNavPosition		= 0;
 	private boolean					drawerIndicatorEnabled	= true;
 	
@@ -123,8 +121,6 @@ public class MainActivity extends FragmentActivity {
 		// setContentView(R.layout.activity_main);
 		setContentView(R.layout.drawer_layout);
 		
-		mTitle = mDrawerTitle = getTitle();
-		
 		mPlanetTitles = getResources().getStringArray(R.array.drawer_actions_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -143,7 +139,7 @@ public class MainActivity extends FragmentActivity {
 			/** Called when a drawer has settled in a completely closed state. */
 			public void onDrawerClosed(View view) {
 				super.onDrawerClosed(view);
-				getActionBar().setTitle(mTitle);
+				// getActionBar().setTitle(mTitle);
 				mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
@@ -151,7 +147,7 @@ public class MainActivity extends FragmentActivity {
 			/** Called when a drawer has settled in a completely open state. */
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
-				getActionBar().setTitle(mDrawerTitle);
+				// getActionBar().setTitle(mDrawerTitle);
 				mDrawerToggle.setDrawerIndicatorEnabled(true);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
