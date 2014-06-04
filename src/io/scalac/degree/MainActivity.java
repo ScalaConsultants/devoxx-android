@@ -1,5 +1,6 @@
 package io.scalac.degree;
 
+import io.scalac.degree.fragments.SpeakersFragment;
 import io.scalac.degree.fragments.TabsFragment;
 import io.scalac.degree.fragments.TabsFragment.TabType;
 import io.scalac.degree.fragments.TalkFragment;
@@ -102,13 +103,16 @@ public class MainActivity extends FragmentActivity {
 		getSupportFragmentManager().popBackStack();
 		switch (position) {
 			case 0:
-				replaceFragment(TalksFragment.newInstance());
+				replaceFragment(TabsFragment.newInstance(TabType.TIME));
 				break;
 			case 1:
 				replaceFragment(TabsFragment.newInstance(TabType.ROOM));
 				break;
 			case 2:
-				replaceFragment(TabsFragment.newInstance(TabType.TIME));
+				replaceFragment(TalksFragment.newInstance());
+				break;
+			case 3:
+				replaceFragment(SpeakersFragment.newInstance());
 				break;
 		}
 	}

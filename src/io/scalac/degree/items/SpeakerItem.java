@@ -1,6 +1,9 @@
 package io.scalac.degree.items;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,5 +76,16 @@ public class SpeakerItem {
 	
 	public int[] getTalks() {
 		return talks;
+	}
+	
+	public static class NameComparator implements Comparator<SpeakerItem> {
+		
+		private Collator	c	= Collator.getInstance(Locale.getDefault());
+		
+		@Override
+		public final int compare(SpeakerItem lhs, SpeakerItem rhs) {
+			return c.compare(lhs.getName(), rhs.getName());
+		}
+		
 	}
 }

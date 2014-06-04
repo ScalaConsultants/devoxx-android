@@ -15,30 +15,6 @@
         tools:context="io.scalac.degree.MainActivity" >
 
         <TextView
-            android:id="@+id/textSpeakers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textTopic"
-            android:layout_marginTop="8dp"
-            android:lineSpacingMultiplier="1.5"
-            android:text="Speakers"
-            android:textIsSelectable="true"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textSpeakers"
-            android:layout_marginTop="32dp"
-            android:lineSpacingMultiplier="1.5"
-            android:linksClickable="true"
-            android:text="Description"
-            android:textIsSelectable="true" />
-
-        <TextView
             android:id="@+id/textNotifyOn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -108,6 +84,47 @@
             android:button="@null"
             android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
             android:text="@string/title_notification" />
+
+        <Button
+            android:id="@+id/buttonSpeaker2"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/buttonSpeaker"
+            android:minHeight="32dp"
+            android:minWidth="32dp"
+            android:paddingLeft="0dp"
+            android:text="Speaker2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonSpeaker"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textTopic"
+            android:layout_marginTop="6dp"
+            android:minHeight="32dp"
+            android:minWidth="32dp"
+            android:paddingLeft="0dp"
+            android:text="Speaker"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/buttonSpeaker2"
+            android:layout_marginTop="28dp"
+            android:lineSpacingMultiplier="1.5"
+            android:linksClickable="true"
+            android:text="Description"
+            android:textIsSelectable="true" />
 
     </RelativeLayout>
 

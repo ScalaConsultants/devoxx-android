@@ -1,8 +1,10 @@
 package io.scalac.degree.items;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,9 +125,11 @@ public class TalkItem {
 	
 	public static class TopicComparator implements Comparator<TalkItem> {
 		
+		private Collator	c	= Collator.getInstance(Locale.getDefault());
+		
 		@Override
 		public final int compare(TalkItem lhs, TalkItem rhs) {
-			return lhs.getTopicString().compareTo(rhs.getTopicString());
+			return c.compare(lhs.getTopicString(), rhs.getTopicString());
 		}
 		
 	}

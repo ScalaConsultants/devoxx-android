@@ -11,9 +11,10 @@
     <string name="drawer_close">Close navigation drawer</string>
 
     <string-array name="drawer_actions_array">
-        <item>All Talks</item>
-        <item>Talks by rooms</item>
-        <item>Talks by time</item>
+        <item>Schedule by time</item>
+        <item>Schedule by rooms</item>
+        <item>Talks</item>
+        <item>Speakers</item>
     </string-array>
 
 </resources>

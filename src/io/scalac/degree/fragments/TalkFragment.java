@@ -15,7 +15,9 @@ import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -31,7 +33,8 @@ public class TalkFragment extends Fragment {
 	private static final String	ARG_TALK_ID	= "talk_id";
 	private int							talkID;
 	private TalkItem					talkItem;
-	private String						speakers;
+	private SpeakerItem				speakerItem;
+	private SpeakerItem				speaker2Item;
 	boolean								isCreated;
 	
 	/**
@@ -74,14 +77,9 @@ public class TalkFragment extends Fragment {
 	private void init() {
 		talkID = getArguments().getInt(ARG_TALK_ID);
 		talkItem = TalkItem.getByID(talkID, getMainActivity().getTalkItemsList());
-		SpeakerItem speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(), getMainActivity().getSpeakerItemsList());
-		speakers = (speakerItem != null) ? speakerItem.getName() : "";
-		if (talkItem.hasSpeaker2()) {
-			SpeakerItem speaker2Item = SpeakerItem.getByID(talkItem.getSpeaker2ID(),
-					getMainActivity().getSpeakerItemsList());
-			if (speaker2Item != null)
-				speakers += "\n" + speaker2Item.getName();
-		}
+		speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(), getMainActivity().getSpeakerItemsList());
+		if (talkItem.hasSpeaker2())
+			speaker2Item = SpeakerItem.getByID(talkItem.getSpeaker2ID(), getMainActivity().getSpeakerItemsList());
 	}
 	
 	@Override
@@ -94,10 +92,6 @@ public class TalkFragment extends Fragment {
 		
 		textView = (TextView) rootView.findViewById(R.id.textTopic);
 		textView.setText(talkItem.getTopic());
-		
-		textView = (TextView) rootView.findViewById(R.id.textSpeakers);
-		
-		textView.setText(speakers);
 		
 		textView = (TextView) rootView.findViewById(R.id.textDesc);
 		textView.setText(talkItem.getDescription());
@@ -121,6 +115,31 @@ public class TalkFragment extends Fragment {
 			textView.setText("");
 			e.printStackTrace();
 		}
+		
+		OnClickListener onClickListener = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				switch (v.getId()) {
+					case R.id.buttonSpeaker:
+						getMainActivity().replaceFragment(SpeakerFragment.newInstance(speakerItem.getId()), true);
+						break;
+					case R.id.buttonSpeaker2:
+						getMainActivity().replaceFragment(SpeakerFragment.newInstance(speaker2Item.getId()), true);
+						break;
+				}
+			}
+		};
+		Button buttonSpeaker = (Button) rootView.findViewById(R.id.buttonSpeaker);
+		buttonSpeaker.setText(speakerItem.getName());
+		buttonSpeaker.setOnClickListener(onClickListener);
+		
+		Button buttonSpeaker2 = (Button) rootView.findViewById(R.id.buttonSpeaker2);
+		if (speaker2Item != null) {
+			buttonSpeaker2.setText(speaker2Item.getName());
+			buttonSpeaker2.setOnClickListener(onClickListener);
+		} else
+			buttonSpeaker2.setVisibility(View.GONE);
 		
 		CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxNotify);
 		checkBox.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
