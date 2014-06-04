@@ -39,7 +39,11 @@ public class SpeakerItem {
 		this.firstName = jsonObject.optString("firstName");
 		this.lastName = jsonObject.optString("lastName");
 		this.bio = jsonObject.optString("bio");
-		this.photoLink = jsonObject.optString("photoLink");
+		try {
+			this.photoLink = jsonObject.getString("photoLink");
+		} catch (JSONException e) {
+			this.photoLink = null;
+		}
 	}
 	
 	public static SpeakerItem getByID(int id, ArrayList<SpeakerItem> speakerItemsList) {
@@ -66,11 +70,22 @@ public class SpeakerItem {
 		return firstName + " " + lastName;
 	}
 	
-	public CharSequence getBio() {
+	public String getBio() {
+		return bio;
+	}
+	
+	public String getBioShort() {
+		String shortBio = Html.fromHtml(bio).toString();
+		return ((shortBio.length() > 128) ? shortBio.substring(0, 128) : shortBio) + "…";
+	}
+	
+	public CharSequence getBioHtml() {
 		return Html.fromHtml(bio);
 	}
 	
 	public String getPhotoLink() {
+		if (photoLink == null)
+			return null;
 		return "http://2014.33degree.org/images/speakers/" + photoLink;
 	}
 	

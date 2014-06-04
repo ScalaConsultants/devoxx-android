@@ -228,8 +228,6 @@ public class MainActivity extends FragmentActivity {
 				i.setData(Uri.parse("http://scalac.io/"));
 				startActivity(i);
 				return true;
-			case R.id.action_settings:
-				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}

@@ -18,9 +18,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -91,10 +91,10 @@ public class TalkFragment extends Fragment {
 		TextView textView;
 		
 		textView = (TextView) rootView.findViewById(R.id.textTopic);
-		textView.setText(talkItem.getTopic());
+		textView.setText(talkItem.getTopicHtml());
 		
 		textView = (TextView) rootView.findViewById(R.id.textDesc);
-		textView.setText(talkItem.getDescription());
+		textView.setText(talkItem.getDescriptionHtml());
 		textView.setMovementMethod(LinkMovementMethod.getInstance());
 		
 		DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(getActivity().getApplicationContext());
@@ -141,9 +141,9 @@ public class TalkFragment extends Fragment {
 		} else
 			buttonSpeaker2.setVisibility(View.GONE);
 		
-		CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxNotify);
-		checkBox.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
-		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		Switch switchNotify = (Switch) rootView.findViewById(R.id.switchNotify);
+		switchNotify.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
+		switchNotify.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

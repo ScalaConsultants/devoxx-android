@@ -215,7 +215,7 @@ public class TalksFragment extends Fragment {
 				if (speaker2Item != null)
 					speakers += " " + getString(R.string.and) + " " + speaker2Item.getName();
 			}
-			holder.textTopic.setText(talkItem.getTopic());
+			holder.textTopic.setText(talkItem.getTopicHtml());
 			holder.textSpeaker.setText(speakers);
 			if (talksType == TalksType.ROOM) {
 				holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));

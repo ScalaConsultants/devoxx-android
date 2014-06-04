@@ -72,17 +72,6 @@
             android:text="10:00"
             android:textAppearance="?android:attr/textAppearance" />
 
-        <CheckBox
-            android:id="@+id/checkBoxNotify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textTimeEnd"
-            android:layout_alignBottom="@+id/textTimeEnd"
-            android:layout_alignParentRight="true"
-            android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-            android:text="@string/title_notification" />
-
         <Button
             android:id="@+id/buttonSpeaker2"
             style="?android:attr/borderlessButtonStyle"
@@ -123,6 +112,29 @@
             android:linksClickable="true"
             android:text="Description"
             android:textIsSelectable="true" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical" >
+
+            <Switch
+                android:id="@+id/switchNotify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/title_notification"
+                android:textAppearance="?android:attr/textAppearance" />
+
+        </LinearLayout>
     </RelativeLayout>
 
 </ScrollView>

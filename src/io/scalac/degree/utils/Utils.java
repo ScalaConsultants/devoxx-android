@@ -57,18 +57,18 @@ public class Utils {
 			try {
 				RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), roomItemsList);
 				notificationBuilder.setContentTitle(roomItem.getName());
-				notificationBuilder.setContentText(talkItem.getTopic());
+				notificationBuilder.setContentText(talkItem.getTopicHtml());
 			} catch (ItemNotFoundException e) {
-				notificationBuilder.setContentTitle(talkItem.getTopic());
+				notificationBuilder.setContentTitle(talkItem.getTopicHtml());
 				e.printStackTrace();
 			}
-			notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(talkItem.getTopic()));
+			notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(talkItem.getTopicHtml()));
 			notificationBuilder.setContentIntent(contentIntent);
 			notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
 			// notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconLarge));
 			notificationBuilder.setWhen(talkItem.getStartTime().getTime());
 			notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-			notificationBuilder.setTicker(talkItem.getTopic());
+			notificationBuilder.setTicker(talkItem.getTopicHtml());
 			// notificationBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 			
 			Notification notification = notificationBuilder.build();
@@ -174,8 +174,8 @@ public class Utils {
 	}
 	
 	private static long getAlarmTime(Context context, long talkStartMS) {
-		// return talkStartMS - 600000; //10 mins before start
-		return System.currentTimeMillis() + 3000; // 3sec after set for testing
+		return talkStartMS - 600000; // 10 mins before start
+		// return System.currentTimeMillis() + 3000; // 3sec after set for testing
 	}
 	
 	public static boolean isNotifySet(Context context, int talkID) {

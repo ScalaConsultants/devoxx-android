@@ -129,7 +129,7 @@ public class TalkItem {
 		
 		@Override
 		public final int compare(TalkItem lhs, TalkItem rhs) {
-			return c.compare(lhs.getTopicString(), rhs.getTopicString());
+			return c.compare(lhs.getTopic(), rhs.getTopic());
 		}
 		
 	}
@@ -147,23 +147,27 @@ public class TalkItem {
 		return id;
 	}
 	
-	public String getTopicString() {
+	public String getTopic() {
 		if (getType().equalsIgnoreCase("Talk"))
 			return topic;
 		else
 			return getType() + ": " + topic;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+	
 	public String getType() {
 		return type;
 	}
 	
-	public CharSequence getTopic() {
-		return Html.fromHtml(getTopicString());
+	public CharSequence getTopicHtml() {
+		return Html.fromHtml(getTopic());
 	}
 	
-	public CharSequence getDescription() {
-		return Html.fromHtml(description);
+	public CharSequence getDescriptionHtml() {
+		return Html.fromHtml(getDescription());
 	}
 	
 	public int getRoomID() {

@@ -4,13 +4,9 @@
 
     <item
         android:id="@+id/action_by_scalac"
+        android:icon="@drawable/ic_scalac"
         android:orderInCategory="90"
         android:showAsAction="always"
         android:title="@string/action_by_scalac"/>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
 
 </menu>

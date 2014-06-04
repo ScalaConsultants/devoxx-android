@@ -5,6 +5,7 @@ import io.scalac.degree.R;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.SpeakerItem.NameComparator;
 import io.scalac.degree.items.TalkItem;
+import io.scalac.degree.utils.AnimateFirstDisplayListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,18 +18,28 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class SpeakersFragment extends Fragment {
 	
-	private ItemAdapter		listAdapter;
-	ArrayList<TalkItem>		talkItemsList;
-	ArrayList<SpeakerItem>	speakerItemsList;
-	boolean						isCreated;
+	private ItemAdapter				listAdapter;
+	ArrayList<TalkItem>				talkItemsList;
+	ArrayList<SpeakerItem>			speakerItemsList;
+	String[]								bios;
+	boolean								isCreated;
+	
+	protected ImageLoader			imageLoader				= ImageLoader.getInstance();
+	private ImageLoadingListener	animateFirstListener	= new AnimateFirstDisplayListener();
+	DisplayImageOptions				imageLoaderOptions;
 	
 	public static SpeakersFragment newInstance() {
 		SpeakersFragment fragment = new SpeakersFragment();
@@ -69,8 +80,19 @@ public class SpeakersFragment extends Fragment {
 	
 	private void init() {
 		setRetainInstance(true);
+		imageLoaderOptions = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.th_background)
+				.showImageForEmptyUri(R.drawable.th_photo)
+				.showImageOnFail(R.drawable.th_photo)
+				.delayBeforeLoading(200)
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+				.build();
 		talkItemsList = getMainActivity().getTalkItemsList();
 		speakerItemsList = new ArrayList<SpeakerItem>(getMainActivity().getSpeakerItemsList());
+		bios = new String[speakerItemsList.size()];
+		for (int i = 0; i < speakerItemsList.size(); i++) {
+			bios[i] = speakerItemsList.get(i).getBioShort();
+		}
 		Collections.sort(speakerItemsList, new NameComparator());
 		listAdapter = new ItemAdapter();
 	}
@@ -97,6 +119,8 @@ public class SpeakersFragment extends Fragment {
 		
 		private class ViewHolder {
 			public TextView	textSpeaker;
+			public TextView	textBio;
+			public ImageView	imageSpeaker;
 		}
 		
 		@Override
@@ -124,13 +148,23 @@ public class SpeakersFragment extends Fragment {
 				viewItem = getActivity().getLayoutInflater().inflate(R.layout.speakers_all_list_item, parent, false);
 				holder = new ViewHolder();
 				holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeaker);
+				holder.textBio = (TextView) viewItem.findViewById(R.id.textBio);
+				holder.imageSpeaker = (ImageView) viewItem.findViewById(R.id.imageSpeaker);
 				viewItem.setTag(holder);
 			} else {
 				viewItem = convertView;
 				holder = (ViewHolder) viewItem.getTag();
 			}
+			
 			SpeakerItem speakerItem = speakerItemsList.get(position);
 			holder.textSpeaker.setText(speakerItem.getName());
+			holder.textBio.setText(bios[position]);
+			
+			imageLoader.displayImage(speakerItem.getPhotoLink(),
+					holder.imageSpeaker,
+					imageLoaderOptions,
+					animateFirstListener);
+			
 			return viewItem;
 		}
 	}
