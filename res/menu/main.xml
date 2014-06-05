@@ -7,6 +7,7 @@
         android:icon="@drawable/ic_scalac_logo"
         android:orderInCategory="90"
         android:showAsAction="always"
-        android:title="@string/action_by_scalac"/>
+        android:title="@string/action_by_scalac"
+        android:visible="false"/>
 
 </menu>
