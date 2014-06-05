@@ -58,22 +58,32 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public ArrayList<TalkItem> getTalkItemsList() {
+		if (talkItemsList.isEmpty())
+			initData();
 		return talkItemsList;
 	}
 	
 	public ArrayList<SpeakerItem> getSpeakerItemsList() {
+		if (speakerItemsList.isEmpty())
+			initData();
 		return speakerItemsList;
 	}
 	
 	public ArrayList<TimeslotItem> getTimeslotItemsList() {
+		if (timeslotItemsList.isEmpty())
+			initData();
 		return timeslotItemsList;
 	}
 	
 	public ArrayList<RoomItem> getRoomItemsList() {
+		if (roomItemsList.isEmpty())
+			initData();
 		return roomItemsList;
 	}
 	
 	public Map<String, ?> getNotifyMap() {
+		if (notifyMap == null)
+			initData();
 		return notifyMap;
 	}
 	
@@ -114,6 +124,26 @@ public class MainActivity extends FragmentActivity {
 				replaceFragment(SpeakersFragment.newInstance());
 				break;
 		}
+	}
+	
+	private void initData() {
+		try {
+			JSONArray jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.timeslots));
+			TimeslotItem.fillList(timeslotItemsList, jsonArray);
+			Collections.sort(timeslotItemsList, new TimeslotComparator());
+			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.talks));
+			TalkItem.fillList(talkItemsList, jsonArray, timeslotItemsList);
+			Collections.sort(talkItemsList, new TimeComparator());
+			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.speakers));
+			SpeakerItem.fillList(speakerItemsList, jsonArray);
+			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.rooms));
+			RoomItem.fillList(roomItemsList, jsonArray);
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		setNotifyMap(Utils.getAlarms(getApplicationContext()));
 	}
 	
 	@Override
@@ -159,23 +189,8 @@ public class MainActivity extends FragmentActivity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 		
-		try {
-			JSONArray jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.timeslots));
-			TimeslotItem.fillList(timeslotItemsList, jsonArray);
-			Collections.sort(timeslotItemsList, new TimeslotComparator());
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.talks));
-			TalkItem.fillList(talkItemsList, jsonArray, timeslotItemsList);
-			Collections.sort(talkItemsList, new TimeComparator());
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.speakers));
-			SpeakerItem.fillList(speakerItemsList, jsonArray);
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.rooms));
-			RoomItem.fillList(roomItemsList, jsonArray);
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		setNotifyMap(Utils.getAlarms(getApplicationContext()));
+		initData();
+		
 		if (savedInstanceState == null) {
 			if (getIntent().hasExtra(Utils.EXTRA_TALK_ID)) {
 				currentNavPosition = -1;
