@@ -5,6 +5,7 @@ import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.SpeakerItem.NameComparator;
 import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
+import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 import java.util.ArrayList;
@@ -89,11 +90,11 @@ public class SpeakersFragment extends Fragment {
 				.build();
 		talkItemsList = getMainActivity().getTalkItemsList();
 		speakerItemsList = new ArrayList<SpeakerItem>(getMainActivity().getSpeakerItemsList());
+		Collections.sort(speakerItemsList, new NameComparator());
 		bios = new String[speakerItemsList.size()];
 		for (int i = 0; i < speakerItemsList.size(); i++) {
 			bios[i] = speakerItemsList.get(i).getBioShort();
 		}
-		Collections.sort(speakerItemsList, new NameComparator());
 		listAdapter = new ItemAdapter();
 	}
 	
@@ -105,6 +106,8 @@ public class SpeakersFragment extends Fragment {
 		
 		final ListView listViewTalks = (ListView) rootView;
 		listViewTalks.setAdapter(listAdapter);
+		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
+		listViewTalks.setFooterDividersEnabled(false);
 		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override

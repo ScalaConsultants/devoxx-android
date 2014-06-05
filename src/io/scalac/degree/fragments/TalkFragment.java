@@ -147,9 +147,12 @@ public class TalkFragment extends Fragment {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked)
-					Utils.setNotify(getActivity().getApplicationContext(), talkID, talkItem.getStartTime().getTime(), true);
-				else
+				if (isChecked) {
+					buttonView.setChecked(Utils.setNotify(getActivity().getApplicationContext(),
+							talkID,
+							talkItem.getStartTime().getTime(),
+							true));
+				} else
 					Utils.unsetNotify(getActivity().getApplicationContext(), talkID);
 				getMainActivity().setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
 			}

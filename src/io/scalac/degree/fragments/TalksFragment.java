@@ -143,6 +143,8 @@ public class TalksFragment extends Fragment {
 		
 		final ListView listViewTalks = (ListView) rootView;
 		listViewTalks.setAdapter(listAdapter);
+		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
+		listViewTalks.setFooterDividersEnabled(false);
 		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override

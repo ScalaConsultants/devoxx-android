@@ -3,7 +3,8 @@
 
     <string name="app_name">33rd Degree</string>
     <string name="title_notification">Notification</string>
-    <string name="toast_notification">Notification set at</string>
+    <string name="toast_notification_set_at">Notification set at</string>
+    <string name="toast_notification_not_set">Can\'t set notification for a past or current event</string>
     <string name="action_by_scalac">by Scalac</string>
     <string name="action_settings">Settings</string>
     <string name="and">and</string>

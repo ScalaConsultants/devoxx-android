@@ -18,6 +18,7 @@ import org.json.JSONException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -26,9 +27,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
+import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 public class Utils {
@@ -83,7 +87,7 @@ public class Utils {
 			
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 			mNotificationManager.notify(talkID, notification);
-			// unsetNotify(context, talkID);
+			unsetNotify(context, talkID);
 		}
 	}
 	
@@ -179,21 +183,27 @@ public class Utils {
 	}
 	
 	public static boolean isNotifySet(Context context, int talkID) {
-		SharedPreferences notifications = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
-		return notifications.contains(String.valueOf(talkID));
+		SharedPreferences alarms = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
+		return alarms.contains(String.valueOf(talkID));
 	}
 	
-	public static void setNotify(Context context, int talkID, long talkStartMS, boolean showToast) {
-		SharedPreferences notifications = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
+	public static boolean setNotify(Context context, int talkID, long talkStartMS, boolean showToast) {
+		long alarmTime = getAlarmTime(context, talkStartMS);
+		if (alarmTime < System.currentTimeMillis()) {
+			if (showToast) {
+				Toast.makeText(context, context.getString(R.string.toast_notification_not_set), Toast.LENGTH_SHORT).show();
+			}
+			return false;
+		}
+		SharedPreferences alarms = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
 		
-		SharedPreferences.Editor editor = notifications.edit();
+		SharedPreferences.Editor editor = alarms.edit();
 		editor.putLong(String.valueOf(talkID), talkStartMS);
 		editor.commit();
 		
 		Intent intent = new Intent(context, AlarmReceiver.class);
 		intent.putExtra(EXTRA_TALK_ID, talkID);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, talkID, intent, 0);
-		long alarmTime = getAlarmTime(context, talkStartMS);
 		setAlarm(context, alarmTime, pendingIntent);
 		
 		if (showToast) {
@@ -204,15 +214,16 @@ public class Utils {
 			if (!dateFormat.format(System.currentTimeMillis()).equals(date)) {
 				time = "\n" + date + " " + time;
 			}
-			Toast.makeText(context, context.getString(R.string.toast_notification) + " " + time, Toast.LENGTH_SHORT)
+			Toast.makeText(context, context.getString(R.string.toast_notification_set_at) + " " + time, Toast.LENGTH_SHORT)
 					.show();
 		}
+		return true;
 	}
 	
 	public static void unsetNotify(Context context, int talkID) {
-		SharedPreferences notifications = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
+		SharedPreferences alarms = context.getSharedPreferences(Utils.ALARMS_NAME, 0);
 		
-		SharedPreferences.Editor editor = notifications.edit();
+		SharedPreferences.Editor editor = alarms.edit();
 		editor.remove(String.valueOf(talkID));
 		editor.commit();
 		
@@ -221,6 +232,20 @@ public class Utils {
 		intent.putExtra(EXTRA_TALK_ID, talkID);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, talkID, intent, 0);
 		alarmManager.cancel(pendingIntent);
+	}
+	
+	public static View getFooterView(final Activity activity) {
+		View footerView = activity.getLayoutInflater().inflate(R.layout.footer_item, null, false);
+		footerView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse("http://scalac.io/"));
+				activity.startActivity(i);
+			}
+		});
+		return footerView;
 	}
 	
 	private static void setAlarm(Context context, long triggerAtMillis, PendingIntent operation) {

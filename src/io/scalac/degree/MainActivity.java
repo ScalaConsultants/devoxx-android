@@ -39,7 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainActivity extends FragmentActivity {
-	private String[]					mPlanetTitles;
+	private String[]					mDrawerActions;
 	private DrawerLayout				mDrawerLayout;
 	private ListView					mDrawerList;
 	private ActionBarDrawerToggle	mDrawerToggle;
@@ -122,12 +122,12 @@ public class MainActivity extends FragmentActivity {
 		// setContentView(R.layout.activity_main);
 		setContentView(R.layout.drawer_layout);
 		
-		mPlanetTitles = getResources().getStringArray(R.array.drawer_actions_array);
+		mDrawerActions = getResources().getStringArray(R.array.drawer_actions_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		
 		// Set the adapter for the list view
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerActions));
 		// Set the list's click listener
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 		
