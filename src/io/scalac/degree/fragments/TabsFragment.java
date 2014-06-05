@@ -52,6 +52,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	TabType								tabType					= TabType.ROOM;
 	
 	int									currentDatePosition	= 0;
+	int									currentTabPosition	= 0;
 	
 	private ArrayAdapter<String>	spinnerAbAdapter;
 	
@@ -257,7 +258,8 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
 		// When the given tab is selected, switch to the corresponding page in
 		// the ViewPager.
-		mViewPager.setCurrentItem(tab.getPosition());
+		currentTabPosition = tab.getPosition();
+		mViewPager.setCurrentItem(currentTabPosition);
 	}
 	
 	@Override

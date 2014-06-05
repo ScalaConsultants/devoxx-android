@@ -24,6 +24,7 @@ import org.json.JSONException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -34,9 +35,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 	private String[]					mDrawerActions;
@@ -51,6 +55,8 @@ public class MainActivity extends FragmentActivity {
 	ArrayList<TimeslotItem>			timeslotItemsList			= new ArrayList<TimeslotItem>();
 	ArrayList<RoomItem>				roomItemsList				= new ArrayList<RoomItem>();
 	Map<String, ?>						notifyMap;
+	
+	ArrayAdapter						arrayAdapter;
 	
 	public void setDrawerIndicatorEnabled(boolean enable) {
 		drawerIndicatorEnabled = enable;
@@ -104,6 +110,7 @@ public class MainActivity extends FragmentActivity {
 				currentNavPosition = position;
 				mDrawerLayout.closeDrawers();
 				selectItem(currentNavPosition);
+				arrayAdapter.notifyDataSetChanged();
 			}
 		}
 	}
@@ -155,10 +162,30 @@ public class MainActivity extends FragmentActivity {
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		
+		arrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerActions) {
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				convertView = super.getView(position, convertView, parent);
+				((TextView) convertView).setTypeface(null, position == currentNavPosition ? Typeface.BOLD : Typeface.NORMAL);
+				return convertView;
+			}
+		};
 		// Set the adapter for the list view
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerActions));
+		mDrawerList.setAdapter(arrayAdapter);
 		// Set the list's click listener
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		mDrawerList.setOnItemSelectedListener(new OnItemSelectedListener() {
+			
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				currentNavPosition = position;
+				arrayAdapter.notifyDataSetChanged();
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
 		
 		mDrawerToggle = new ActionBarDrawerToggle(this,
 				mDrawerLayout,
@@ -245,6 +272,12 @@ public class MainActivity extends FragmentActivity {
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void buttonScalacOnClick(View v) {
+		Intent i = new Intent(Intent.ACTION_VIEW);
+		i.setData(Uri.parse("http://scalac.io/"));
+		startActivity(i);
 	}
 	
 	public void replaceFragment(Fragment fragment) {

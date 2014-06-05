@@ -11,6 +11,7 @@ import io.scalac.degree33.R;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -77,6 +78,12 @@ public class SpeakersFragment extends Fragment {
 			init();
 			isCreated = true;
 		}
+		
+		// Set up the action bar.
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setDisplayShowCustomEnabled(true);
+		if (actionBar.getCustomView() == null)
+			actionBar.setCustomView(R.layout.custom_ab_button);
 	}
 	
 	private void init() {
@@ -116,6 +123,14 @@ public class SpeakersFragment extends Fragment {
 			}
 		});
 		return rootView;
+	}
+	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setCustomView(null);
+		actionBar.setDisplayShowCustomEnabled(false);
 	}
 	
 	class ItemAdapter extends BaseAdapter {

@@ -10,6 +10,7 @@ import io.scalac.degree33.R;
 
 import java.text.DateFormat;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
@@ -72,6 +73,12 @@ public class TalkFragment extends Fragment {
 			init();
 			isCreated = true;
 		}
+		
+		// Set up the action bar.
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setDisplayShowCustomEnabled(true);
+		if (actionBar.getCustomView() == null)
+			actionBar.setCustomView(R.layout.custom_ab_button);
 	}
 	
 	private void init() {
@@ -159,5 +166,13 @@ public class TalkFragment extends Fragment {
 		});
 		
 		return rootView;
+	}
+	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		ActionBar actionBar = getActivity().getActionBar();
+		actionBar.setCustomView(null);
+		actionBar.setDisplayShowCustomEnabled(false);
 	}
 }

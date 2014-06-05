@@ -4,15 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Spinner
-        android:id="@+id/date_ab_spinner"
-        style="@style/DropDownNav.Scalac"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="85dp" />
-
     <ImageButton
         android:id="@+id/imageButtonScalac"
         style="?android:attr/borderlessButtonStyle"
