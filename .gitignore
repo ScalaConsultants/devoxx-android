@@ -1,2 +1,5 @@
 /bin
 /gen
+/assets/crashlytics-build.properties
+/crashlytics.properties
+/res/values/com_crashlytics_export_strings.xml
