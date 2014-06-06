@@ -64,6 +64,39 @@ public class TimeslotItem {
 		return dates;
 	}
 	
+	public static int getInitialDatePosition(ArrayList<TimeslotItem> timeslotItemsList) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		long currentDateMS = cal.getTimeInMillis();
+		
+		ArrayList<Date> dates = getDatesList(timeslotItemsList);
+		for (int i = 0; i < dates.size(); i++) {
+			if (dates.get(i).getTime() == currentDateMS)
+				return i;
+		}
+		return 0;
+	}
+	
+	public static int getInitialTimePosition(ArrayList<TimeslotItem> timeslotItemsList) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+		long currentDateMS = cal.getTimeInMillis();
+		TimeslotItem timeslotItem = timeslotItemsList.get(0);
+		long prevEndTime = timeslotItem.getStartTime().getTime();
+		for (int i = 0; i < timeslotItemsList.size(); i++) {
+			timeslotItem = timeslotItemsList.get(i);
+			if (prevEndTime <= currentDateMS && timeslotItem.getEndTime().getTime() >= currentDateMS)
+				return i;
+			prevEndTime = timeslotItem.getEndTime().getTime();
+		}
+		return 0;
+	}
+	
 	public TimeslotItem(JSONObject jsonObject) {
 		this.id = jsonObject.optInt("id");
 		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);

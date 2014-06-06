@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.text.Html;
-import android.util.Log;
 
 public class SpeakerItem {
 	
@@ -19,7 +18,7 @@ public class SpeakerItem {
 	private String	lastName;
 	private String	bio;
 	private String	photoLink;
-	private int[]	talks;
+	private int[]	talksIDs;
 	
 	public static void fillList(ArrayList<SpeakerItem> speakerItemsList, JSONArray jsonArray) {
 		speakerItemsList.clear();
@@ -48,11 +47,10 @@ public class SpeakerItem {
 		}
 		try {
 			JSONArray talksJsonArray = jsonObject.getJSONArray("talks");
-			this.talks = new int[talksJsonArray.length()];
+			this.talksIDs = new int[talksJsonArray.length()];
 			for (int i = 0; i < talksJsonArray.length(); i++) {
 				try {
-					talks[i] = talksJsonArray.getJSONObject(i).getInt("id");
-					Log.d("talks", "speaker id: " + this.id + " talk id: " + talks[i]);
+					talksIDs[i] = talksJsonArray.getJSONObject(i).getInt("id");
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -105,8 +103,8 @@ public class SpeakerItem {
 		return "http://2014.33degree.org/images/speakers/" + photoLink;
 	}
 	
-	public int[] getTalks() {
-		return talks;
+	public int[] getTalksIDs() {
+		return talksIDs;
 	}
 	
 	public static class NameComparator implements Comparator<SpeakerItem> {

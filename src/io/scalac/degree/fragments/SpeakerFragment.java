@@ -2,6 +2,7 @@ package io.scalac.degree.fragments;
 
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.items.SpeakerItem;
+import io.scalac.degree.items.TalkItem;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree33.R;
 import android.app.ActionBar;
@@ -10,8 +11,11 @@ import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -72,8 +76,8 @@ public class SpeakerFragment extends Fragment {
 		// Set up the action bar.
 		ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setDisplayShowCustomEnabled(true);
-		if (actionBar.getCustomView() == null)
-			actionBar.setCustomView(R.layout.custom_ab_button);
+		// if (actionBar.getCustomView() == null)
+		actionBar.setCustomView(R.layout.custom_ab_button);
 	}
 	
 	private void init() {
@@ -106,6 +110,29 @@ public class SpeakerFragment extends Fragment {
 		textView = (TextView) rootView.findViewById(R.id.textBio);
 		textView.setText(speakerItem.getBioHtml());
 		textView.setMovementMethod(LinkMovementMethod.getInstance());
+		
+		int[] talksIDs = speakerItem.getTalksIDs();
+		if (talksIDs != null && talksIDs.length > 0) {
+			LinearLayout linearLayoutTalks = (LinearLayout) rootView.findViewById(R.id.linearLayoutTalks);
+			
+			OnClickListener buttonItemClickListener = new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					getMainActivity().replaceFragment(TalkFragment.newInstance((Integer) v.getTag()), true);
+				}
+			};
+			for (int talkID : talksIDs) {
+				Button buttonItem = (Button) LayoutInflater.from(getActivity()).inflate(R.layout.button_item, null);
+				buttonItem.setText(TalkItem.getByID(talkID, getMainActivity().getTalkItemsList()).getTopicHtml());
+				buttonItem.setTag(talkID);
+				buttonItem.setOnClickListener(buttonItemClickListener);
+				linearLayoutTalks.addView(buttonItem);
+			}
+		} else {
+			rootView.findViewById(R.id.textViewTalks).setVisibility(View.GONE);
+			rootView.findViewById(R.id.linearLayoutTalks).setVisibility(View.GONE);
+		}
 		
 		return rootView;
 	}

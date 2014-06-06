@@ -34,6 +34,7 @@
             android:lineSpacingMultiplier="1.5"
             android:linksClickable="true"
             android:text="Bio"
+            android:textColorLink="@color/degree_link"
             android:textIsSelectable="true" />
 
         <TextView
@@ -45,7 +46,28 @@
             android:layout_toRightOf="@+id/imageSpeaker"
             android:text="Name"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewTalks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textBio"
+            android:layout_marginTop="28dp"
+            android:text="@string/title_talks_list"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <LinearLayout
+            android:id="@+id/linearLayoutTalks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textViewTalks"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" >
+        </LinearLayout>
     </RelativeLayout>
 
 </ScrollView>

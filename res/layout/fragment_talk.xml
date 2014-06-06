@@ -40,7 +40,8 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/textTimeStart"
             android:layout_marginTop="4dp"
-            android:text="Room" />
+            android:text="Room"
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/textTopic"
@@ -51,7 +52,8 @@
             android:layout_marginTop="16dp"
             android:text="Topic"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textDate"
@@ -84,6 +86,7 @@
             android:paddingLeft="0dp"
             android:text="Speaker2"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/degree_link"
             android:textStyle="bold" />
 
         <Button
@@ -99,6 +102,7 @@
             android:paddingLeft="0dp"
             android:text="Speaker"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/degree_link"
             android:textStyle="bold" />
 
         <TextView
@@ -111,6 +115,7 @@
             android:lineSpacingMultiplier="1.5"
             android:linksClickable="true"
             android:text="Description"
+            android:textColorLink="@color/degree_link"
             android:textIsSelectable="true" />
 
         <LinearLayout

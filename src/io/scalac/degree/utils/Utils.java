@@ -27,12 +27,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
-import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 public class Utils {
@@ -235,17 +233,7 @@ public class Utils {
 	}
 	
 	public static View getFooterView(final Activity activity) {
-		View footerView = activity.getLayoutInflater().inflate(R.layout.footer_item, null, false);
-		footerView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse("http://scalac.io/"));
-				activity.startActivity(i);
-			}
-		});
-		return footerView;
+		return activity.getLayoutInflater().inflate(R.layout.footer_scalac_button, null, false);
 	}
 	
 	private static void setAlarm(Context context, long triggerAtMillis, PendingIntent operation) {

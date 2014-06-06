@@ -52,6 +52,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	TabType								tabType					= TabType.ROOM;
 	
 	int									currentDatePosition	= 0;
+	int									currentTabPosition	= 0;
 	
 	private ArrayAdapter<String>	spinnerAbAdapter;
 	
@@ -60,10 +61,6 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	
 	public enum TabType {
 		ROOM, TIME
-	}
-	
-	public static TabsFragment newInstance(TabType tabType) {
-		return newInstance(tabType, 0);
 	}
 	
 	public static TabsFragment newInstance(TabType tabType, int datePosition) {
@@ -102,8 +99,8 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		actionBar.setDisplayShowTitleEnabled(getResources().getBoolean(R.bool.show_title));
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowCustomEnabled(true);
-		if (actionBar.getCustomView() == null)
-			actionBar.setCustomView(R.layout.date_ab_spinner);
+		// if (actionBar.getCustomView() == null)
+		actionBar.setCustomView(R.layout.date_ab_spinner);
 		
 		Spinner spinnerAB = (Spinner) actionBar.getCustomView().findViewById(R.id.date_ab_spinner);
 		spinnerAB.setAdapter(spinnerAbAdapter);
@@ -133,25 +130,33 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		
-		// When swiping between different sections, select the corresponding
-		// tab. We can also use ActionBar.Tab#select() to do this if we have
-		// a reference to the Tab.
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
-			}
-		});
-		
 		// For each of the sections in the app, add a tab to the action bar.
 		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
 			// Create a tab with text corresponding to the page title defined by
 			// the adapter. Also specify this Activity object, which implements
 			// the TabListener interface, as the callback (listener) for when
 			// this tab is selected.
-			actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+			Tab tab = actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this);
+			actionBar.addTab(tab);
+			if (i == currentTabPosition) {
+				actionBar.selectTab(tab);
+			}
 		}
 		
+		// When swiping between different sections, select the corresponding
+		// tab. We can also use ActionBar.Tab#select() to do this if we have
+		// a reference to the Tab.
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				currentTabPosition = position;
+				try {
+					actionBar.setSelectedNavigationItem(position);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	private void init(Bundle savedInstanceState) {
@@ -161,6 +166,8 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		datesList = TimeslotItem.getDatesList(getMainActivity().getTimeslotItemsList());
 		timeslotItemsList = TimeslotItem.getTimeslotItemsList(getMainActivity().getTimeslotItemsList(),
 				datesList.get(currentDatePosition));
+		if (tabType == TabType.TIME)
+			currentTabPosition = TimeslotItem.getInitialTimePosition(timeslotItemsList);
 		datesNamesList = new ArrayList<String>();
 		DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getActivity().getApplicationContext());
 		for (Date date : datesList) {

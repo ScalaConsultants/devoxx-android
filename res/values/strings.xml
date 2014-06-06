@@ -10,6 +10,7 @@
     <string name="and">and</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="title_talks_list">Talk(s):</string>
 
     <string-array name="drawer_actions_array">
         <item>Schedule by time</item>

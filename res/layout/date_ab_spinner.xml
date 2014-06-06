@@ -20,6 +20,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/action_by_scalac"
         android:onClick="buttonScalacOnClick"
         android:paddingLeft="8dp"
         android:paddingRight="12dp"

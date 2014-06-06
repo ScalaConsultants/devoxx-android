@@ -18,6 +18,8 @@
     style="?android:attr/borderlessButtonStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:contentDescription="@string/action_by_scalac"
     android:gravity="center"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:onClick="buttonScalacOnClick"
     android:src="@drawable/ic_scalac_logo" />

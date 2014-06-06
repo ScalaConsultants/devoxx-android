@@ -111,8 +111,8 @@ public class TalksFragment extends Fragment {
 			// Set up the action bar.
 			ActionBar actionBar = getActivity().getActionBar();
 			actionBar.setDisplayShowCustomEnabled(true);
-			if (actionBar.getCustomView() == null)
-				actionBar.setCustomView(R.layout.custom_ab_button);
+			// if (actionBar.getCustomView() == null)
+			actionBar.setCustomView(R.layout.custom_ab_button);
 		}
 	}
 	

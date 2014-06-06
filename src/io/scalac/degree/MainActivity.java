@@ -30,8 +30,10 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +50,7 @@ public class MainActivity extends FragmentActivity {
 	private ListView					mDrawerList;
 	private ActionBarDrawerToggle	mDrawerToggle;
 	private int							currentNavPosition		= 0;
+	private int							initialDatePosition		= 0;
 	private boolean					drawerIndicatorEnabled	= true;
 	
 	ArrayList<TalkItem>				talkItemsList				= new ArrayList<TalkItem>();
@@ -116,13 +119,13 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private void selectItem(int position) {
-		getSupportFragmentManager().popBackStack();
+		removeFragments();
 		switch (position) {
 			case 0:
-				replaceFragment(TabsFragment.newInstance(TabType.TIME));
+				replaceFragment(TabsFragment.newInstance(TabType.TIME, initialDatePosition));
 				break;
 			case 1:
-				replaceFragment(TabsFragment.newInstance(TabType.ROOM));
+				replaceFragment(TabsFragment.newInstance(TabType.ROOM, initialDatePosition));
 				break;
 			case 2:
 				replaceFragment(TalksFragment.newInstance());
@@ -145,6 +148,8 @@ public class MainActivity extends FragmentActivity {
 			SpeakerItem.fillList(speakerItemsList, jsonArray);
 			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.rooms));
 			RoomItem.fillList(roomItemsList, jsonArray);
+			
+			initialDatePosition = TimeslotItem.getInitialDatePosition(timeslotItemsList);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
@@ -157,6 +162,8 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.drawer_layout);
+		
+		initData();
 		
 		mDrawerActions = getResources().getStringArray(R.array.drawer_actions_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -216,8 +223,6 @@ public class MainActivity extends FragmentActivity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 		
-		initData();
-		
 		if (savedInstanceState == null) {
 			if (getIntent().hasExtra(Utils.EXTRA_TALK_ID)) {
 				currentNavPosition = -1;
@@ -264,11 +269,6 @@ public class MainActivity extends FragmentActivity {
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				onBackPressed();
-				break;
-			case R.id.action_by_scalac:
-				Intent i = new Intent(Intent.ACTION_VIEW);
-				i.setData(Uri.parse("http://scalac.io/"));
-				startActivity(i);
 				return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -292,11 +292,21 @@ public class MainActivity extends FragmentActivity {
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		
 		ft.setTransition(fragmentTransition);
+		if (getSupportFragmentManager().getFragments() != null)
+			Log.d("tag", "getFragments().size(): " + getSupportFragmentManager().getFragments().size());
+		Fragment oldFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+		if (oldFragment != null) {
+			ft.detach(oldFragment).remove(oldFragment);
+		}
 		ft.replace(R.id.content_frame, fragment);
-		// ft.attach(fragment);
+		ft.attach(fragment);
 		if (backStackName != null)
 			ft.addToBackStack(backStackName);
 		ft.commit();
 	}
 	
+	private void removeFragments() {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.popBackStackImmediate();
+	}
 }
