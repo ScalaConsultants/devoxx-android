@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.scalac.degree33"
     android:versionCode="090001"
-    android:versionName="0.9.1-alpha" >
+    android:versionName="0.9.1-beta-1" >
 
     <uses-sdk
         android:minSdkVersion="15"

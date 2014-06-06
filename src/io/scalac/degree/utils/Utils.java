@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Toast;
 
 public class Utils {
+	public static final String	FLURRY_API_KEY	= "FQNW22QNG8F9DG7JFFNS";
 	
 	public static final String	ALARMS_NAME		= "alarms";
 	public static final String	EXTRA_TALK_ID	= "io.scalac.degree.android.intent.extra.TALK_ID";

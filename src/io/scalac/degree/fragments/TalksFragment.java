@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -132,6 +134,7 @@ public class TalksFragment extends Fragment {
 			itemLayoutID = R.layout.talks_time_list_item;
 		} else {
 			// setRetainInstance(true);
+			FlurryAgent.logEvent("Talks_watched");
 			talksType = TalksType.ALL;
 			talkItemsList = new ArrayList<TalkItem>(getMainActivity().getTalkItemsList());
 			Collections.sort(talkItemsList, new TopicComparator());

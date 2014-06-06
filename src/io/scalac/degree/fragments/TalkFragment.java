@@ -24,6 +24,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -59,6 +61,7 @@ public class TalkFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setRetainInstance(true);
+		FlurryAgent.logEvent("Talk_info_watched");
 		if (getActivity() != null) {
 			init();
 			isCreated = true;

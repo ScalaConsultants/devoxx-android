@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +42,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.flurry.android.FlurryAgent;
 
 public class MainActivity extends FragmentActivity {
 	private String[]					mDrawerActions;
@@ -244,6 +245,18 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	protected void onStart() {
+		super.onStart();
+		FlurryAgent.onStartSession(this, Utils.FLURRY_API_KEY);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
+	
+	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
@@ -275,6 +288,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void buttonScalacOnClick(View v) {
+		FlurryAgent.logEvent("Scalac_clicked");
 		Intent i = new Intent(Intent.ACTION_VIEW);
 		i.setData(Uri.parse("http://scalac.io/"));
 		startActivity(i);
@@ -292,8 +306,6 @@ public class MainActivity extends FragmentActivity {
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		
 		ft.setTransition(fragmentTransition);
-		if (getSupportFragmentManager().getFragments() != null)
-			Log.d("tag", "getFragments().size(): " + getSupportFragmentManager().getFragments().size());
 		Fragment oldFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 		if (oldFragment != null) {
 			ft.detach(oldFragment).remove(oldFragment);

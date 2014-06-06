@@ -27,6 +27,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.flurry.android.FlurryAgent;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -49,7 +51,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	ArrayList<Date>					datesList;
 	ArrayList<String>					datesNamesList;
 	boolean								isCreated;
-	TabType								tabType					= TabType.ROOM;
+	TabType								tabType;
 	
 	int									currentDatePosition	= 0;
 	int									currentTabPosition	= 0;
@@ -166,8 +168,15 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		datesList = TimeslotItem.getDatesList(getMainActivity().getTimeslotItemsList());
 		timeslotItemsList = TimeslotItem.getTimeslotItemsList(getMainActivity().getTimeslotItemsList(),
 				datesList.get(currentDatePosition));
-		if (tabType == TabType.TIME)
-			currentTabPosition = TimeslotItem.getInitialTimePosition(timeslotItemsList);
+		switch (tabType) {
+			case ROOM:
+				FlurryAgent.logEvent("Schedule_by_room_watched");
+				break;
+			case TIME:
+				currentTabPosition = TimeslotItem.getInitialTimePosition(timeslotItemsList);
+				FlurryAgent.logEvent("Schedule_by_time_watched");
+				break;
+		}
 		datesNamesList = new ArrayList<String>();
 		DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getActivity().getApplicationContext());
 		for (Date date : datesList) {

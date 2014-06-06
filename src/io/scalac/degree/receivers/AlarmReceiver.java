@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
+import com.flurry.android.FlurryAgent;
+
 public class AlarmReceiver extends BroadcastReceiver {
 	
 	public AlarmReceiver() {}
@@ -23,5 +25,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 		if (talkID != -1)
 			Utils.showNotification(context.getApplicationContext(), talkID);
 		wl.release();
+		FlurryAgent.logEvent("Alarm_received");
 	}
 }
