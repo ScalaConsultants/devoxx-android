@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.text.Html;
+import android.util.Log;
 
 public class SpeakerItem {
 	
@@ -21,6 +22,7 @@ public class SpeakerItem {
 	private int[]	talks;
 	
 	public static void fillList(ArrayList<SpeakerItem> speakerItemsList, JSONArray jsonArray) {
+		speakerItemsList.clear();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			try {
 				if (jsonArray.get(i) instanceof JSONObject) {
@@ -43,6 +45,20 @@ public class SpeakerItem {
 			this.photoLink = jsonObject.getString("photoLink");
 		} catch (JSONException e) {
 			this.photoLink = null;
+		}
+		try {
+			JSONArray talksJsonArray = jsonObject.getJSONArray("talks");
+			this.talks = new int[talksJsonArray.length()];
+			for (int i = 0; i < talksJsonArray.length(); i++) {
+				try {
+					talks[i] = talksJsonArray.getJSONObject(i).getInt("id");
+					Log.d("talks", "speaker id: " + this.id + " talk id: " + talks[i]);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
 	

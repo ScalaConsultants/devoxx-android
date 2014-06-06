@@ -22,6 +22,7 @@ public class TimeslotItem {
 	private Date	dateTime;
 	
 	public static void fillList(ArrayList<TimeslotItem> timeslotItemsList, JSONArray jsonArray) {
+		timeslotItemsList.clear();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			try {
 				if (jsonArray.get(i) instanceof JSONObject) {

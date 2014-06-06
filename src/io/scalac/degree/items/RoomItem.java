@@ -14,6 +14,7 @@ public class RoomItem {
 	private String	name;
 	
 	public static void fillList(ArrayList<RoomItem> roomItemsList, JSONArray jsonArray) {
+		roomItemsList.clear();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			try {
 				if (jsonArray.get(i) instanceof JSONObject) {

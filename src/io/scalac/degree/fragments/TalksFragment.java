@@ -131,7 +131,7 @@ public class TalksFragment extends Fragment {
 			talksType = TalksType.TIME;
 			itemLayoutID = R.layout.talks_time_list_item;
 		} else {
-			setRetainInstance(true);
+			// setRetainInstance(true);
 			talksType = TalksType.ALL;
 			talkItemsList = new ArrayList<TalkItem>(getMainActivity().getTalkItemsList());
 			Collections.sort(talkItemsList, new TopicComparator());

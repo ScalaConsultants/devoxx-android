@@ -87,10 +87,10 @@ public class SpeakersFragment extends Fragment {
 	}
 	
 	private void init() {
-		setRetainInstance(true);
+		// setRetainInstance(true);
 		imageLoaderOptions = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.th_background)
-				.showImageForEmptyUri(R.drawable.th_photo)
-				.showImageOnFail(R.drawable.th_photo)
+				.showImageForEmptyUri(R.drawable.no_photo)
+				.showImageOnFail(R.drawable.no_photo)
 				.delayBeforeLoading(200)
 				.cacheInMemory(true)
 				.cacheOnDisk(true)

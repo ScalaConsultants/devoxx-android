@@ -56,7 +56,7 @@ public class MainActivity extends FragmentActivity {
 	ArrayList<RoomItem>				roomItemsList				= new ArrayList<RoomItem>();
 	Map<String, ?>						notifyMap;
 	
-	ArrayAdapter						arrayAdapter;
+	ArrayAdapter<String>				arrayAdapter;
 	
 	public void setDrawerIndicatorEnabled(boolean enable) {
 		drawerIndicatorEnabled = enable;

@@ -54,7 +54,7 @@ public class SpeakerFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
+		// setRetainInstance(true);
 		if (getActivity() != null) {
 			init();
 			isCreated = true;
@@ -78,8 +78,8 @@ public class SpeakerFragment extends Fragment {
 	
 	private void init() {
 		imageLoaderOptions = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.th_background)
-				.showImageForEmptyUri(R.drawable.th_photo)
-				.showImageOnFail(R.drawable.th_photo)
+				.showImageForEmptyUri(R.drawable.no_photo)
+				.showImageOnFail(R.drawable.no_photo)
 				.cacheInMemory(true)
 				.cacheOnDisk(true)
 				.build();

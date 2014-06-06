@@ -29,6 +29,7 @@ public class TalkItem {
 	public static void fillList(ArrayList<TalkItem> talkItemsList,
 			JSONArray jsonArray,
 			ArrayList<TimeslotItem> timeslotItemsList) {
+		talkItemsList.clear();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			try {
 				if (jsonArray.get(i) instanceof JSONObject) {

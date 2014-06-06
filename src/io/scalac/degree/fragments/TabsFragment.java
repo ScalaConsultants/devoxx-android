@@ -52,7 +52,6 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	TabType								tabType					= TabType.ROOM;
 	
 	int									currentDatePosition	= 0;
-	int									currentTabPosition	= 0;
 	
 	private ArrayAdapter<String>	spinnerAbAdapter;
 	
@@ -81,9 +80,9 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
+		// setRetainInstance(true);
 		if (getActivity() != null) {
-			init();
+			init(savedInstanceState);
 			isCreated = true;
 		} else
 			isCreated = false;
@@ -94,7 +93,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		super.onActivityCreated(savedInstanceState);
 		
 		if (!isCreated) {
-			init();
+			init(savedInstanceState);
 			isCreated = true;
 		}
 		
@@ -152,9 +151,10 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 			// this tab is selected.
 			actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 		}
+		
 	}
 	
-	private void init() {
+	private void init(Bundle savedInstanceState) {
 		tabType = TabType.values()[getArguments().getInt(ARG_TAB_TYPE)];
 		currentDatePosition = getArguments().getInt(ARG_DATE_POSITION);
 		roomItemsList = getMainActivity().getRoomItemsList();
@@ -258,8 +258,7 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
 		// When the given tab is selected, switch to the corresponding page in
 		// the ViewPager.
-		currentTabPosition = tab.getPosition();
-		mViewPager.setCurrentItem(currentTabPosition);
+		mViewPager.setCurrentItem(tab.getPosition());
 	}
 	
 	@Override

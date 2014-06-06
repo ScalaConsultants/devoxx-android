@@ -58,7 +58,7 @@ public class TalkFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
+		// setRetainInstance(true);
 		if (getActivity() != null) {
 			init();
 			isCreated = true;
