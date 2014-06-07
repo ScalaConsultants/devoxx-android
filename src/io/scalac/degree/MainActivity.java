@@ -16,6 +16,7 @@ import io.scalac.degree33.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -116,24 +117,6 @@ public class MainActivity extends FragmentActivity {
 				selectItem(currentNavPosition);
 				arrayAdapter.notifyDataSetChanged();
 			}
-		}
-	}
-	
-	private void selectItem(int position) {
-		removeFragments();
-		switch (position) {
-			case 0:
-				replaceFragment(TabsFragment.newInstance(TabType.TIME, initialDatePosition));
-				break;
-			case 1:
-				replaceFragment(TabsFragment.newInstance(TabType.ROOM, initialDatePosition));
-				break;
-			case 2:
-				replaceFragment(TalksFragment.newInstance());
-				break;
-			case 3:
-				replaceFragment(SpeakersFragment.newInstance());
-				break;
 		}
 	}
 	
@@ -295,30 +278,63 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void replaceFragment(Fragment fragment) {
-		replaceFragment(fragment, null, FragmentTransaction.TRANSIT_NONE);
+		replaceFragment(fragment, false, FragmentTransaction.TRANSIT_NONE);
 	}
 	
 	public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-		replaceFragment(fragment, addToBackStack ? "backStack" : null, FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		replaceFragment(fragment, addToBackStack, FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 	}
 	
-	public void replaceFragment(Fragment fragment, String backStackName, int fragmentTransition) {
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+	public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		
+		// Fragment oldFragment = fragmentManager.findFragmentById(R.id.content_frame);
+		// if (oldFragment != null && oldFragment.getTag() == null) {
+		// fragmentManager.beginTransaction().detach(oldFragment).remove(oldFragment).commit();
+		// // fragmentManager.executePendingTransactions();
+		// }
+		
+		FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(fragmentTransition);
-		Fragment oldFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
-		if (oldFragment != null) {
-			ft.detach(oldFragment).remove(oldFragment);
-		}
-		ft.replace(R.id.content_frame, fragment);
+		ft.replace(R.id.content_frame, fragment, TAG_CONTENT_FRAGMENT);
 		ft.attach(fragment);
-		if (backStackName != null)
-			ft.addToBackStack(backStackName);
+		if (addToBackStack)
+			ft.addToBackStack(null);
 		ft.commit();
 	}
+	
+	private void selectItem(final int position) {
+		removeFragments();
+		switch (position) {
+			case 0:
+				replaceFragment(TabsFragment.newInstance(TabType.TIME, initialDatePosition));
+				break;
+			case 1:
+				replaceFragment(TabsFragment.newInstance(TabType.ROOM, initialDatePosition));
+				break;
+			case 2:
+				replaceFragment(TalksFragment.newInstance());
+				break;
+			case 3:
+				replaceFragment(SpeakersFragment.newInstance());
+				break;
+		}
+	}
+	
+	private static final String	TAG_CONTENT_FRAGMENT	= "content_fragment";
 	
 	private void removeFragments() {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.popBackStackImmediate();
+		List<Fragment> fragments = fragmentManager.getFragments();
+		if (fragments != null) {
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			for (Fragment fragment : fragments) {
+				if (fragment != null)
+					ft.detach(fragment).remove(fragment);
+			}
+			ft.commitAllowingStateLoss();
+			fragmentManager.executePendingTransactions();
+		}
 	}
 }
