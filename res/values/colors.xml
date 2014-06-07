@@ -2,5 +2,7 @@
 <resources>
 
     <color name="degree_link">#A30E0B</color>
+    <color name="tab_strip">#FF0000</color>
+    <color name="drawer_bg">#f6f5f2</color>
 
 </resources>

@@ -146,6 +146,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.drawer_layout);
+		getActionBar().setDisplayShowTitleEnabled(false);
 		
 		initData();
 		
@@ -288,12 +289,6 @@ public class MainActivity extends FragmentActivity {
 	public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		
-		// Fragment oldFragment = fragmentManager.findFragmentById(R.id.content_frame);
-		// if (oldFragment != null && oldFragment.getTag() == null) {
-		// fragmentManager.beginTransaction().detach(oldFragment).remove(oldFragment).commit();
-		// // fragmentManager.executePendingTransactions();
-		// }
-		
 		FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(fragmentTransition);
 		ft.replace(R.id.content_frame, fragment, TAG_CONTENT_FRAGMENT);
@@ -333,7 +328,7 @@ public class MainActivity extends FragmentActivity {
 				if (fragment != null)
 					ft.detach(fragment).remove(fragment);
 			}
-			ft.commitAllowingStateLoss();
+			ft.commit();
 			fragmentManager.executePendingTransactions();
 		}
 	}

@@ -3,6 +3,7 @@ package io.scalac.degree.fragments;
 import io.scalac.degree.MainActivity;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.TimeslotItem;
+import io.scalac.degree.views.SlidingTabLayout;
 import io.scalac.degree33.R;
 
 import java.lang.reflect.Field;
@@ -40,6 +41,12 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	 * memory intensive, it may be best to switch to a {@link android.support.v13.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter				mSectionsPagerAdapter;
+	
+	/**
+	 * A custom {@link ViewPager} title strip which looks much like Tabs present in Android v4.0 and above, but is
+	 * designed to give continuous feedback to the user when scrolling.
+	 */
+	private SlidingTabLayout		mSlidingTabLayout;
 	
 	/**
 	 * The {@link ViewPager} that will host the section contents.
@@ -98,8 +105,6 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		
 		// Set up the action bar.
 		final ActionBar actionBar = getActivity().getActionBar();
-		actionBar.setDisplayShowTitleEnabled(getResources().getBoolean(R.bool.show_title));
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowCustomEnabled(true);
 		// if (actionBar.getCustomView() == null)
 		actionBar.setCustomView(R.layout.date_ab_spinner);
@@ -129,21 +134,21 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
 		
 		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+		mViewPager = (ViewPager) getView().findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		
 		// For each of the sections in the app, add a tab to the action bar.
-		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-			// Create a tab with text corresponding to the page title defined by
-			// the adapter. Also specify this Activity object, which implements
-			// the TabListener interface, as the callback (listener) for when
-			// this tab is selected.
-			Tab tab = actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this);
-			actionBar.addTab(tab);
-			if (i == currentTabPosition) {
-				actionBar.selectTab(tab);
-			}
-		}
+		// for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+		// // Create a tab with text corresponding to the page title defined by
+		// // the adapter. Also specify this Activity object, which implements
+		// // the TabListener interface, as the callback (listener) for when
+		// // this tab is selected.
+		// Tab tab = actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this);
+		// actionBar.addTab(tab);
+		// if (i == currentTabPosition) {
+		// actionBar.selectTab(tab);
+		// }
+		// }
 		
 		// When swiping between different sections, select the corresponding
 		// tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -152,13 +157,12 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 			@Override
 			public void onPageSelected(int position) {
 				currentTabPosition = position;
-				try {
-					actionBar.setSelectedNavigationItem(position);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 			}
 		});
+		mSlidingTabLayout = (SlidingTabLayout) getView().findViewById(R.id.sliding_tabs);
+		mSlidingTabLayout.setViewPager(mViewPager);
+		mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.tab_strip));
+		mViewPager.setCurrentItem(currentTabPosition);
 	}
 	
 	private void init(Bundle savedInstanceState) {
@@ -190,19 +194,16 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		getMainActivity().setDrawerIndicatorEnabled(true);
-		View rootView = inflater.inflate(R.layout.fragment_rooms, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_tabs, container, false);
 		return rootView;
 	}
 	
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		final ActionBar actionBar = getActivity().getActionBar();
-		actionBar.removeAllTabs();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		ActionBar actionBar = getActivity().getActionBar();
 		actionBar.setCustomView(null);
 		actionBar.setDisplayShowCustomEnabled(false);
-		actionBar.setDisplayShowTitleEnabled(true);
 	}
 	
 	@Override
@@ -261,8 +262,14 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 				case TIME:
 					TimeslotItem timeslotItem = timeslotItemsList.get(position);
 					DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
-					String time = timeFormat.format(timeslotItem.getStartTime()).replaceAll(" AM", "").replaceAll(" PM", "") + " – "
-							+ timeFormat.format(timeslotItem.getEndTime()).replaceAll(" ", "&nbsp;");
+					String timeStart = timeFormat.format(timeslotItem.getStartTime());
+					String timeEnd = timeFormat.format(timeslotItem.getEndTime());
+					if (timeStart.contains(" AM")) {
+						if (timeEnd.contains(" AM"))
+							timeStart = timeStart.replaceAll(" AM", "");
+					} else if (timeStart.contains(" PM") && timeEnd.contains(" PM"))
+						timeStart = timeStart.replaceAll(" PM", "");
+					String time = timeStart + " – " + timeEnd;
 					return Html.fromHtml(time);
 				default:
 					return roomItemsList.get(position).getName().toUpperCase(l);
