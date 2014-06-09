@@ -26,6 +26,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources.NotFoundException;
 import android.os.Build;
 import android.os.PowerManager;
@@ -253,6 +254,24 @@ public class Utils {
 			alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, operation);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static String getVersionName(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+			return "versionName";
+		}
+	}
+	
+	public static int getVersionCode(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+			return 0;
 		}
 	}
 }

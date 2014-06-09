@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">33rd Degree</string>
+    <string name="feedback_link">mailto:apps@scalac.io?subject=Feedback: %1$s %2$s (%3$s) Android %4$s (API %5$s) %6$s %7$s</string>
     <string name="title_notification">Notification</string>
+    <string name="toast_feedback_activity_not_found">Email app not found</string>
     <string name="toast_notification_set_at">Notification set at</string>
     <string name="toast_notification_not_set">Can\'t set notification for a past or current event</string>
     <string name="action_by_scalac">by Scalac</string>
@@ -17,6 +19,7 @@
         <item>Schedule by rooms</item>
         <item>Talks</item>
         <item>Speakers</item>
+        <item>Feedback</item>
     </string-array>
 
 </resources>

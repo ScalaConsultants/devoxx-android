@@ -22,11 +22,13 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -34,7 +36,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
 
@@ -108,14 +110,48 @@ public class MainActivity extends FragmentActivity {
 		super.onSaveInstanceState(outState);
 	}
 	
+	private void nonSelectableItemClick(int position) {
+		switch (position) {
+			case 4:
+				Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(String.format(getString(R.string.feedback_link),
+						getString(R.string.app_name),
+						Utils.getVersionName(this),
+						Utils.getVersionCode(this),
+						Build.VERSION.RELEASE,
+						Build.VERSION.SDK_INT,
+						Build.MANUFACTURER,
+						Build.MODEL)));
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				try {
+					startActivity(intent);
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(getApplicationContext(), R.string.toast_feedback_activity_not_found, Toast.LENGTH_SHORT)
+							.show();
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			if (position != currentNavPosition) {
-				currentNavPosition = position;
-				mDrawerLayout.closeDrawers();
-				selectItem(currentNavPosition);
-				arrayAdapter.notifyDataSetChanged();
+			switch (getDrawerItemViewType(position)) {
+				case SECONDARY:
+					if (currentNavPosition != -1)
+						mDrawerList.setItemChecked(currentNavPosition, true);
+					mDrawerLayout.closeDrawers();
+					nonSelectableItemClick(position);
+					break;
+				default:
+					if (position != currentNavPosition) {
+						currentNavPosition = position;
+						mDrawerLayout.closeDrawers();
+						selectItem(currentNavPosition);
+						arrayAdapter.notifyDataSetChanged();
+					}
+					break;
 			}
 		}
 	}
@@ -142,6 +178,19 @@ public class MainActivity extends FragmentActivity {
 		setNotifyMap(Utils.getAlarms(getApplicationContext()));
 	}
 	
+	private enum DrawerItemViewType {
+		PRIMARY, SECONDARY
+	}
+	
+	private DrawerItemViewType getDrawerItemViewType(int position) {
+		switch (position) {
+			case 4:
+				return DrawerItemViewType.SECONDARY;
+			default:
+				return DrawerItemViewType.PRIMARY;
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -156,11 +205,45 @@ public class MainActivity extends FragmentActivity {
 		
 		arrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerActions) {
 			
+			class ViewHolder {
+				public TextView	text1;
+			}
+			
+			@Override
+			public int getItemViewType(int position) {
+				return getDrawerItemViewType(position).ordinal();
+			}
+			
+			@Override
+			public int getViewTypeCount() {
+				return DrawerItemViewType.values().length;
+			}
+			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				convertView = super.getView(position, convertView, parent);
-				((TextView) convertView).setTypeface(null, position == currentNavPosition ? Typeface.BOLD : Typeface.NORMAL);
-				return convertView;
+				View viewItem;
+				ViewHolder holder;
+				
+				if (convertView == null) {
+					int itemLayoutID = (getDrawerItemViewType(position) == DrawerItemViewType.SECONDARY) ? R.layout.drawer_list_secondary_item
+							: R.layout.drawer_list_item;
+					viewItem = getLayoutInflater().inflate(itemLayoutID, parent, false);
+					holder = new ViewHolder();
+					holder.text1 = (TextView) viewItem.findViewById(android.R.id.text1);
+					viewItem.setTag(holder);
+				} else {
+					viewItem = convertView;
+					holder = (ViewHolder) viewItem.getTag();
+				}
+				holder.text1.setText(mDrawerActions[position]);
+				holder.text1.setTypeface(null, position == currentNavPosition ? Typeface.BOLD : Typeface.NORMAL);
+				
+				return viewItem;
+				
+				// convertView = super.getView(position, convertView, parent);
+				// ((TextView) convertView).setTypeface(null, position == currentNavPosition ? Typeface.BOLD :
+				// Typeface.NORMAL);
+				// return convertView;
 			}
 		};
 		// Set the adapter for the list view
@@ -244,13 +327,6 @@ public class MainActivity extends FragmentActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
 	
 	@Override
