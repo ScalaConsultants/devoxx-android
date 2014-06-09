@@ -1,0 +1,115 @@
+[{
+	"id": 1000,
+	"endTime": "2014-06-09T07:00:00Z",
+	"startTime": "2014-06-09T06:00:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1001,
+	"endTime": "2014-06-09T09:30:00Z",
+	"startTime": "2014-06-09T09:00:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1002,
+	"endTime": "2014-06-09T11:30:00Z",
+	"startTime": "2014-06-09T10:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1003,
+	"endTime": "2014-06-09T12:40:00Z",
+	"startTime": "2014-06-09T12:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1004,
+	"endTime": "2014-06-09T14:10:00Z",
+	"startTime": "2014-06-09T13:40:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1005,
+	"endTime": "2014-06-09T15:20:00Z",
+	"startTime": "2014-06-09T15:10:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1006,
+	"endTime": "2014-06-09T18:00:00Z",
+	"startTime": "2014-06-09T16:20:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1007,
+	"endTime": "2014-06-09T22:00:00Z",
+	"startTime": "2014-06-09T18:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1008,
+	"endTime": "2014-06-10T07:00:00Z",
+	"startTime": "2014-06-10T06:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1009,
+	"endTime": "2014-06-10T09:30:00Z",
+	"startTime": "2014-06-10T09:00:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1010,
+	"endTime": "2014-06-10T11:30:00Z",
+	"startTime": "2014-06-10T10:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1011,
+	"endTime": "2014-06-10T12:40:00Z",
+	"startTime": "2014-06-10T12:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1012,
+	"endTime": "2014-06-10T14:10:00Z",
+	"startTime": "2014-06-10T13:40:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1013,
+	"endTime": "2014-06-10T15:20:00Z",
+	"startTime": "2014-06-10T15:10:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1014,
+	"endTime": "2014-06-11T07:00:00Z",
+	"startTime": "2014-06-11T06:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1015,
+	"endTime": "2014-06-11T08:30:00Z",
+	"startTime": "2014-06-11T08:00:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1016,
+	"endTime": "2014-06-11T09:40:00Z",
+	"startTime": "2014-06-11T09:30:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1017,
+	"endTime": "2014-06-11T11:40:00Z",
+	"startTime": "2014-06-11T10:40:00Z",
+	"timeslotType": "BREAK"
+},
+{
+	"id": 1018,
+	"endTime": "2014-06-11T13:10:00Z",
+	"startTime": "2014-06-11T12:40:00Z",
+	"timeslotType": "BREAK"
+}
+]

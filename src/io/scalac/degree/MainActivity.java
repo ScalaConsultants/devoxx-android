@@ -5,6 +5,8 @@ import io.scalac.degree.fragments.TabsFragment;
 import io.scalac.degree.fragments.TabsFragment.TabType;
 import io.scalac.degree.fragments.TalkFragment;
 import io.scalac.degree.fragments.TalksFragment;
+import io.scalac.degree.fragments.TalksFragment.TalksType;
+import io.scalac.degree.items.BreakItem;
 import io.scalac.degree.items.RoomItem;
 import io.scalac.degree.items.SpeakerItem;
 import io.scalac.degree.items.TalkItem;
@@ -61,6 +63,7 @@ public class MainActivity extends FragmentActivity {
 	ArrayList<SpeakerItem>			speakerItemsList			= new ArrayList<SpeakerItem>();
 	ArrayList<TimeslotItem>			timeslotItemsList			= new ArrayList<TimeslotItem>();
 	ArrayList<RoomItem>				roomItemsList				= new ArrayList<RoomItem>();
+	ArrayList<BreakItem>				breakItemsList				= new ArrayList<BreakItem>();
 	Map<String, ?>						notifyMap;
 	
 	ArrayAdapter<String>				arrayAdapter;
@@ -94,6 +97,12 @@ public class MainActivity extends FragmentActivity {
 		return roomItemsList;
 	}
 	
+	public ArrayList<BreakItem> getBreakItemsList() {
+		if (breakItemsList.isEmpty())
+			initData();
+		return breakItemsList;
+	}
+	
 	public Map<String, ?> getNotifyMap() {
 		if (notifyMap == null)
 			initData();
@@ -112,7 +121,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private void nonSelectableItemClick(int position) {
 		switch (position) {
-			case 4:
+			case 5:
 				Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(String.format(getString(R.string.feedback_link),
 						getString(R.string.app_name),
 						Utils.getVersionName(this),
@@ -159,15 +168,15 @@ public class MainActivity extends FragmentActivity {
 	private void initData() {
 		try {
 			JSONArray jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.timeslots));
-			TimeslotItem.fillList(timeslotItemsList, jsonArray);
+			JSONArray jsonArray2 = new JSONArray(Utils.getRawResource(this, R.raw.breaks_timeslots));
+			
+			TimeslotItem.fillList(timeslotItemsList, Utils.concatArray(jsonArray, jsonArray2));
 			Collections.sort(timeslotItemsList, new TimeslotComparator());
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.talks));
-			TalkItem.fillList(talkItemsList, jsonArray, timeslotItemsList);
+			TalkItem.fillList(talkItemsList, new JSONArray(Utils.getRawResource(this, R.raw.talks)), timeslotItemsList);
 			Collections.sort(talkItemsList, new TimeComparator());
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.speakers));
-			SpeakerItem.fillList(speakerItemsList, jsonArray);
-			jsonArray = new JSONArray(Utils.getRawResource(this, R.raw.rooms));
-			RoomItem.fillList(roomItemsList, jsonArray);
+			SpeakerItem.fillList(speakerItemsList, new JSONArray(Utils.getRawResource(this, R.raw.speakers)));
+			RoomItem.fillList(roomItemsList, new JSONArray(Utils.getRawResource(this, R.raw.rooms)));
+			BreakItem.fillList(breakItemsList, new JSONArray(Utils.getRawResource(this, R.raw.breaks)));
 			
 			initialDatePosition = TimeslotItem.getInitialDatePosition(timeslotItemsList);
 		} catch (NotFoundException e) {
@@ -184,7 +193,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private DrawerItemViewType getDrawerItemViewType(int position) {
 		switch (position) {
-			case 4:
+			case 5:
 				return DrawerItemViewType.SECONDARY;
 			default:
 				return DrawerItemViewType.PRIMARY;
@@ -388,6 +397,9 @@ public class MainActivity extends FragmentActivity {
 				break;
 			case 3:
 				replaceFragment(SpeakersFragment.newInstance());
+				break;
+			case 4:
+				replaceFragment(TalksFragment.newInstance(TalksType.NOTIFICATION));
 				break;
 		}
 	}

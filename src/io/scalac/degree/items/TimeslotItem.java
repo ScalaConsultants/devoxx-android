@@ -16,10 +16,15 @@ import org.json.JSONObject;
 
 public class TimeslotItem {
 	
-	private int		id;
-	private Date	startTime;
-	private Date	endTime;
-	private Date	dateTime;
+	private int				id;
+	private Date			startTime;
+	private Date			endTime;
+	private Date			dateTime;
+	private TimeslotType	timeslotType;
+	
+	public enum TimeslotType {
+		TALK, BREAK
+	}
 	
 	public static void fillList(ArrayList<TimeslotItem> timeslotItemsList, JSONArray jsonArray) {
 		timeslotItemsList.clear();
@@ -116,6 +121,11 @@ public class TimeslotItem {
 		cal.set(Calendar.HOUR, 0);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		this.dateTime = new Date(cal.getTimeInMillis());
+		try {
+			this.timeslotType = TimeslotType.valueOf(jsonObject.optString("timeslotType", TimeslotType.TALK.name()));
+		} catch (Exception e) {
+			this.timeslotType = TimeslotType.TALK;
+		}
 	}
 	
 	public int getId() {
@@ -132,6 +142,10 @@ public class TimeslotItem {
 	
 	public Date getDateTime() {
 		return dateTime;
+	}
+	
+	public TimeslotType getTimeslotType() {
+		return timeslotType;
 	}
 	
 	public static class TimeslotComparator implements Comparator<TimeslotItem> {

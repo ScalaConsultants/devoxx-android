@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,6 +83,16 @@ public class TalkItem {
 		ArrayList<TalkItem> roomTalkItemsList = new ArrayList<TalkItem>();
 		for (TalkItem talkItem : talkItemsList) {
 			if (talkItem.getTimeslotID() == timeslotID)
+				roomTalkItemsList.add(talkItem);
+		}
+		return roomTalkItemsList;
+	}
+	
+	public static ArrayList<TalkItem>
+			getNotificationTalkList(ArrayList<TalkItem> talkItemsList, Map<String, ?> notifyMap) {
+		ArrayList<TalkItem> roomTalkItemsList = new ArrayList<TalkItem>();
+		for (TalkItem talkItem : talkItemsList) {
+			if (notifyMap.containsKey(String.valueOf(talkItem.getId())))
 				roomTalkItemsList.add(talkItem);
 		}
 		return roomTalkItemsList;

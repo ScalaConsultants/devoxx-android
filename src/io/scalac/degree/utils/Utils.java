@@ -95,7 +95,8 @@ public class Utils {
 		ArrayList<TimeslotItem> timeslotItemsList = new ArrayList<TimeslotItem>();
 		try {
 			JSONArray jsonArray = new JSONArray(Utils.getRawResource(context, R.raw.timeslots));
-			TimeslotItem.fillList(timeslotItemsList, jsonArray);
+			JSONArray jsonArray2 = new JSONArray(Utils.getRawResource(context, R.raw.breaks_timeslots));
+			TimeslotItem.fillList(timeslotItemsList, Utils.concatArray(jsonArray, jsonArray2));
 		} catch (NotFoundException e) {
 			// e.printStackTrace();
 		} catch (JSONException e) {
@@ -145,6 +146,16 @@ public class Utils {
 		return null;
 	}
 	
+	public static JSONArray concatArray(JSONArray... arrs) throws JSONException {
+		JSONArray result = new JSONArray();
+		for (JSONArray arr : arrs) {
+			for (int i = 0; i < arr.length(); i++) {
+				result.put(arr.get(i));
+			}
+		}
+		return result;
+	}
+	
 	public static Map<String, ?> getAlarms(Context context) {
 		Map<String, ?> keys = context.getSharedPreferences(Utils.ALARMS_NAME, 0).getAll();
 		return keys;
@@ -177,7 +188,7 @@ public class Utils {
 		wl.release();
 	}
 	
-	private static long getAlarmTime(Context context, long talkStartMS) {
+	public static long getAlarmTime(long talkStartMS) {
 		return talkStartMS - 600000; // 10 mins before start
 		// return System.currentTimeMillis() + 3000; // 3sec after set for testing
 	}
@@ -188,7 +199,7 @@ public class Utils {
 	}
 	
 	public static boolean setNotify(Context context, int talkID, long talkStartMS, boolean showToast) {
-		long alarmTime = getAlarmTime(context, talkStartMS);
+		long alarmTime = getAlarmTime(talkStartMS);
 		if (alarmTime < System.currentTimeMillis()) {
 			if (showToast) {
 				Toast.makeText(context, context.getString(R.string.toast_notification_not_set), Toast.LENGTH_SHORT).show();

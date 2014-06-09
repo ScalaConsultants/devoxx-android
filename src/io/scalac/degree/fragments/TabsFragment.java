@@ -137,22 +137,6 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 		mViewPager = (ViewPager) getView().findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		
-		// For each of the sections in the app, add a tab to the action bar.
-		// for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-		// // Create a tab with text corresponding to the page title defined by
-		// // the adapter. Also specify this Activity object, which implements
-		// // the TabListener interface, as the callback (listener) for when
-		// // this tab is selected.
-		// Tab tab = actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this);
-		// actionBar.addTab(tab);
-		// if (i == currentTabPosition) {
-		// actionBar.selectTab(tab);
-		// }
-		// }
-		
-		// When swiping between different sections, select the corresponding
-		// tab. We can also use ActionBar.Tab#select() to do this if we have
-		// a reference to the Tab.
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
@@ -237,7 +221,13 @@ public class TabsFragment extends Fragment implements ActionBar.TabListener {
 			// Return a TalksFragment (defined as a static inner class below).
 			switch (tabType) {
 				case TIME:
-					return TalksFragment.newInstanceTime(timeslotItemsList.get(position).getId());
+					TimeslotItem timeslotItem = timeslotItemsList.get(position);
+					switch (timeslotItem.getTimeslotType()) {
+						case BREAK:
+							return BreaksFragment.newInstanceTime(timeslotItem.getId());
+						default:
+							return TalksFragment.newInstanceTime(timeslotItem.getId());
+					}
 				default:
 					return TalksFragment.newInstanceRoom(roomItemsList.get(position).getId(),
 							datesList.get(currentDatePosition).getTime());

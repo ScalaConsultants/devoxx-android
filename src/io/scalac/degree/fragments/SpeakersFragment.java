@@ -111,7 +111,7 @@ public class SpeakersFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		getMainActivity().setDrawerIndicatorEnabled(true);
 		
-		final View rootView = inflater.inflate(R.layout.fragment_talks, container, false);
+		final View rootView = inflater.inflate(R.layout.items_list_view, container, false);
 		
 		final ListView listViewTalks = (ListView) rootView;
 		listViewTalks.setAdapter(listAdapter);

@@ -1,0 +1,136 @@
+[{
+	"id": 1,
+	"description": "Registration",
+	"timeslot": {
+		"id": 1000
+	}
+},
+{
+	"id": 2,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1001
+	}
+},
+{
+	"id": 3,
+	"description": "Lunch break",
+	"timeslot": {
+		"id": 1002
+	}
+},
+{
+	"id": 4,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1003
+	}
+},
+{
+	"id": 5,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1004
+	}
+},
+{
+	"id": 6,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1005
+	}
+},
+{
+	"id": 7,
+	"title": "Welcome Party",
+	"description": "hosted by Oracle",
+	"timeslot": {
+		"id": 1006
+	}
+},
+{
+	"id": 8,
+	"title": "Beer gathering",
+	"description": "House of Beer",
+	"timeslot": {
+		"id": 1007
+	}
+},
+{
+	"id": 9,
+	"description": "Registration",
+	"timeslot": {
+		"id": 1008
+	}
+},
+{
+	"id": 10,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1009
+	}
+},
+{
+	"id": 11,
+	"description": "Lunch break",
+	"timeslot": {
+		"id": 1010
+	}
+},
+{
+	"id": 12,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1011
+	}
+},
+{
+	"id": 13,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1012
+	}
+},
+{
+	"id": 14,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1013
+	}
+},
+{
+	"id": 15,
+	"description": "Registration",
+	"timeslot": {
+		"id": 1014
+	}
+},
+{
+	"id": 16,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1015
+	}
+},
+{
+	"id": 17,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1016
+	}
+},
+{
+	"id": 18,
+	"description": "Lunch break",
+	"timeslot": {
+		"id": 1017
+	}
+},
+{
+	"id": 19,
+	"description": "Coffee break",
+	"timeslot": {
+		"id": 1018
+	}
+}
+]
