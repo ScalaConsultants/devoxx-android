@@ -68,6 +68,8 @@ public class MainActivity extends FragmentActivity {
 	
 	ArrayAdapter<String>				arrayAdapter;
 	
+	boolean								isPaused						= false;
+	
 	public void setDrawerIndicatorEnabled(boolean enable) {
 		drawerIndicatorEnabled = enable;
 		mDrawerToggle.setDrawerIndicatorEnabled(enable);
@@ -146,6 +148,11 @@ public class MainActivity extends FragmentActivity {
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			if (isPaused) {
+				if (currentNavPosition != -1)
+					mDrawerList.setItemChecked(currentNavPosition, true);
+				return;
+			}
 			switch (getDrawerItemViewType(position)) {
 				case SECONDARY:
 					if (currentNavPosition != -1)
@@ -333,6 +340,18 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		isPaused = true;
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		isPaused = false;
+	}
+	
+	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mDrawerToggle.onConfigurationChanged(newConfig);
@@ -372,6 +391,8 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
+		if (isPaused)
+			return;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		
 		FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -384,6 +405,8 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private void selectItem(final int position) {
+		if (isPaused)
+			return;
 		removeFragments();
 		switch (position) {
 			case 0:

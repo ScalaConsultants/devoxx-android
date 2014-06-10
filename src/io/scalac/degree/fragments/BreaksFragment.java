@@ -81,9 +81,9 @@ public class BreaksFragment extends Fragment {
 		final View rootView = inflater.inflate(R.layout.items_list_view, container, false);
 		
 		final ListView listViewBreaks = (ListView) rootView;
-		listViewBreaks.setAdapter(listAdapter);
 		listViewBreaks.addFooterView(Utils.getFooterView(getActivity()));
 		listViewBreaks.setFooterDividersEnabled(false);
+		listViewBreaks.setAdapter(listAdapter);
 		listViewBreaks.setOnItemClickListener(null);
 		listViewBreaks.setItemsCanFocus(true);
 		return rootView;

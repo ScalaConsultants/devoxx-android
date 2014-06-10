@@ -31,11 +31,17 @@
             android:text="Speakers" />
 
         <TextView
-            android:id="@+id/textNotify"
+            android:id="@+id/textTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:drawableLeft="@drawable/ic_device_access_alarms_12"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical|left"
             android:text="Notify time"
-            android:textStyle="italic" />
+            android:textColor="@color/secondary_text"
+            android:textSize="13sp" />
+
     </LinearLayout>
 
     <ImageButton

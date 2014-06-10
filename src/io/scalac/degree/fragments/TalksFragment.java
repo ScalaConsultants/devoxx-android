@@ -112,12 +112,6 @@ public class TalksFragment extends Fragment {
 	}
 	
 	@Override
-	public void onResume() {
-		super.onResume();
-		listAdapter.notifyDataSetChanged();
-	}
-	
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
@@ -135,6 +129,17 @@ public class TalksFragment extends Fragment {
 			default:
 				break;
 		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (talksType == TalksType.NOTIFICATION && talkItemsList != null) {
+			talkItemsList.clear();
+			talkItemsList.addAll(TalkItem.getNotificationTalkList(getMainActivity().getTalkItemsList(),
+					getMainActivity().getNotifyMap()));
+		}
+		listAdapter.notifyDataSetChanged();
 	}
 	
 	private void init() {
@@ -168,6 +173,7 @@ public class TalksFragment extends Fragment {
 				FlurryAgent.logEvent("Talks_watched");
 				talkItemsList = new ArrayList<TalkItem>(getMainActivity().getTalkItemsList());
 				Collections.sort(talkItemsList, new TopicComparator());
+				roomItemsList = getMainActivity().getRoomItemsList();
 				itemLayoutID = R.layout.talks_all_list_item;
 				break;
 		}
@@ -186,9 +192,9 @@ public class TalksFragment extends Fragment {
 		final View rootView = inflater.inflate(R.layout.items_list_view, container, false);
 		
 		final ListView listViewTalks = (ListView) rootView;
-		listViewTalks.setAdapter(listAdapter);
 		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
 		listViewTalks.setFooterDividersEnabled(false);
+		listViewTalks.setAdapter(listAdapter);
 		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
@@ -210,6 +216,9 @@ public class TalksFragment extends Fragment {
 	}
 	
 	class ItemAdapter extends BaseAdapter {
+		
+		static final int	FORMAT_DATE_FLAGS	= DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+																| DateUtils.FORMAT_NO_YEAR;
 		
 		private class ViewHolder {
 			public TextView		textTopic;
@@ -247,8 +256,9 @@ public class TalksFragment extends Fragment {
 				holder.textTopic = (TextView) viewItem.findViewById(R.id.textTopic);
 				holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
 				switch (talksType) {
+					case ALL:
 					case NOTIFICATION:
-						holder.text3 = (TextView) viewItem.findViewById(R.id.textNotify);
+						holder.text3 = (TextView) viewItem.findViewById(R.id.textTime);
 						break;
 					case ROOM:
 						holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
@@ -282,10 +292,22 @@ public class TalksFragment extends Fragment {
 			holder.textTopic.setText(talkItem.getTopicHtml());
 			holder.textSpeaker.setText(speakers);
 			switch (talksType) {
+				case ALL:
+					String roomName;
+					try {
+						roomName = " – " + RoomItem.getByID(talkItem.getRoomID(), roomItemsList).getName();
+					} catch (ItemNotFoundException e1) {
+						roomName = "";
+					}
+					holder.text3.setText(DateUtils.formatDateTime(getActivity().getApplicationContext(),
+							talkItem.getStartTime().getTime(),
+							FORMAT_DATE_FLAGS) + roomName);
+					break;
 				case NOTIFICATION:
 					long alarmTime = Utils.getAlarmTime(talkItem.getStartTime().getTime());
-					int flags = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
-					holder.text3.setText(DateUtils.formatDateTime(getActivity().getApplicationContext(), alarmTime, flags));
+					holder.text3.setText(DateUtils.formatDateTime(getActivity().getApplicationContext(),
+							alarmTime,
+							FORMAT_DATE_FLAGS));
 					break;
 				case ROOM:
 					holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));

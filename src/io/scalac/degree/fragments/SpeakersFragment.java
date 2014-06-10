@@ -114,9 +114,9 @@ public class SpeakersFragment extends Fragment {
 		final View rootView = inflater.inflate(R.layout.items_list_view, container, false);
 		
 		final ListView listViewTalks = (ListView) rootView;
-		listViewTalks.setAdapter(listAdapter);
 		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
 		listViewTalks.setFooterDividersEnabled(false);
+		listViewTalks.setAdapter(listAdapter);
 		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override

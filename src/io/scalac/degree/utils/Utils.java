@@ -51,7 +51,6 @@ public class Utils {
 			ArrayList<RoomItem> roomItemsList = getRoomItemsList(context);
 			Intent notificationIntent = new Intent(context, MainActivity.class);
 			notificationIntent.putExtra(EXTRA_TALK_ID, talkID);
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			PendingIntent contentIntent = PendingIntent.getActivity(context,
 					talkID,
 					notificationIntent,
