@@ -263,8 +263,8 @@ public class TalksFragment extends BaseFragment {
 					break;
 			}
 			boolean isAlarmSet = dataSource.getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
-			holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_device_access_alarms
-					: R.drawable.ic_action_alerts_and_states_add_alarm);
+			holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_alarm
+					: R.drawable.ic_action_alarm_add);
 			holder.imageButtonNotify.setTag(position);
 			return viewItem;
 		}
