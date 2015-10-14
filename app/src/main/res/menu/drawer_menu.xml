@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_menu_schedule_by_time"
+            android:title="@string/drawer_menu_schedule_time_label"/>
+        <item
+            android:id="@+id/drawer_menu_schedule_by_rooms"
+            android:title="@string/drawer_menu_schedule_room_label"/>
+        <item
+            android:id="@+id/drawer_menu_talks"
+            android:title="@string/drawer_menu_talks_label"/>
+        <item
+            android:id="@+id/drawer_menu_speakers"
+            android:title="@string/drawer_menu_speakers_label"/>
+        <item
+            android:id="@+id/drawer_menu_my_schedule"
+            android:title="@string/drawer_menu_my_schedule_label"/>
+        <item
+            android:id="@+id/drawer_menu_feedback"
+            android:title="@string/drawer_menu_other_feedback_label"/>
+    </group>
+</menu>
