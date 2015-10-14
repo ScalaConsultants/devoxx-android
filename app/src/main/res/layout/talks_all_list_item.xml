@@ -52,7 +52,7 @@
         android:minHeight="48dp"
         android:minWidth="48dp"
         android:padding="0dp"
-        android:src="@drawable/ic_action_device_access_alarms"
-        android:tint="@color/primary_text_90"/>
+        android:src="@drawable/ic_action_alarm_add"
+        android:tint="@color/primary_text_45"/>
 
 </LinearLayout>
