@@ -1,10 +1,9 @@
 package io.scalac.degree.connection;
 
-import com.github.kubatatami.judonetworking.Endpoint;
-import com.github.kubatatami.judonetworking.EndpointFactory;
-import com.github.kubatatami.judonetworking.callbacks.Callback;
-import com.github.kubatatami.judonetworking.controllers.json.simple.JsonSimpleRestController;
-import com.github.kubatatami.judonetworking.transports.OkHttpTransportLayer;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
@@ -12,21 +11,15 @@ import org.androidannotations.annotations.RootContext;
 
 import android.content.Context;
 
-import java.util.List;
+import java.io.IOException;
 
 import io.scalac.degree.Configuration;
-import io.scalac.degree.connection.model.ConferenceSingleApiModel;
-import io.scalac.degree.connection.model.ConferencesApiModel;
-import io.scalac.degree.connection.model.LinkApiModel;
-import io.scalac.degree.connection.model.ProposalTypesApiModel;
-import io.scalac.degree.connection.model.SlotApiModel;
-import io.scalac.degree.connection.model.SpeakerFullApiModel;
-import io.scalac.degree.connection.model.SpeakerShortApiModel;
-import io.scalac.degree.connection.model.TalkFullApiModel;
-import io.scalac.degree33.BuildConfig;
+import io.scalac.degree.utils.Logger;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 @EBean
-public class Connection implements DevoxxApi {
+public class Connection {
 
 	@RootContext Context context;
 
@@ -37,56 +30,36 @@ public class Connection implements DevoxxApi {
 	}
 
 	private void setupApi() {
-		final JsonSimpleRestController controller = new JsonSimpleRestController();
-		final OkHttpTransportLayer transportLayer = new OkHttpTransportLayer();
+		final OkHttpClient client = new OkHttpClient();
+		client.interceptors().add(new LoggingInterceptor());
 
-		final Endpoint endpoint = EndpointFactory.createEndpoint(context,
-				controller, transportLayer, Configuration.API_URL);
-		endpoint.setDebugFlags(BuildConfig.LOGGING
-				? Endpoint.FULL_DEBUG : Endpoint.NO_DEBUG);
-		endpoint.setCacheEnabled(true);
-		endpoint.setCallbackThread(false);
-
-		devoxxApi = endpoint.getService(DevoxxApi.class);
+		final Retrofit retrofit = new Retrofit.Builder()
+				.baseUrl(Configuration.API_URL)
+				.client(client)
+				.addConverterFactory(GsonConverterFactory.create())
+				.build();
+		devoxxApi = retrofit.create(DevoxxApi.class);
 	}
 
-	@Override public void conferences(Callback<ConferencesApiModel> callback) {
-		devoxxApi.conferences(callback);
+	public DevoxxApi getDevoxxApi() {
+		return devoxxApi;
 	}
 
-	@Override
-	public void conference(String confCOde, Callback<ConferenceSingleApiModel> callback) {
-		devoxxApi.conference(confCOde, callback);
-	}
+	class LoggingInterceptor implements Interceptor {
+		@Override public Response intercept(Chain chain) throws IOException {
+			Request request = chain.request();
 
-	@Override
-	public void speakers(String confCode, Callback<List<SpeakerShortApiModel>> callback) {
-		devoxxApi.speakers(confCode, callback);
-	}
+			long t1 = System.nanoTime();
+			Logger.l(String.format("Sending request %s on %s%n%s",
+					request.url(), chain.connection(), request.headers()));
 
-	@Override
-	public void schedules(String confCode, Callback<List<LinkApiModel>> callback) {
-		devoxxApi.schedules(confCode, callback);
-	}
+			Response response = chain.proceed(request);
 
-	@Override
-	public void specificSchedule(
-			String confCode, String dayOfWeek, Callback<List<SlotApiModel>> callback) {
-		devoxxApi.specificSchedule(confCode, dayOfWeek, callback);
-	}
+			long t2 = System.nanoTime();
+			Logger.l(String.format("Received response for %s in %.1fms%n%s",
+					response.request().url(), (t2 - t1) / 1e6d, response.headers()));
 
-	@Override
-	public void proposalTypes(String confCode, Callback<ProposalTypesApiModel> callback) {
-		devoxxApi.proposalTypes(confCode, callback);
-	}
-
-	@Override
-	public void speaker(String confCode, String uuid, Callback<SpeakerFullApiModel> callback) {
-		devoxxApi.speaker(confCode, uuid, callback);
-	}
-
-	@Override
-	public void talk(String confCode, String talkId, Callback<TalkFullApiModel> callback) {
-		devoxxApi.talk(confCode, talkId, callback);
+			return response;
+		}
 	}
 }

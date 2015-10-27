@@ -1,6 +1,6 @@
 package io.scalac.degree.connection.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -11,8 +11,8 @@ import java.io.Serializable;
  */
 public class SlotApiModel implements Serializable {
 
-	/* nullability is mutually exclusive with talk field*/
-	@JsonProperty("break") public BreakApiModel slotBreak;
+	/* nullability is mutually exclusive with talk field */
+	@SerializedName("break") public BreakApiModel slotBreak;
 
 	/* nullability is mutually exclusive with talk break */
 	public TalkFullApiModel talk;

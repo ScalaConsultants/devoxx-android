@@ -35,4 +35,10 @@ public class Logger {
 			Log.d(TAG, message + ", " + new Date(syncTime).toString());
 		}
 	}
+
+	public static void exc(Exception e) {
+		if (isEnabled) {
+			e.printStackTrace();
+		}
+	}
 }

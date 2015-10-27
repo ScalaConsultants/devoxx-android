@@ -1,9 +1,5 @@
 package io.scalac.degree.connection;
 
-import com.github.kubatatami.judonetworking.annotations.RequestMethod;
-import com.github.kubatatami.judonetworking.callbacks.Callback;
-import com.github.kubatatami.judonetworking.controllers.raw.RawRestController;
-
 import java.util.List;
 
 import io.scalac.degree.connection.model.ConferenceSingleApiModel;
@@ -14,46 +10,43 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.SpeakerFullApiModel;
 import io.scalac.degree.connection.model.SpeakerShortApiModel;
 import io.scalac.degree.connection.model.TalkFullApiModel;
+import retrofit.Call;
+import retrofit.http.GET;
+import retrofit.http.Path;
 
 public interface DevoxxApi {
 
-	@RawRestController.Rest(value = "conferences")
-	@RequestMethod(async = true) void conferences(
-			Callback<ConferencesApiModel> callback
+	@GET("/api/conferences") Call<ConferencesApiModel> conferences();
+
+	@GET("/api/conferences/{confCode}") Call<ConferenceSingleApiModel> conference(
+			@Path("confCode") String confCode
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}")
-	@RequestMethod(async = true) void conference(
-			String confCOde, Callback<ConferenceSingleApiModel> callback
+	@GET("/api/conferences/{confCode}/speakers") Call<List<SpeakerShortApiModel>> speakers(
+			@Path("confCode") String confCode
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}/speakers")
-	@RequestMethod(async = true) void speakers(
-			String confCode, Callback<List<SpeakerShortApiModel>> callback
+	@GET("api/conferences/{confCode}/schedules") Call<List<LinkApiModel>> schedules(
+			@Path("confCOde") String confCode
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}/schedules")
-	@RequestMethod(async = true) void schedules(
-			String confCode, Callback<List<LinkApiModel>> callback
+	@GET("/api/conferences/{confCode}/schedules/{dayOfWeek}")
+	Call<List<SlotApiModel>> specificSchedule(
+			@Path("confCode") String confCode,
+			@Path("dayOfWeek") String dayOfWeek
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}/schedules/{1}")
-	@RequestMethod(async = true) void specificSchedule(
-			String confCode, String dayOfWeek, Callback<List<SlotApiModel>> callback
+	@GET("/api/conferences/{confCode}/proposalTypes") Call<ProposalTypesApiModel> proposalTypes(
+			@Path("confCode") String confCode
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}/proposalTypes")
-	@RequestMethod(async = true) void proposalTypes(
-			String confCode, Callback<ProposalTypesApiModel> callback
+	@GET("/api/conferences/{confCode}/speakers/{uuid}") Call<SpeakerFullApiModel> speaker(
+			@Path("confCode") String confCode,
+			@Path("uuid") String uuid
 	);
 
-	@RawRestController.Rest(value = "conferences/{0}/speakers/{1}")
-	@RequestMethod(async = true) void speaker(
-			String confCode, String uuid, Callback<SpeakerFullApiModel> callback
-	);
-
-	@RawRestController.Rest(value = "conferences/{0}/talks/{1}")
-	@RequestMethod(async = true) void talk(
-			String confCode, String talkId, Callback<TalkFullApiModel> callback
+	@GET("/api/conferences/{confCode}/talks/{talkId}") Call<TalkFullApiModel> talk(
+			@Path("confCode") String confCode,
+			@Path("talkId") String talkId
 	);
 }
