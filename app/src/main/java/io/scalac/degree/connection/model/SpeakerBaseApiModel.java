@@ -12,4 +12,8 @@ public class SpeakerBaseApiModel implements Serializable {
 	public String firstName;
 	public String lastName;
 	public String avatarURL;
+
+	public String getName() {
+		return String.format("%s %s", firstName, lastName);
+	}
 }

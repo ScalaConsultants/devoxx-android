@@ -2,7 +2,6 @@ package io.scalac.degree.android.fragment;
 
 import com.flurry.android.FlurryAgent;
 
-import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 
 import android.support.annotation.Nullable;
@@ -11,12 +10,9 @@ import android.support.v4.app.Fragment;
 import android.widget.Spinner;
 
 import io.scalac.degree.android.activity.MainActivity;
-import io.scalac.degree.data.DataSource;
 
 @EFragment
 public class BaseFragment extends Fragment {
-
-	@Bean DataSource dataSource;
 
 	public static final int UNKNOWN_TITLE_RES = -1;
 

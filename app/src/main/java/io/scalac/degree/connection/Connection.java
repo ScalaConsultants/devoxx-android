@@ -12,9 +12,12 @@ import org.androidannotations.annotations.RootContext;
 import android.content.Context;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import io.scalac.degree.Configuration;
 import io.scalac.degree.utils.Logger;
+import retrofit.CallAdapter;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 

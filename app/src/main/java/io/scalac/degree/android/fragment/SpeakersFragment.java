@@ -4,10 +4,12 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.res.StringRes;
 
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,40 +20,58 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
-import io.scalac.degree.items.SpeakerItem;
-import io.scalac.degree.items.SpeakerItem.NameComparator;
-import io.scalac.degree.items.TalkItem;
+import io.scalac.degree.connection.model.SpeakerShortApiModel;
+import io.scalac.degree.data.manager.AbstractDataManager;
+import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.items_list_view)
-public class SpeakersFragment extends BaseFragment {
+public class SpeakersFragment extends BaseFragment implements
+		AbstractDataManager.IDataManagerListener<SpeakerShortApiModel> {
 
-	private ItemAdapter listAdapter;
-	ArrayList<TalkItem> talkItemsList;
-	ArrayList<SpeakerItem> speakerItemsList;
-	String[] bios;
+	@Bean SpeakersDataManager speakersDataManager;
+	@StringRes(R.string.devoxx_conference) String conferenceCode;
 
-	protected ImageLoader imageLoader = ImageLoader.getInstance();
+	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	DisplayImageOptions imageLoaderOptions;
+	private ListView listView;
+	private ItemAdapter itemAdapter;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		logFlurryEvent("Speakers_watched");
-
-		init();
+	@AfterInject void afterInject() {
+		imageLoaderOptions = new DisplayImageOptions.Builder()
+				.showImageOnLoading(R.drawable.th_background)
+				.showImageForEmptyUri(R.drawable.no_photo)
+				.showImageOnFail(R.drawable.no_photo)
+				.delayBeforeLoading(200)
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+				.build();
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		listAdapter.notifyDataSetChanged();
+	@AfterViews void afterViews() {
+		logFlurryEvent("Speakers_watched");
+
+		speakersDataManager.fetchSpeakers(conferenceCode, this);
+
+		listView = (ListView) getView();
+		final View footer = Utils.getFooterView(getActivity(), listView);
+		listView.addFooterView(footer);
+		listView.setFooterDividersEnabled(false);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				getMainActivity().replaceFragment(SpeakerFragment_.builder()
+						.speakerShortApiModel(itemAdapter.getClickedItem(position))
+						.build(), true);
+
+			}
+		});
 	}
 
 	@Override public int getTitle() {
@@ -62,56 +82,39 @@ public class SpeakersFragment extends BaseFragment {
 		return false;
 	}
 
-	private void init() {
-		imageLoaderOptions = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.th_background)
-				.showImageForEmptyUri(R.drawable.no_photo)
-				.showImageOnFail(R.drawable.no_photo)
-				.delayBeforeLoading(200)
-				.cacheInMemory(true)
-				.cacheOnDisk(true)
-				.build();
-		talkItemsList = dataSource.getTalkItemsList();
-		speakerItemsList = new ArrayList<>(dataSource.getSpeakerItemsList());
-		Collections.sort(speakerItemsList, new NameComparator());
-		bios = new String[speakerItemsList.size()];
-		for (int i = 0; i < speakerItemsList.size(); i++) {
-			bios[i] = speakerItemsList.get(i).getBioShort();
-		}
-		listAdapter = new ItemAdapter();
+	@Override public void onDataStartFetching() {
+
 	}
 
-	@AfterViews void afterViews() {
-		final ListView listViewTalks = (ListView) getView();
-		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
-		listViewTalks.setFooterDividersEnabled(false);
-		listViewTalks.setAdapter(listAdapter);
-		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
+	@Override public void onDataAvailable(List<SpeakerShortApiModel> items) {
+		itemAdapter = new ItemAdapter(items);
+		listView.setAdapter(itemAdapter);
+	}
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				getMainActivity().replaceFragment(SpeakerFragment_.builder().
-						speakerID(speakerItemsList.get(position).getId()).build(), true);
+	@Override public void onDataAvailable(SpeakerShortApiModel item) {
+		// Nothing here.
+	}
 
-			}
-		});
+	@Override public void onDataError() {
+		// Nothing here.
 	}
 
 	class ItemAdapter extends BaseAdapter {
 
-		private class ViewHolder {
-			public TextView textSpeaker;
-			public TextView textBio;
-			public ImageView imageSpeaker;
+		private List<SpeakerShortApiModel> speakers = new ArrayList<>(0);
+
+		ItemAdapter(List<SpeakerShortApiModel> speakers) {
+			this.speakers.addAll(speakers);
 		}
 
 		@Override
 		public int getCount() {
-			return speakerItemsList.size();
+			return speakers.size();
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return position;
+		public SpeakerShortApiModel getItem(int position) {
+			return speakers.get(position);
 		}
 
 		@Override
@@ -137,16 +140,26 @@ public class SpeakersFragment extends BaseFragment {
 				holder = (ViewHolder) viewItem.getTag();
 			}
 
-			SpeakerItem speakerItem = speakerItemsList.get(position);
-			holder.textSpeaker.setText(speakerItem.getName());
-			holder.textBio.setText(bios[position]);
+			SpeakerShortApiModel speakerItem = getItem(position);
+			holder.textSpeaker.setText(String.format("%s %s",
+					speakerItem.firstName, speakerItem.lastName));
 
-			imageLoader.displayImage(speakerItem.getPhotoLink(),
+			imageLoader.displayImage(speakerItem.avatarURL,
 					holder.imageSpeaker,
 					imageLoaderOptions,
 					animateFirstListener);
 
 			return viewItem;
+		}
+
+		public SpeakerShortApiModel getClickedItem(int position) {
+			return speakers.get(position);
+		}
+
+		private class ViewHolder {
+			public TextView textSpeaker;
+			public TextView textBio;
+			public ImageView imageSpeaker;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package io.scalac.degree.android.fragment;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 
@@ -11,9 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import io.scalac.degree.items.BreakItem;
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -23,10 +25,12 @@ import io.scalac.degree33.R;
 @EFragment(R.layout.items_list_view)
 public class BreaksFragment extends BaseFragment {
 
-	@FragmentArg int timeslotID;
+	@Bean SlotsDataManager slotsDataManager;
+
+	@FragmentArg SlotApiModel timeslotID;
 
 	private ItemAdapter listAdapter;
-	ArrayList<BreakItem> breakItemsList;
+	private List<SlotApiModel> breakItemsList;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,13 +51,14 @@ public class BreaksFragment extends BaseFragment {
 	}
 
 	private void init() {
-		breakItemsList = BreakItem.getTimeslotBreakList(dataSource.getBreakItemsList(), timeslotID);
+		breakItemsList = slotsDataManager.getBreaksListBySlot(timeslotID);
 		listAdapter = new ItemAdapter();
 	}
 
 	@AfterViews void afterViews() {
 		final ListView listViewBreaks = (ListView) getView();
-		listViewBreaks.addFooterView(Utils.getFooterView(getActivity()));
+		final View footer = Utils.getFooterView(getActivity(), listViewBreaks);
+		listViewBreaks.addFooterView(footer);
 		listViewBreaks.setFooterDividersEnabled(false);
 		listViewBreaks.setAdapter(listAdapter);
 		listViewBreaks.setOnItemClickListener(null);
@@ -104,17 +109,10 @@ public class BreaksFragment extends BaseFragment {
 				holder = (ViewHolder) viewItem.getTag();
 			}
 
-			BreakItem breakItem = breakItemsList.get(position);
-			if (breakItem.hasTitle()) {
-				holder.textTitle.setVisibility(View.VISIBLE);
-				holder.textTitle.setText(breakItem.getTitleHtml());
-			} else
-				holder.textTitle.setVisibility(View.GONE);
-			if (breakItem.hasDescription()) {
-				holder.textDesc.setVisibility(View.VISIBLE);
-				holder.textDesc.setText(breakItem.getDescriptionHtml());
-			} else
-				holder.textDesc.setVisibility(View.GONE);
+			final SlotApiModel breakItem = breakItemsList.get(position);
+			holder.textTitle.setVisibility(View.VISIBLE);
+			holder.textTitle.setText(breakItem.slotBreak.nameEN);
+			holder.textDesc.setVisibility(View.GONE);
 
 			return viewItem;
 		}

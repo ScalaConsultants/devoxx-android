@@ -1,11 +1,14 @@
 package io.scalac.degree.android.activity;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
 import com.flurry.android.FlurryAgent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringRes;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -36,17 +39,24 @@ import io.scalac.degree.android.fragment.BaseFragment;
 import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TabsFragment.TabType;
 import io.scalac.degree.android.fragment.TabsFragment_;
+import io.scalac.degree.android.fragment.TalkFragment;
+import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment.TalksType;
 import io.scalac.degree.android.fragment.TalksFragment_;
-import io.scalac.degree.data.DataSource;
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.manager.AbstractDataManager;
+import io.scalac.degree.data.manager.NotificationsManager;
+import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity
-		implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
+		implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener,
+		AbstractDataManager.IDataManagerListener<SlotApiModel> {
 
-	@Bean DataSource dataSource;
+	@Bean SlotsDataManager slotsDataManager;
+	@StringRes(R.string.devoxx_conference) String conferenceCode;
 
 	@ViewById(R.id.toolbarWithSpinner) Toolbar toolbar;
 	@ViewById(R.id.navigationView) NavigationView navigationView;
@@ -58,6 +68,7 @@ public class MainActivity extends AppCompatActivity
 	private int lastClickedMenuItemId;
 	private int currentClickedMenuItemId;
 
+	private boolean isColdStart;
 	private FragmentManager.OnBackStackChangedListener
 			onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
 		@Override
@@ -69,6 +80,8 @@ public class MainActivity extends AppCompatActivity
 		}
 	};
 
+	private String incomingSlotId;
+
 	@AfterViews protected void afterViews() {
 		getSupportFragmentManager().
 				addOnBackStackChangedListener(onBackStackChangedListener);
@@ -77,21 +90,29 @@ public class MainActivity extends AppCompatActivity
 		setupDrawer();
 	}
 
+	@Override protected void onNewIntent(Intent intent) {
+		if (intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
+			incomingSlotId = intent.getStringExtra(
+					NotificationsManager.EXTRA_TALK_ID);
+		}
+	}
+
 	@Override protected void onDestroy() {
 		getSupportFragmentManager().removeOnBackStackChangedListener(onBackStackChangedListener);
 		super.onDestroy();
 	}
 
-	@Override protected void onPostCreate(Bundle savedInstanceState) {
+	@Override protected void onPostCreate(final Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		actionBarDrawerToggle.syncState();
-
-		selectItem(R.id.drawer_menu_schedule_by_time);
+		isColdStart = savedInstanceState == null;
 	}
 
 	@Override protected void onStart() {
 		super.onStart();
 		FlurryAgent.onStartSession(this, Utils.FLURRY_API_KEY);
+
+		actionBarDrawerToggle.syncState();
+		slotsDataManager.fetchTalks(conferenceCode, this);
 	}
 
 	@Override protected void onStop() {
@@ -277,12 +298,12 @@ public class MainActivity extends AppCompatActivity
 		switch (menuItemId) {
 			case R.id.drawer_menu_schedule_by_time:
 				replaceFragment(TabsFragment_.builder().currentDatePosition(
-						dataSource.getInitialDatePosition())
+						slotsDataManager.getInitialDatePosition())
 						.tabTypeEnumName(TabType.TIME.name()).build(), false);
 				break;
 			case R.id.drawer_menu_schedule_by_rooms:
 				replaceFragment(TabsFragment_.builder().currentDatePosition(
-						dataSource.getInitialDatePosition())
+						slotsDataManager.getInitialDatePosition())
 						.tabTypeEnumName(TabType.ROOM.name()).build(), false);
 				break;
 			case R.id.drawer_menu_talks:
@@ -362,5 +383,51 @@ public class MainActivity extends AppCompatActivity
 		});
 		drawerLayout.setDrawerListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
+	}
+
+	@Override public void onDataStartFetching() {
+		// Nothing here.
+	}
+
+	@Override public void onDataAvailable(List<SlotApiModel> items) {
+		if (TextUtils.isEmpty(incomingSlotId)) {
+			final Intent intent = getIntent();
+			if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
+				incomingSlotId = intent.getStringExtra(
+						NotificationsManager.EXTRA_TALK_ID);
+			}
+		}
+
+		if (isColdStart && !TextUtils.isEmpty(incomingSlotId)) {
+			final Optional<SlotApiModel> optModel = Stream.of(items)
+					.filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
+					.findFirst();
+
+			if (optModel.isPresent()) {
+				final FragmentManager fm = getSupportFragmentManager();
+				final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
+				final SlotApiModel slotApiModel = optModel.get();
+				if (talkFragment instanceof TalkFragment) {
+					((TalkFragment) talkFragment).setupViews(slotApiModel);
+				} else {
+					removeFragments();
+					replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
+				}
+
+				syncActionBarArrowState();
+			} else {
+				selectItem(R.id.drawer_menu_schedule_by_time);
+			}
+		} else {
+			selectItem(R.id.drawer_menu_schedule_by_time);
+		}
+	}
+
+	@Override public void onDataAvailable(SlotApiModel item) {
+		// Nothing here.
+	}
+
+	@Override public void onDataError() {
+		// Nothing here.
 	}
 }

@@ -1,5 +1,6 @@
 package io.scalac.degree.connection.model;
 
+import com.annimon.stream.function.Predicate;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -34,6 +35,19 @@ public class SlotApiModel implements Serializable {
 	}
 
 	public boolean isTalk() {
-		return !isBreak();
+		return slotBreak == null && talk != null;
+	}
+
+	public static class SameModelPredicate implements Predicate<SlotApiModel> {
+
+		private String id;
+
+		public SameModelPredicate(String id) {
+			this.id = id;
+		}
+
+		@Override public boolean test(SlotApiModel value) {
+			return value.slotId.equals(id);
+		}
 	}
 }

@@ -6,6 +6,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
+import org.androidannotations.annotations.EApplication;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
@@ -13,10 +15,12 @@ import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+@EApplication
 public class MainApplication extends Application {
 
-	@Override
-	public void onCreate() {
+	@Override public void onCreate() {
 		// StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath()..build());
 		super.onCreate();
 //		Crashlytics.start(this);
@@ -35,6 +39,7 @@ public class MainApplication extends Application {
 
 		// Universal image loader
 		initImageLoader(getApplicationContext());
+		JodaTimeAndroid.init(this);
 	}
 
 	@Override

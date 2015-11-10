@@ -1,34 +1,37 @@
 package io.scalac.degree.android.fragment;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.util.List;
 
-import io.scalac.degree.items.RoomItem;
-import io.scalac.degree.items.SpeakerItem;
-import io.scalac.degree.items.TalkItem;
-import io.scalac.degree.utils.ItemNotFoundException;
-import io.scalac.degree.utils.Utils;
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.connection.model.TalkSpeakerApiModel;
+import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment {
 
-	@FragmentArg int talkID;
+	@FragmentArg SlotApiModel slotModel;
+
+	@Bean NotificationsManager notificationsManager;
 
 	@ViewById(R.id.textTopic) TextView topic;
 	@ViewById(R.id.textDesc) TextView desc;
@@ -40,37 +43,13 @@ public class TalkFragment extends BaseFragment {
 	@ViewById(R.id.buttonSpeaker2) Button speaker2;
 	@ViewById(R.id.switchNotify) Switch notifySwitch;
 
-	private TalkItem talkItem;
-	private SpeakerItem speakerItem;
-	private SpeakerItem speaker2Item;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		logFlurryEvent("Talk_info_watched");
-
-		init();
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		init();
-	}
-
-	private void init() {
-		talkItem = TalkItem.getByID(talkID, dataSource.getTalkItemsList());
-		speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(),
-				dataSource.getSpeakerItemsList());
-		if (talkItem.hasSpeaker2()) {
-			speaker2Item = SpeakerItem.getByID(talkItem.getSpeaker2ID(),
-					dataSource.getSpeakerItemsList());
-		}
 	}
 
 	@Nullable @Override public String getTitleAsString() {
-		return talkItem.getTopic();
+		return slotModel.talk.title;
 	}
 
 	@Override public boolean needsToolbarSpinner() {
@@ -79,48 +58,52 @@ public class TalkFragment extends BaseFragment {
 
 	@AfterViews void afterViews() {
 		setHasOptionsMenu(true);
+		setupViews(slotModel);
+	}
 
-		topic.setText(talkItem.getTopicHtml());
+	public void setupViews(final SlotApiModel slotModel) {
+		topic.setText(Html.fromHtml(slotModel.talk.title));
 
-		desc.setText(talkItem.getDescriptionHtml());
+		desc.setText(Html.fromHtml(slotModel.talk.summaryAsHtml));
 		desc.setMovementMethod(LinkMovementMethod.getInstance());
 
-		DateFormat dateFormat = android.text.format.DateFormat
-				.getLongDateFormat(getActivity().getApplicationContext());
-		DateFormat timeFormat = android.text.format.DateFormat
-				.getTimeFormat(getActivity().getApplicationContext());
+		final Context appContext = getActivity().getApplicationContext();
+		final DateFormat dateFormat = android.text.format.DateFormat
+				.getLongDateFormat(appContext);
+		final DateFormat timeFormat = android.text.format.DateFormat
+				.getTimeFormat(appContext);
 
-		date.setText(dateFormat.format(talkItem.getStartTime()));
-		start.setText(timeFormat.format(talkItem.getStartTime()));
-		end.setText(timeFormat.format(talkItem.getEndTime()));
+		date.setText(dateFormat.format(slotModel.fromTimeMillis));
+		start.setText(timeFormat.format(slotModel.fromTimeMillis));
+		end.setText(timeFormat.format(slotModel.toTimeMillis));
 
-		try {
-			RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), dataSource.getRoomItemsList());
-			room.setText(roomItem.getName());
-		} catch (ItemNotFoundException e) {
-			room.setText("");
-			e.printStackTrace();
-		}
-		speaker.setText(speakerItem.getName());
+		room.setText(slotModel.roomName);
 
-		if (speaker2Item != null) {
-			speaker2.setText(speaker2Item.getName());
-		} else
+		final List<TalkSpeakerApiModel> speakers = slotModel.talk.speakers;
+		final TalkSpeakerApiModel firstSpeaker = speakers.get(0);
+		speaker.setText(firstSpeaker.name);
+
+		final TalkSpeakerApiModel secondSpeaker = speakers.size() > 1 ? speakers.get(1) : null;
+
+		if (secondSpeaker != null) {
+			speaker2.setText(secondSpeaker.name);
+		} else {
 			speaker2.setVisibility(View.GONE);
+		}
 
-		notifySwitch.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
-		notifySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		notifySwitch.setChecked(notificationsManager.isNotificationScheduled(slotModel.slotId));
+		notifySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				final NotificationsManager.ScheduleNotificationModel model =
+						NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
 				if (isChecked) {
-					buttonView.setChecked(Utils.setNotify(getActivity().getApplicationContext(),
-							talkID,
-							talkItem.getStartTime().getTime(),
-							true));
-				} else
-					Utils.unsetNotify(getActivity().getApplicationContext(), talkID);
-				dataSource.setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
+					final boolean checkResult = notificationsManager.scheduleNotification(model);
+					buttonView.setChecked(checkResult);
+				} else {
+					notificationsManager.unscheduleNotification(slotModel.slotId);
+				}
 			}
 		});
 
@@ -131,11 +114,11 @@ public class TalkFragment extends BaseFragment {
 		switch (view.getId()) {
 			case R.id.buttonSpeaker:
 				getMainActivity().replaceFragment(SpeakerFragment_.builder()
-						.speakerID(speakerItem.getId()).build(), true);
+						.speaker(slotModel.talk.speakers.get(0)).build(), true);
 				break;
 			case R.id.buttonSpeaker2:
 				getMainActivity().replaceFragment(SpeakerFragment_.builder()
-						.speakerID(speaker2Item.getId()).build(), true);
+						.speaker(slotModel.talk.speakers.get(1)).build(), true);
 				break;
 		}
 	}
