@@ -6,6 +6,6 @@ package io.scalac.degree.connection.model;
  * 26/10/2015
  */
 public class TalkSpeakerApiModel extends SpeakerBaseApiModel {
-	public String name;
-	public LinkApiModel link;
+    public String name;
+    public LinkApiModel link;
 }

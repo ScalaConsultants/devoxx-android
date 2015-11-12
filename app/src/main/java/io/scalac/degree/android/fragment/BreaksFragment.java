@@ -1,9 +1,5 @@
 package io.scalac.degree.android.fragment;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +7,15 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 
-import io.scalac.degree.items.BreakItem;
+import java.util.List;
+
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -23,100 +25,99 @@ import io.scalac.degree33.R;
 @EFragment(R.layout.items_list_view)
 public class BreaksFragment extends BaseFragment {
 
-	@FragmentArg int timeslotID;
+    @Bean
+    SlotsDataManager slotsDataManager;
 
-	private ItemAdapter listAdapter;
-	ArrayList<BreakItem> breakItemsList;
+    @FragmentArg
+    SlotApiModel timeslotID;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		init();
-	}
+    private ItemAdapter listAdapter;
+    private List<SlotApiModel> breakItemsList;
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		listAdapter.notifyDataSetChanged();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        init();
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		init();
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        listAdapter.notifyDataSetChanged();
+    }
 
-	private void init() {
-		breakItemsList = BreakItem.getTimeslotBreakList(dataSource.getBreakItemsList(), timeslotID);
-		listAdapter = new ItemAdapter();
-	}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        init();
+    }
 
-	@AfterViews void afterViews() {
-		final ListView listViewBreaks = (ListView) getView();
-		listViewBreaks.addFooterView(Utils.getFooterView(getActivity()));
-		listViewBreaks.setFooterDividersEnabled(false);
-		listViewBreaks.setAdapter(listAdapter);
-		listViewBreaks.setOnItemClickListener(null);
-		listViewBreaks.setItemsCanFocus(true);
-	}
+    private void init() {
+        breakItemsList = slotsDataManager.getBreaksListBySlot(timeslotID);
+        listAdapter = new ItemAdapter();
+    }
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-	}
+    @AfterViews
+    void afterViews() {
+        final ListView listViewBreaks = (ListView) getView();
+        final View footer = Utils.getFooterView(getActivity(), listViewBreaks);
+        listViewBreaks.addFooterView(footer);
+        listViewBreaks.setFooterDividersEnabled(false);
+        listViewBreaks.setAdapter(listAdapter);
+        listViewBreaks.setOnItemClickListener(null);
+        listViewBreaks.setItemsCanFocus(true);
+    }
 
-	class ItemAdapter extends BaseAdapter {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
-		private class ViewHolder {
-			public TextView textTitle;
-			public TextView textDesc;
-		}
+    class ItemAdapter extends BaseAdapter {
 
-		@Override
-		public int getCount() {
-			return breakItemsList.size();
-		}
+        @Override
+        public int getCount() {
+            return breakItemsList.size();
+        }
 
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
 
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
-			View viewItem;
-			ViewHolder holder;
+            View viewItem;
+            ViewHolder holder;
 
-			if (convertView == null) {
-				viewItem = getActivity().getLayoutInflater().inflate(R.layout.break_list_item, parent, false);
-				holder = new ViewHolder();
-				holder.textTitle = (TextView) viewItem.findViewById(R.id.textTitle);
-				holder.textDesc = (TextView) viewItem.findViewById(R.id.textDesc);
-				viewItem.setTag(holder);
-			} else {
-				viewItem = convertView;
-				holder = (ViewHolder) viewItem.getTag();
-			}
+            if (convertView == null) {
+                viewItem = getActivity().getLayoutInflater().inflate(R.layout.break_list_item, parent, false);
+                holder = new ViewHolder();
+                holder.textTitle = (TextView) viewItem.findViewById(R.id.textTitle);
+                holder.textDesc = (TextView) viewItem.findViewById(R.id.textDesc);
+                viewItem.setTag(holder);
+            } else {
+                viewItem = convertView;
+                holder = (ViewHolder) viewItem.getTag();
+            }
 
-			BreakItem breakItem = breakItemsList.get(position);
-			if (breakItem.hasTitle()) {
-				holder.textTitle.setVisibility(View.VISIBLE);
-				holder.textTitle.setText(breakItem.getTitleHtml());
-			} else
-				holder.textTitle.setVisibility(View.GONE);
-			if (breakItem.hasDescription()) {
-				holder.textDesc.setVisibility(View.VISIBLE);
-				holder.textDesc.setText(breakItem.getDescriptionHtml());
-			} else
-				holder.textDesc.setVisibility(View.GONE);
+            final SlotApiModel breakItem = breakItemsList.get(position);
+            holder.textTitle.setVisibility(View.VISIBLE);
+            holder.textTitle.setText(breakItem.slotBreak.nameEN);
+            holder.textDesc.setVisibility(View.GONE);
 
-			return viewItem;
-		}
-	}
+            return viewItem;
+        }
+
+        private class ViewHolder {
+            public TextView textTitle;
+            public TextView textDesc;
+        }
+    }
 }

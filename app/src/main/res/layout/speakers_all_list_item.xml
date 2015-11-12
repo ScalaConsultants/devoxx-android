@@ -38,9 +38,9 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
-            android:textSize="16dp"
             android:lines="1"
             android:textColor="@color/primary_text_90"
+            android:textSize="16dp"
             tools:text="Jacek Modrakowski"/>
 
         <TextView
@@ -54,6 +54,7 @@
             android:singleLine="true"
             android:textColor="@color/primary_text_45"
             android:textSize="12dp"
+            android:visibility="gone"
             tools:text="Hi my name is Jacek and I am a Developer of Android Framework"/>
 
     </LinearLayout>

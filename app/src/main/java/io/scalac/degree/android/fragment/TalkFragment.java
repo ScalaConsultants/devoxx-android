@@ -1,142 +1,142 @@
 package io.scalac.degree.android.fragment;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
+
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.text.method.LinkMovementMethod;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Switch;
-import android.widget.TextView;
-
 import java.text.DateFormat;
+import java.util.List;
 
-import io.scalac.degree.items.RoomItem;
-import io.scalac.degree.items.SpeakerItem;
-import io.scalac.degree.items.TalkItem;
-import io.scalac.degree.utils.ItemNotFoundException;
-import io.scalac.degree.utils.Utils;
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.connection.model.TalkSpeakerApiModel;
+import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment {
 
-	@FragmentArg int talkID;
+    @FragmentArg
+    SlotApiModel slotModel;
 
-	@ViewById(R.id.textTopic) TextView topic;
-	@ViewById(R.id.textDesc) TextView desc;
-	@ViewById(R.id.textDate) TextView date;
-	@ViewById(R.id.textTimeStart) TextView start;
-	@ViewById(R.id.textTimeEnd) TextView end;
-	@ViewById(R.id.textRoom) TextView room;
-	@ViewById(R.id.buttonSpeaker) Button speaker;
-	@ViewById(R.id.buttonSpeaker2) Button speaker2;
-	@ViewById(R.id.switchNotify) Switch notifySwitch;
+    @Bean
+    NotificationsManager notificationsManager;
 
-	private TalkItem talkItem;
-	private SpeakerItem speakerItem;
-	private SpeakerItem speaker2Item;
+    @ViewById(R.id.textTopic)
+    TextView topic;
+    @ViewById(R.id.textDesc)
+    TextView desc;
+    @ViewById(R.id.textDate)
+    TextView date;
+    @ViewById(R.id.textTimeStart)
+    TextView start;
+    @ViewById(R.id.textTimeEnd)
+    TextView end;
+    @ViewById(R.id.textRoom)
+    TextView room;
+    @ViewById(R.id.buttonSpeaker)
+    Button speaker;
+    @ViewById(R.id.buttonSpeaker2)
+    Button speaker2;
+    @ViewById(R.id.switchNotify)
+    Switch notifySwitch;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logFlurryEvent("Talk_info_watched");
+    }
 
-		logFlurryEvent("Talk_info_watched");
+    @Nullable
+    @Override
+    public String getTitleAsString() {
+        return slotModel.talk.title;
+    }
 
-		init();
-	}
+    @Override
+    public boolean needsToolbarSpinner() {
+        return false;
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		init();
-	}
+    @AfterViews
+    void afterViews() {
+        setHasOptionsMenu(true);
+        setupViews(slotModel);
+    }
 
-	private void init() {
-		talkItem = TalkItem.getByID(talkID, dataSource.getTalkItemsList());
-		speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(),
-				dataSource.getSpeakerItemsList());
-		if (talkItem.hasSpeaker2()) {
-			speaker2Item = SpeakerItem.getByID(talkItem.getSpeaker2ID(),
-					dataSource.getSpeakerItemsList());
-		}
-	}
+    public void setupViews(final SlotApiModel slotModel) {
+        topic.setText(Html.fromHtml(slotModel.talk.title));
 
-	@Nullable @Override public String getTitleAsString() {
-		return talkItem.getTopic();
-	}
+        desc.setText(Html.fromHtml(slotModel.talk.summaryAsHtml));
+        desc.setMovementMethod(LinkMovementMethod.getInstance());
 
-	@Override public boolean needsToolbarSpinner() {
-		return false;
-	}
+        final Context appContext = getActivity().getApplicationContext();
+        final DateFormat dateFormat = android.text.format.DateFormat
+                .getLongDateFormat(appContext);
+        final DateFormat timeFormat = android.text.format.DateFormat
+                .getTimeFormat(appContext);
 
-	@AfterViews void afterViews() {
-		setHasOptionsMenu(true);
+        date.setText(dateFormat.format(slotModel.fromTimeMillis));
+        start.setText(timeFormat.format(slotModel.fromTimeMillis));
+        end.setText(timeFormat.format(slotModel.toTimeMillis));
 
-		topic.setText(talkItem.getTopicHtml());
+        room.setText(slotModel.roomName);
 
-		desc.setText(talkItem.getDescriptionHtml());
-		desc.setMovementMethod(LinkMovementMethod.getInstance());
+        final List<TalkSpeakerApiModel> speakers = slotModel.talk.speakers;
+        final TalkSpeakerApiModel firstSpeaker = speakers.get(0);
+        speaker.setText(firstSpeaker.name);
 
-		DateFormat dateFormat = android.text.format.DateFormat
-				.getLongDateFormat(getActivity().getApplicationContext());
-		DateFormat timeFormat = android.text.format.DateFormat
-				.getTimeFormat(getActivity().getApplicationContext());
+        final TalkSpeakerApiModel secondSpeaker = speakers.size() > 1 ? speakers.get(1) : null;
 
-		date.setText(dateFormat.format(talkItem.getStartTime()));
-		start.setText(timeFormat.format(talkItem.getStartTime()));
-		end.setText(timeFormat.format(talkItem.getEndTime()));
+        if (secondSpeaker != null) {
+            speaker2.setText(secondSpeaker.name);
+        } else {
+            speaker2.setVisibility(View.GONE);
+        }
 
-		try {
-			RoomItem roomItem = RoomItem.getByID(talkItem.getRoomID(), dataSource.getRoomItemsList());
-			room.setText(roomItem.getName());
-		} catch (ItemNotFoundException e) {
-			room.setText("");
-			e.printStackTrace();
-		}
-		speaker.setText(speakerItem.getName());
+        notifySwitch.setChecked(notificationsManager.isNotificationScheduled(slotModel.slotId));
+        notifySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-		if (speaker2Item != null) {
-			speaker2.setText(speaker2Item.getName());
-		} else
-			speaker2.setVisibility(View.GONE);
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final NotificationsManager.ScheduleNotificationModel model =
+                        NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
+                if (isChecked) {
+                    final boolean checkResult = notificationsManager.scheduleNotification(model);
+                    buttonView.setChecked(checkResult);
+                } else {
+                    notificationsManager.unscheduleNotification(slotModel.slotId);
+                }
+            }
+        });
 
-		notifySwitch.setChecked(Utils.isNotifySet(getActivity().getApplicationContext(), talkID));
-		notifySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
+    }
 
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked) {
-					buttonView.setChecked(Utils.setNotify(getActivity().getApplicationContext(),
-							talkID,
-							talkItem.getStartTime().getTime(),
-							true));
-				} else
-					Utils.unsetNotify(getActivity().getApplicationContext(), talkID);
-				dataSource.setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
-			}
-		});
-
-		getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
-	}
-
-	@Click({R.id.buttonSpeaker, R.id.buttonSpeaker2}) void onSpeakersClick(View view) {
-		switch (view.getId()) {
-			case R.id.buttonSpeaker:
-				getMainActivity().replaceFragment(SpeakerFragment_.builder()
-						.speakerID(speakerItem.getId()).build(), true);
-				break;
-			case R.id.buttonSpeaker2:
-				getMainActivity().replaceFragment(SpeakerFragment_.builder()
-						.speakerID(speaker2Item.getId()).build(), true);
-				break;
-		}
-	}
+    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2})
+    void onSpeakersClick(View view) {
+        switch (view.getId()) {
+            case R.id.buttonSpeaker:
+                getMainActivity().replaceFragment(SpeakerFragment_.builder()
+                        .speaker(slotModel.talk.speakers.get(0)).build(), true);
+                break;
+            case R.id.buttonSpeaker2:
+                getMainActivity().replaceFragment(SpeakerFragment_.builder()
+                        .speaker(slotModel.talk.speakers.get(1)).build(), true);
+                break;
+        }
+    }
 }

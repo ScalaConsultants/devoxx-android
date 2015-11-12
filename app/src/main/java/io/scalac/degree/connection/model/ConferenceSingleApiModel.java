@@ -9,9 +9,9 @@ import java.util.List;
  * 26/10/2015
  */
 public class ConferenceSingleApiModel implements Serializable {
-	public String label;
-	public String localisation;
-	public String eventCode;
-	public List<LinkApiModel> links;
-	public List<String> locale;
+    public String label;
+    public String localisation;
+    public String eventCode;
+    public List<LinkApiModel> links;
+    public List<String> locale;
 }

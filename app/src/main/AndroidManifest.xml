@@ -10,14 +10,15 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
-        android:name="io.scalac.degree.MainApplication"
+        android:name="io.scalac.degree.MainApplication_"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
             android:name="io.scalac.degree.android.activity.MainActivity_"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -26,12 +27,12 @@
         </activity>
 
         <receiver
-            android:name="io.scalac.degree.android.receiver.AlarmReceiver"
+            android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
             android:enabled="true"
             android:exported="false">
         </receiver>
         <receiver
-            android:name="io.scalac.degree.android.receiver.AppUpdatedReceiver"
+            android:name="io.scalac.degree.android.receiver.AppUpdatedReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -43,7 +44,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="io.scalac.degree.android.receiver.BootReceiver"
+            android:name="io.scalac.degree.android.receiver.BootReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -51,7 +52,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="io.scalac.degree.android.receiver.TimezoneReceiver"
+            android:name="io.scalac.degree.android.receiver.TimezoneReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
