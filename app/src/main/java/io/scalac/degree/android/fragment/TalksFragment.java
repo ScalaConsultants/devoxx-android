@@ -1,10 +1,6 @@
 package io.scalac.degree.android.fragment;
 
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-
+import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -18,274 +14,308 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.res.StringRes;
+
+import java.text.Collator;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
-import io.scalac.degree.items.RoomItem;
-import io.scalac.degree.items.SpeakerItem;
-import io.scalac.degree.items.TalkItem;
-import io.scalac.degree.items.TalkItem.TimeComparator;
-import io.scalac.degree.items.TalkItem.TopicComparator;
-import io.scalac.degree.utils.ItemNotFoundException;
+import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.manager.NotificationsManager;
+import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.items_list_view)
-public class TalksFragment extends BaseFragment {
+public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
-	private ItemAdapter listAdapter;
-	ArrayList<TalkItem> talkItemsList;
-	ArrayList<SpeakerItem> speakerItemsList;
-	ArrayList<RoomItem> roomItemsList;
-	DateFormat timeFormat;
-	DateFormat mediumDateFormat;
-	boolean is12HourFormat;
-	TalksType talksType = TalksType.ALL;
+    @Bean
+    SlotsDataManager slotsDataManager;
+    @Bean
+    NotificationsManager notificationsManager;
 
-	@FragmentArg String talksTypeEnumName;
-	@FragmentArg int roomID;
-	@FragmentArg int timeslotID;
-	@FragmentArg long dateMs;
+    @StringRes(R.string.devoxx_conference)
+    String conferenceCode;
 
-	int itemLayoutID;
+    @FragmentArg
+    String talksTypeEnumName;
+    @FragmentArg
+    String roomID;
+    @FragmentArg
+    SlotApiModel slotModel;
+    @FragmentArg
+    long dateMs;
 
-	public enum TalksType {
-		ALL, ROOM, TIME, NOTIFICATION
-	}
+    private ItemAdapter listAdapter;
+    private DateFormat timeFormat;
+    private boolean is12HourFormat;
+    private TalksType talksType = TalksType.ALL;
 
-	@AfterInject void afterInject() {
-		talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
-				: TalksType.valueOf(talksTypeEnumName);
+    private int itemLayoutID;
 
-		init();
-	}
+    @AfterInject
+    void afterInject() {
+        talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
+                : TalksType.valueOf(talksTypeEnumName);
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		if (talksType == TalksType.NOTIFICATION && talkItemsList != null) {
-			talkItemsList.clear();
-			talkItemsList.addAll(TalkItem.getNotificationTalkList(dataSource.getTalkItemsList(),
-					dataSource.getNotifyMap()));
-		}
-		listAdapter.notifyDataSetChanged();
-	}
+        final Context appContext = getActivity().getApplicationContext();
+        timeFormat = android.text.format.DateFormat.getTimeFormat(appContext);
+        is12HourFormat = !android.text.format.DateFormat.is24HourFormat(appContext);
+        listAdapter = new ItemAdapter();
+    }
 
-	private void init() {
-		switch (talksType) {
-			case ROOM:
-				talkItemsList = TalkItem.getRoomTalkList(dataSource.getTalkItemsList(),
-						roomID, dateMs);
-				itemLayoutID = R.layout.talks_room_list_item;
-				break;
-			case TIME:
-				talkItemsList = TalkItem.getTimeslotTalkList(dataSource.getTalkItemsList(), timeslotID);
-				roomItemsList = dataSource.getRoomItemsList();
-				itemLayoutID = R.layout.talks_time_list_item;
-				break;
-			case NOTIFICATION:
-				logFlurryEvent("Notifications_watched");
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        getMainActivity().replaceFragment(TalkFragment_.builder()
+                .slotModel(listAdapter.getClickedItem(position)).build(), true);
+    }
 
-				talkItemsList = TalkItem.getNotificationTalkList(dataSource.getTalkItemsList(),
-						dataSource.getNotifyMap());
-				Collections.sort(talkItemsList, new TimeComparator());
-				itemLayoutID = R.layout.talks_notify_list_item;
-				break;
-			default:
-				logFlurryEvent("Talks_watched");
+    private void init() {
+        List<SlotApiModel> slots = new ArrayList<>();
 
-				talkItemsList = new ArrayList<>(dataSource.getTalkItemsList());
-				Collections.sort(talkItemsList, new TopicComparator());
-				roomItemsList = dataSource.getRoomItemsList();
-				itemLayoutID = R.layout.talks_all_list_item;
-				break;
-		}
+        switch (talksType) {
+            case ROOM:
+                slots = slotsDataManager.getTalksForSpecificTimeAndRoom(roomID, dateMs);
+                itemLayoutID = R.layout.talks_room_list_item;
+                break;
+            case TIME:
+                slots = slotsDataManager.getTalksForSpecificTime(slotModel.fromTimeMillis);
+                itemLayoutID = R.layout.talks_time_list_item;
+                break;
+            case NOTIFICATION:
+                logFlurryEvent("Notifications_watched");
 
-		speakerItemsList = dataSource.getSpeakerItemsList();
-		timeFormat = android.text.format.DateFormat.getTimeFormat(getActivity().getApplicationContext());
-		mediumDateFormat = android.text.format.DateFormat.getMediumDateFormat(getActivity().getApplicationContext());
-		is12HourFormat = !android.text.format.DateFormat.is24HourFormat(getActivity());
-		listAdapter = new ItemAdapter();
-	}
+                itemLayoutID = R.layout.talks_notify_list_item;
+                break;
+            default:
+                logFlurryEvent("Talks_watched");
+                itemLayoutID = R.layout.talks_all_list_item;
 
-	@Override public boolean needsToolbarSpinner() {
-		return setupSpinnerVisibility();
-	}
+                slots = Stream.of(slotsDataManager.getLastTalks())
+                        .sorted(new Comparator<SlotApiModel>() {
+                            final Collator collator = Collator.getInstance(Locale.getDefault());
 
-	@Override public int getTitle() {
-		switch (talksType) {
-			case ALL:
-				return R.string.drawer_menu_talks_label;
-			case NOTIFICATION:
-				return R.string.drawer_menu_my_schedule_label;
-			case ROOM:
-			case TIME:
-			default:
-				return -1;
-		}
-	}
+                            @Override
+                            public int compare(SlotApiModel lhs, SlotApiModel rhs) {
+                                return collator.compare(lhs.talk.title, rhs.talk.title);
+                            }
+                        })
+                        .collect(Collectors.<SlotApiModel>toList());
+                break;
+        }
+        listAdapter.setData(slots);
+        listAdapter.notifyDataSetChanged();
+    }
 
-	@AfterViews void afterViews() {
-		final ListView listViewTalks = (ListView) getView();
-		listViewTalks.addFooterView(Utils.getFooterView(getActivity()));
-		listViewTalks.setFooterDividersEnabled(false);
-		listViewTalks.setAdapter(listAdapter);
-		listViewTalks.setOnItemClickListener(new OnItemClickListener() {
+//	TODO Do it!
+//	public void onResume() {
+//		super.onResume();
+//		if (talksType == TalksType.NOTIFICATION && slots != null) {
+//			slots.clear();
+//			slots.addAll(TalkItem.getNotificationTalkList(dataSource.getTalkItemsList(),
+//					dataSource.getNotifyMap()));
+//		}
+//		listAdapter.notifyDataSetChanged();
+//	}
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				getMainActivity().replaceFragment(TalkFragment_.builder()
-						.talkID(talkItemsList.get(position).getId()).build(), true);
-			}
-		});
-	}
+    @Override
+    public boolean needsToolbarSpinner() {
+        return setupSpinnerVisibility();
+    }
 
-	private boolean setupSpinnerVisibility() {
-		switch (talksType) {
-			case ALL:
-			case NOTIFICATION:
-				return false;
-			case ROOM:
-			case TIME:
-			default:
-				return true;
-		}
-	}
+    @Override
+    public int getTitle() {
+        switch (talksType) {
+            case ALL:
+                return R.string.drawer_menu_talks_label;
+            case NOTIFICATION:
+                return R.string.drawer_menu_my_schedule_label;
+            case ROOM:
+            case TIME:
+            default:
+                return -1;
+        }
+    }
 
-	class ItemAdapter extends BaseAdapter {
+    @AfterViews
+    void afterViews() {
+        final ListView listViewTalks = (ListView) getView();
+        final View footer = Utils.getFooterView(getActivity(), listViewTalks);
+        listViewTalks.addFooterView(footer);
+        listViewTalks.setFooterDividersEnabled(false);
+        listViewTalks.setAdapter(listAdapter);
+        listViewTalks.setOnItemClickListener(this);
 
-		static final int FORMAT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-				| DateUtils.FORMAT_NO_YEAR;
+        init();
+    }
 
-		private class ViewHolder {
-			public TextView textTopic;
-			public TextView text3;
-			public TextView textSpeaker;
-			public TextView textTimeStart;
-			public TextView textTimeEnd;
-			public ImageButton imageButtonNotify;
-		}
+    private boolean setupSpinnerVisibility() {
+        switch (talksType) {
+            case ALL:
+            case NOTIFICATION:
+                return false;
+            case ROOM:
+            case TIME:
+            default:
+                return true;
+        }
+    }
 
-		@Override
-		public int getCount() {
-			return talkItemsList.size();
-		}
+    public enum TalksType {
+        ALL, ROOM, TIME, NOTIFICATION;
+    }
 
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
+    class ItemAdapter extends BaseAdapter {
 
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
+        static final int FORMAT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME
+                | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
+        private final AlarmOnClick alarmOnClick = new AlarmOnClick();
+        private List<SlotApiModel> data;
 
-		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
+        ItemAdapter() {
+            this.data = new ArrayList<>();
+        }
 
-			View viewItem;
-			ViewHolder holder;
+        public void setData(List<SlotApiModel> data) {
+            this.data.clear();
+            this.data = data;
+        }
 
-			if (convertView == null) {
-				viewItem = getActivity().getLayoutInflater().inflate(itemLayoutID, parent, false);
-				holder = new ViewHolder();
-				holder.textTopic = (TextView) viewItem.findViewById(R.id.textTopic);
-				holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
-				switch (talksType) {
-					case ALL:
-					case NOTIFICATION:
-						holder.text3 = (TextView) viewItem.findViewById(R.id.textTime);
-						break;
-					case ROOM:
-						holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
-						holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
-						if (is12HourFormat) {
-							LinearLayout linearLayoutTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
-							linearLayoutTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
-						}
-						break;
-					case TIME:
-						holder.text3 = (TextView) viewItem.findViewById(R.id.textRoom);
-						break;
-					default:
-						break;
-				}
-				holder.imageButtonNotify = (ImageButton) viewItem.findViewById(R.id.imageButtonNotify);
-				holder.imageButtonNotify.setOnClickListener(alarmOnClick);
-				viewItem.setTag(holder);
-			} else {
-				viewItem = convertView;
-				holder = (ViewHolder) viewItem.getTag();
-			}
-			TalkItem talkItem = talkItemsList.get(position);
-			SpeakerItem speakerItem = SpeakerItem.getByID(talkItem.getSpeakerID(), speakerItemsList);
-			String speakers = (speakerItem != null) ? speakerItem.getName() : "";
-			if (talkItem.hasSpeaker2()) {
-				SpeakerItem speaker2Item = SpeakerItem.getByID(talkItem.getSpeaker2ID(), speakerItemsList);
-				if (speaker2Item != null)
-					speakers += " " + getString(R.string.and) + " " + speaker2Item.getName();
-			}
-			holder.textTopic.setText(talkItem.getTopicHtml());
-			holder.textSpeaker.setText(speakers);
-			switch (talksType) {
-				case ALL:
-					String roomName;
-					try {
-						roomName = "  " + RoomItem.getByID(talkItem.getRoomID(), roomItemsList).getName();
-					} catch (ItemNotFoundException e1) {
-						roomName = "";
-					}
-					holder.text3.setText(DateUtils.formatDateTime(getActivity().getApplicationContext(),
-							talkItem.getStartTime().getTime(),
-							FORMAT_DATE_FLAGS) + roomName);
-					break;
-				case NOTIFICATION:
-					long alarmTime = Utils.getAlarmTime(talkItem.getStartTime().getTime());
-					holder.text3.setText(DateUtils.formatDateTime(getActivity().getApplicationContext(),
-							alarmTime,
-							FORMAT_DATE_FLAGS));
-					break;
-				case ROOM:
-					holder.textTimeStart.setText(timeFormat.format(talkItem.getStartTime()));
-					holder.textTimeEnd.setText(timeFormat.format(talkItem.getEndTime()));
-					break;
-				case TIME:
-					try {
-						holder.text3.setText(RoomItem.getByID(talkItem.getRoomID(), roomItemsList).getName());
-					} catch (ItemNotFoundException e) {
-						// e.printStackTrace();
-						holder.text3.setText("");
-					}
-					break;
-				default:
-					break;
-			}
-			boolean isAlarmSet = dataSource.getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
-			holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_alarm
-					: R.drawable.ic_action_alarm_add);
-			holder.imageButtonNotify.setTag(position);
-			return viewItem;
-		}
+        @Override
+        public int getCount() {
+            return data.size();
+        }
 
-		private final AlarmOnClick alarmOnClick = new AlarmOnClick();
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
 
-		private class AlarmOnClick implements OnClickListener {
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-			@Override
-			public void onClick(View v) {
-				int position = (Integer) v.getTag();
-				TalkItem talkItem = talkItemsList.get(position);
-				boolean isAlarmSet = dataSource.getNotifyMap().containsKey(String.valueOf(talkItem.getId()));
-				if (isAlarmSet)
-					Utils.unsetNotify(getActivity().getApplicationContext(), talkItem.getId());
-				else
-					Utils.setNotify(getActivity().getApplicationContext(), talkItem.getId(), talkItem.getStartTime()
-							.getTime(), true);
-				dataSource.setNotifyMap(Utils.getAlarms(getActivity().getApplicationContext()));
-				listAdapter.notifyDataSetChanged();
-			}
-		}
-	}
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
+            View viewItem;
+            ViewHolder holder;
+
+            if (convertView == null) {
+                viewItem = getActivity().getLayoutInflater().inflate(itemLayoutID, parent, false);
+                holder = new ViewHolder();
+                holder.textTopic = (TextView) viewItem.findViewById(R.id.textTopic);
+                holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
+                switch (talksType) {
+                    case ALL:
+                    case NOTIFICATION:
+                        holder.text3 = (TextView) viewItem.findViewById(R.id.textTime);
+                        break;
+                    case ROOM:
+                        holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
+                        holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
+                        if (is12HourFormat) {
+                            LinearLayout llTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
+                            llTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
+                        }
+                        break;
+                    case TIME:
+                        holder.text3 = (TextView) viewItem.findViewById(R.id.textRoom);
+                        break;
+                    default:
+                        break;
+                }
+                holder.imageButtonNotify = (ImageButton) viewItem.findViewById(R.id.imageButtonNotify);
+                holder.imageButtonNotify.setOnClickListener(alarmOnClick);
+                viewItem.setTag(holder);
+            } else {
+                viewItem = convertView;
+                holder = (ViewHolder) viewItem.getTag();
+            }
+
+            fillHolder(holder, position);
+
+            return viewItem;
+        }
+
+        private void fillHolder(ViewHolder holder, int position) {
+            final SlotApiModel slotModel = data.get(position);
+            holder.textSpeaker.setText(slotModel.talk.getReadableSpeakers());
+            holder.textTopic.setText(slotModel.talk.title);
+
+            switch (talksType) {
+                case ALL:
+                    final Context appContext = getActivity().getApplicationContext();
+                    final String text = String.format("%s %s",
+                            DateUtils.formatDateTime(appContext, slotModel.fromTimeMillis,
+                                    FORMAT_DATE_FLAGS), slotModel.roomName);
+                    holder.text3.setText(text);
+                    break;
+                case NOTIFICATION:
+                    final long alarmTime = notificationsManager
+                            .calculateAlarmTime(slotModel.fromTimeMillis);
+                    holder.text3.setText(DateUtils.formatDateTime(getActivity()
+                            .getApplicationContext(), alarmTime, FORMAT_DATE_FLAGS));
+                    break;
+                case ROOM:
+                    holder.textTimeStart.setText(timeFormat.format(slotModel.fromTimeMillis));
+                    holder.textTimeEnd.setText(timeFormat.format(slotModel.toTimeMillis));
+                    break;
+                case TIME:
+                    holder.text3.setText(slotModel.roomName);
+                    break;
+                default:
+                    break;
+            }
+            boolean isAlarmSet = notificationsManager
+                    .isNotificationScheduled(slotModel.slotId);
+            holder.imageButtonNotify.setImageResource(isAlarmSet ? R.drawable.ic_action_alarm
+                    : R.drawable.ic_action_alarm_add);
+            holder.imageButtonNotify.setTag(position);
+        }
+
+        public SlotApiModel getClickedItem(int position) {
+            return data.get(position);
+        }
+
+        private class AlarmOnClick implements OnClickListener {
+
+            @Override
+            public void onClick(View v) {
+                final int position = (Integer) v.getTag();
+                final SlotApiModel talkItem = data.get(position);
+                boolean isAlarmSet = notificationsManager
+                        .isNotificationScheduled(talkItem.slotId);
+                final NotificationsManager.ScheduleNotificationModel scheduleNotificationModel =
+                        NotificationsManager.ScheduleNotificationModel.create(talkItem, true);
+                if (isAlarmSet) {
+                    notificationsManager.unscheduleNotification(talkItem.slotId);
+                } else {
+                    notificationsManager.scheduleNotification(scheduleNotificationModel);
+                }
+                listAdapter.notifyDataSetChanged();
+            }
+        }
+
+        private class ViewHolder {
+            public TextView textTopic;
+            public TextView text3;
+            public TextView textSpeaker;
+            public TextView textTimeStart;
+            public TextView textTimeEnd;
+            public ImageButton imageButtonNotify;
+        }
+    }
 }

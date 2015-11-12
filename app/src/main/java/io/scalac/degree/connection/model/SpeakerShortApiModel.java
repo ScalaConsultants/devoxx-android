@@ -8,5 +8,5 @@ import java.util.List;
  * 26/10/2015
  */
 public class SpeakerShortApiModel extends SpeakerBaseApiModel {
-	public List<LinkApiModel> links;
+    public List<LinkApiModel> links;
 }

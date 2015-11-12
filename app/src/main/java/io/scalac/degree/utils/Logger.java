@@ -13,32 +13,32 @@ import io.scalac.degree33.BuildConfig;
  */
 public class Logger {
 
-	public static final boolean isEnabled = BuildConfig.LOGGING;
-	public static final String TAG = "Devoxx";
+    public static final boolean isEnabled = BuildConfig.LOGGING;
+    public static final String TAG = "Devoxx";
 
-	public static void l(boolean message) {
-		l(String.valueOf(message));
-	}
+    public static void l(boolean message) {
+        l(String.valueOf(message));
+    }
 
-	public static void l(int message) {
-		l(String.valueOf(message));
-	}
+    public static void l(int message) {
+        l(String.valueOf(message));
+    }
 
-	public static void l(String message) {
-		if (isEnabled) {
-			Log.d(TAG, message);
-		}
-	}
+    public static void l(String message) {
+        if (isEnabled) {
+            Log.d(TAG, message);
+        }
+    }
 
-	public static void logDate(String message, long syncTime) {
-		if (isEnabled) {
-			Log.d(TAG, message + ", " + new Date(syncTime).toString());
-		}
-	}
+    public static void logDate(String message, long syncTime) {
+        if (isEnabled) {
+            Log.d(TAG, message + ", " + new Date(syncTime).toString());
+        }
+    }
 
-	public static void exc(Exception e) {
-		if (isEnabled) {
-			e.printStackTrace();
-		}
-	}
+    public static void exc(Exception e) {
+        if (isEnabled) {
+            e.printStackTrace();
+        }
+    }
 }

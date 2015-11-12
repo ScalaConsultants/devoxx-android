@@ -8,8 +8,8 @@ import java.io.Serializable;
  * 26/10/2015
  */
 public class RoomApiModel implements Serializable {
-	public String id;
-	public String name;
-	public String setup;
-	public int capacity;
+    public String id;
+    public String name;
+    public String setup;
+    public int capacity;
 }
