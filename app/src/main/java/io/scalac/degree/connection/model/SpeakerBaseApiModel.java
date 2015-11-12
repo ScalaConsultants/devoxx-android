@@ -8,12 +8,12 @@ import java.io.Serializable;
  * 26/10/2015
  */
 public class SpeakerBaseApiModel implements Serializable {
-	public String uuid;
-	public String firstName;
-	public String lastName;
-	public String avatarURL;
+    public String uuid;
+    public String firstName;
+    public String lastName;
+    public String avatarURL;
 
-	public String getName() {
-		return String.format("%s %s", firstName, lastName);
-	}
+    public String getName() {
+        return String.format("%s %s", firstName, lastName);
+    }
 }

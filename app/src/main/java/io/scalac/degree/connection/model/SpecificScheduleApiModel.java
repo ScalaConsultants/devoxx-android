@@ -9,9 +9,9 @@ import java.util.List;
  * 27/10/2015
  */
 public class SpecificScheduleApiModel implements Serializable {
-	public final List<SlotApiModel> slots;
+    public final List<SlotApiModel> slots;
 
-	public SpecificScheduleApiModel(List<SlotApiModel> slots) {
-		this.slots = slots;
-	}
+    public SpecificScheduleApiModel(List<SlotApiModel> slots) {
+        this.slots = slots;
+    }
 }

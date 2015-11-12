@@ -11,15 +11,15 @@ import java.util.List;
  * 26/10/2015
  */
 public class ConferencesApiModel implements Serializable {
-	public final String content;
-	public final List<LinkApiModel> links;
+    public final String content;
+    public final List<LinkApiModel> links;
 
-	public ConferencesApiModel(String content, List<LinkApiModel> links) {
-		this.content = content;
-		this.links = links;
-	}
+    public ConferencesApiModel(String content, List<LinkApiModel> links) {
+        this.content = content;
+        this.links = links;
+    }
 
-	public static String extractConferenceCode(LinkApiModel linkApiModel) {
-		return Uri.parse(linkApiModel.href).getLastPathSegment();
-	}
+    public static String extractConferenceCode(LinkApiModel linkApiModel) {
+        return Uri.parse(linkApiModel.href).getLastPathSegment();
+    }
 }

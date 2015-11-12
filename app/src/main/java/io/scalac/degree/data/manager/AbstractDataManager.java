@@ -13,37 +13,41 @@ import java.util.List;
 @EBean
 public abstract class AbstractDataManager<T> {
 
-	public interface IDataManagerListener<T> {
-		void onDataStartFetching();
+    @UiThread
+    void notifyAboutSuccess(IDataManagerListener<T> listener, T result) {
+        if (listener != null) {
+            listener.onDataAvailable(result);
+        }
+    }
 
-		void onDataAvailable(List<T> items);
+    @UiThread
+    void notifyAboutSuccess(IDataManagerListener<T> listener, List<T> result) {
+        if (listener != null) {
+            listener.onDataAvailable(result);
+        }
+    }
 
-		void onDataAvailable(T item);
+    @UiThread
+    void notifyAboutStart(IDataManagerListener<T> listener) {
+        if (listener != null) {
+            listener.onDataStartFetching();
+        }
+    }
 
-		void onDataError();
-	}
+    @UiThread
+    void notifyAboutFailed(IDataManagerListener<T> listener) {
+        if (listener != null) {
+            listener.onDataError();
+        }
+    }
 
-	@UiThread void notifyAboutSuccess(IDataManagerListener<T> listener, T result) {
-		if (listener != null) {
-			listener.onDataAvailable(result);
-		}
-	}
+    public interface IDataManagerListener<T> {
+        void onDataStartFetching();
 
-	@UiThread void notifyAboutSuccess(IDataManagerListener<T> listener, List<T> result) {
-		if (listener != null) {
-			listener.onDataAvailable(result);
-		}
-	}
+        void onDataAvailable(List<T> items);
 
-	@UiThread void notifyAboutStart(IDataManagerListener<T> listener) {
-		if (listener != null) {
-			listener.onDataStartFetching();
-		}
-	}
+        void onDataAvailable(T item);
 
-	@UiThread void notifyAboutFailed(IDataManagerListener<T> listener) {
-		if (listener != null) {
-			listener.onDataError();
-		}
-	}
+        void onDataError();
+    }
 }

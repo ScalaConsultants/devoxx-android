@@ -10,49 +10,50 @@ import io.realm.annotations.PrimaryKey;
  */
 public class NotificationModel extends RealmObject {
 
-	@PrimaryKey private String slotId;
-	private String roomName;
-	private String talkName;
-	private long eventTime;
-	private long alarmTime;
+    @PrimaryKey
+    private String slotId;
+    private String roomName;
+    private String talkName;
+    private long eventTime;
+    private long alarmTime;
 
-	public String getSlotId() {
-		return slotId;
-	}
+    public String getSlotId() {
+        return slotId;
+    }
 
-	public void setSlotId(String slotId) {
-		this.slotId = slotId;
-	}
+    public void setSlotId(String slotId) {
+        this.slotId = slotId;
+    }
 
-	public void setEventTime(long eventTime) {
-		this.eventTime = eventTime;
-	}
+    public long getEventTime() {
+        return eventTime;
+    }
 
-	public long getEventTime() {
-		return eventTime;
-	}
+    public void setEventTime(long eventTime) {
+        this.eventTime = eventTime;
+    }
 
-	public long getAlarmTime() {
-		return alarmTime;
-	}
+    public long getAlarmTime() {
+        return alarmTime;
+    }
 
-	public void setAlarmTime(long alarmTime) {
-		this.alarmTime = alarmTime;
-	}
+    public void setAlarmTime(long alarmTime) {
+        this.alarmTime = alarmTime;
+    }
 
-	public String getRoomName() {
-		return roomName;
-	}
+    public String getRoomName() {
+        return roomName;
+    }
 
-	public void setRoomName(String roomName) {
-		this.roomName = roomName;
-	}
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
 
-	public String getTalkName() {
-		return talkName;
-	}
+    public String getTalkName() {
+        return talkName;
+    }
 
-	public void setTalkName(String talkName) {
-		this.talkName = talkName;
-	}
+    public void setTalkName(String talkName) {
+        this.talkName = talkName;
+    }
 }

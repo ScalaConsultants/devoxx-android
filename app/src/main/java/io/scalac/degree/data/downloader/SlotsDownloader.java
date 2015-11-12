@@ -27,58 +27,59 @@ import retrofit.Call;
 @EBean
 public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
 
-	@Bean SlotsCache slotsCache;
+    private final List<String> AVAILABLE_CONFERENCE_DAYS = Collections.unmodifiableList(
+            Arrays.asList("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+    );
+    @Bean
+    SlotsCache slotsCache;
 
-	private final List<String> AVAILABLE_CONFERENCE_DAYS = Collections.unmodifiableList(
-			Arrays.asList("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
-	);
+    /**
+     * Download talks for all days during conference.
+     *
+     * @param confCode of the requested conference's talks.
+     */
+    public List<SlotApiModel> downloadTalks(String confCode) throws IOException {
+        final List<SlotApiModel> result;
 
-	/**
-	 * Download talks for all days during conference.
-	 *
-	 * @param confCode of the requested conference's talks.
-	 */
-	public List<SlotApiModel> downloadTalks(String confCode) throws IOException {
-		final List<SlotApiModel> result;
+        if (slotsCache.isValid()) {
+            updateAllDataAsync(confCode);
+            return slotsCache.getData();
+        } else {
+            result = downloadAllData(confCode);
+        }
 
-		if (slotsCache.isValid()) {
-			updateAllDataAsync(confCode);
-			return slotsCache.getData();
-		} else {
-			result = downloadAllData(confCode);
-		}
+        return result;
+    }
 
-		return result;
-	}
+    private String deserializeData(List<SlotApiModel> result) {
+        return new Gson().toJson(result);
+    }
 
-	private String deserializeData(List<SlotApiModel> result) {
-		return new Gson().toJson(result);
-	}
+    @Background
+    void updateAllDataAsync(String confCode) {
+        try {
+            downloadAllData(confCode);
+        } catch (IOException e) {
+            Logger.l("Can't update slots!");
+            Logger.exc(e);
+        }
+    }
 
-	@Background void updateAllDataAsync(String confCode) {
-		try {
-			downloadAllData(confCode);
-		} catch (IOException e) {
-			Logger.l("Can't update slots!");
-			Logger.exc(e);
-		}
-	}
+    private List<SlotApiModel> downloadAllData(String confCode) throws IOException {
+        final List<SlotApiModel> result = new ArrayList<>();
+        for (String day : AVAILABLE_CONFERENCE_DAYS) {
+            downloadTalkSlotsForDay(confCode, result, day);
+        }
+        slotsCache.storeData(deserializeData(result), confCode);
+        return result;
+    }
 
-	private List<SlotApiModel> downloadAllData(String confCode) throws IOException {
-		final List<SlotApiModel> result = new ArrayList<>();
-		for (String day : AVAILABLE_CONFERENCE_DAYS) {
-			downloadTalkSlotsForDay(confCode, result, day);
-		}
-		slotsCache.storeData(deserializeData(result), confCode);
-		return result;
-	}
+    private void downloadTalkSlotsForDay(
+            String confCode, List<SlotApiModel> result, String day) throws IOException {
+        final DevoxxApi devoxxApi = connection.getDevoxxApi();
+        final Call<SpecificScheduleApiModel> call =
+                devoxxApi.specificSchedule(confCode, day);
 
-	private void downloadTalkSlotsForDay(
-			String confCode, List<SlotApiModel> result, String day) throws IOException {
-		final DevoxxApi devoxxApi = connection.getDevoxxApi();
-		final Call<SpecificScheduleApiModel> call =
-				devoxxApi.specificSchedule(confCode, day);
-
-		result.addAll(call.execute().body().slots);
-	}
+        result.addAll(call.execute().body().slots);
+    }
 }

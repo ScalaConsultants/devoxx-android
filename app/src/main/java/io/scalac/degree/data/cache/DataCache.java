@@ -7,15 +7,15 @@ package io.scalac.degree.data.cache;
  */
 public interface DataCache<DataType, StorageType> {
 
-	void storeData(StorageType rawData, String query);
+    void storeData(StorageType rawData, String query);
 
-	DataType getData();
+    DataType getData();
 
-	DataType getData(String query);
+    DataType getData(String query);
 
-	boolean isValid();
+    boolean isValid();
 
-	boolean isValid(String query);
+    boolean isValid(String query);
 
-	void clearCache();
+    void clearCache();
 }

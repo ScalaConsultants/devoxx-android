@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 26/10/2015
  */
 public class ProposalSingleTypeApiModel implements Serializable {
-	public String id;
-	public String description;
-	public String label;
+    public String id;
+    public String description;
+    public String label;
 }

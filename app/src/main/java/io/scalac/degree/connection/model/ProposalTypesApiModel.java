@@ -9,6 +9,6 @@ import java.util.List;
  * 26/10/2015
  */
 public class ProposalTypesApiModel implements Serializable {
-	public String content;
-	public List<ProposalSingleTypeApiModel> proposalTypes;
+    public String content;
+    public List<ProposalSingleTypeApiModel> proposalTypes;
 }
