@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -66,6 +67,10 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     @ViewById(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+
+    @ViewById(R.id.homeProgressBar)
+    ContentLoadingProgressBar progressBar;
+
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private Spinner toolbarSpinner;
     private int lastClickedMenuItemId;
@@ -403,11 +408,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDataStartFetching() {
-        // Nothing here.
+        progressBar.show();
     }
 
     @Override
     public void onDataAvailable(List<SlotApiModel> items) {
+        progressBar.hide();
+
         if (TextUtils.isEmpty(incomingSlotId)) {
             final Intent intent = getIntent();
             if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
@@ -448,6 +455,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDataError() {
-        // Nothing here.
+        progressBar.hide();
     }
 }
