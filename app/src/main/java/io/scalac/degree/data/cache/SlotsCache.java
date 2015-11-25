@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.scalac.degree.Configuration;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.cache.model.SlotsCacheObject;
@@ -27,7 +28,7 @@ import io.scalac.degree.data.cache.model.SlotsCacheObject;
 public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
 
     private static final long CACHE_LIFE_TIME_MS =
-            TimeUnit.MINUTES.toMillis(5);
+            TimeUnit.MINUTES.toMillis(Configuration.SLOTS_CACHE_TIME_MIN);
 
     @RootContext
     Context context;

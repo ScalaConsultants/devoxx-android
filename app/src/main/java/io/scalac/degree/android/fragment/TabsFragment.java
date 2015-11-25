@@ -135,25 +135,27 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
 
     private void init() {
         datesList = slotsDataManager.createDateList();
-        final Date currentDate = datesList.get(currentDatePosition);
-        roomTabLabels = slotsDataManager.extractRoomLabelsForDate(currentDate);
-        timeTabLabels = slotsDataManager.extractTimeLabelsForDate(currentDate);
+        if (!datesList.isEmpty()) {
+            final Date currentDate = datesList.get(currentDatePosition);
+            roomTabLabels = slotsDataManager.extractRoomLabelsForDate(currentDate);
+            timeTabLabels = slotsDataManager.extractTimeLabelsForDate(currentDate);
 
-        switch (tabType) {
-            case ROOM:
-                logFlurryEvent("Schedule_by_room_watched");
-                break;
-            case TIME:
-                // TODO Do it!
-                // currentTabPosition = TimeslotItem.getInitialTimePosition(timeTabLabels);
-                logFlurryEvent("Schedule_by_time_watched");
-                break;
-        }
-        datesNamesList = new ArrayList<>();
-        DateFormat dateFormat = android.text.format.DateFormat.
-                getMediumDateFormat(getActivity().getApplicationContext());
-        for (Date date : datesList) {
-            datesNamesList.add(dateFormat.format(date));
+            switch (tabType) {
+                case ROOM:
+                    logFlurryEvent("Schedule_by_room_watched");
+                    break;
+                case TIME:
+                    // TODO Do it!
+                    // currentTabPosition = TimeslotItem.getInitialTimePosition(timeTabLabels);
+                    logFlurryEvent("Schedule_by_time_watched");
+                    break;
+            }
+            datesNamesList = new ArrayList<>();
+            DateFormat dateFormat = android.text.format.DateFormat.
+                    getMediumDateFormat(getActivity().getApplicationContext());
+            for (Date date : datesList) {
+                datesNamesList.add(dateFormat.format(date));
+            }
         }
     }
 

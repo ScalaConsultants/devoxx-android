@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
+import io.scalac.degree.data.TalkVoter;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree33.R;
 
@@ -34,6 +35,9 @@ public class TalkFragment extends BaseFragment {
 
     @Bean
     NotificationsManager notificationsManager;
+
+    @Bean
+    TalkVoter talkVoter;
 
     @ViewById(R.id.textTopic)
     TextView topic;
@@ -53,6 +57,8 @@ public class TalkFragment extends BaseFragment {
     Button speaker2;
     @ViewById(R.id.switchNotify)
     Switch notifySwitch;
+
+    private String talkId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,8 @@ public class TalkFragment extends BaseFragment {
     }
 
     public void setupViews(final SlotApiModel slotModel) {
+        talkId = slotModel.talk.id;
+
         topic.setText(Html.fromHtml(slotModel.talk.title));
 
         desc.setText(Html.fromHtml(slotModel.talk.summaryAsHtml));
@@ -126,7 +134,7 @@ public class TalkFragment extends BaseFragment {
         getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2})
+    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton})
     void onSpeakersClick(View view) {
         switch (view.getId()) {
             case R.id.buttonSpeaker:
@@ -136,6 +144,9 @@ public class TalkFragment extends BaseFragment {
             case R.id.buttonSpeaker2:
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
                         .speaker(slotModel.talk.speakers.get(1)).build(), true);
+                break;
+            case R.id.voteButton:
+                talkVoter.voteForTalk(talkId);
                 break;
         }
     }
