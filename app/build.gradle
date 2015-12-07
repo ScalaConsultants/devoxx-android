@@ -30,17 +30,35 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1010100
-        versionName "1.1.1"
+        versionName "1.0"
+        manifestPlaceholders = [applicationLabel: "@string/app_name"]
     }
+
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+        }
+    }
+
     buildTypes {
         release {
             debuggable false
             minifyEnabled false
             buildConfigField "boolean", "LOGGING", "false"
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
         }
         debug {
             debuggable true
             buildConfigField "boolean", "LOGGING", "true"
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
+        }
+        devoxx {
+            debuggable true
+            versionNameSuffix "@devoxx"
+            applicationIdSuffix ".devoxx"
+            buildConfigField "boolean", "LOGGING", "true"
+            signingConfig signingConfigs.debug
+            manifestPlaceholders = [applicationLabel: "@string/app_name_devox"]
         }
     }
     packagingOptions {

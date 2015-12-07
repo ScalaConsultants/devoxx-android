@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">33rd Degree</string>
+    <string name="app_name_devox">Devoxx App</string>
     <string name="feedback_link">mailto:apps@scalac.io?subject=Feedback: %1$s %2$s (%3$s) Android %4$s (API %5$s) %6$s %7$s</string>
     <string name="title_notification">Notification</string>
     <string name="toast_feedback_activity_not_found">Email app not found</string>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.ViewConfiguration;
 
+import com.crashlytics.android.Crashlytics;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -42,7 +43,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         // StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath()..build());
         super.onCreate();
-//		Crashlytics.start(this);
+		Crashlytics.start(this);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
             try {
