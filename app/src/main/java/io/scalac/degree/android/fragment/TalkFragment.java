@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -23,12 +24,16 @@ import java.util.List;
 
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
-import io.scalac.degree.data.TalkVoter;
+import io.scalac.degree.connection.vote.model.VoteTalkModel;
 import io.scalac.degree.data.manager.NotificationsManager;
+import io.scalac.degree.data.vote.interfaces.IOnGetTalkVotesListener;
+import io.scalac.degree.data.vote.interfaces.IOnVoteForTalkListener;
+import io.scalac.degree.data.vote.interfaces.ITalkVoter;
+import io.scalac.degree.data.vote.voters.FakeVoter;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_talk)
-public class TalkFragment extends BaseFragment {
+public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListener, IOnVoteForTalkListener {
 
     @FragmentArg
     SlotApiModel slotModel;
@@ -36,8 +41,8 @@ public class TalkFragment extends BaseFragment {
     @Bean
     NotificationsManager notificationsManager;
 
-    @Bean
-    TalkVoter talkVoter;
+    @Bean(FakeVoter.class)
+    ITalkVoter talkVoter;
 
     @ViewById(R.id.textTopic)
     TextView topic;
@@ -57,6 +62,8 @@ public class TalkFragment extends BaseFragment {
     Button speaker2;
     @ViewById(R.id.switchNotify)
     Switch notifySwitch;
+    @ViewById(R.id.talkFragmentVoteLabel)
+    TextView voteLabel;
 
     private String talkId;
 
@@ -132,6 +139,8 @@ public class TalkFragment extends BaseFragment {
         });
 
         getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
+
+        talkVoter.getVotesCountForTalk(talkId, this);
     }
 
     @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton})
@@ -146,8 +155,31 @@ public class TalkFragment extends BaseFragment {
                         .speaker(slotModel.talk.speakers.get(1)).build(), true);
                 break;
             case R.id.voteButton:
-                talkVoter.voteForTalk(talkId);
+                talkVoter.voteForTalk(talkId, this);
                 break;
         }
+    }
+
+    @Override
+    public void onTalkVotesAvailable(VoteTalkModel voteTalkModel) {
+        final int count = Integer.parseInt(voteTalkModel.count);
+        final String template = count == 0 ? "VOTES" : "%s VOTES";
+        voteLabel.setText(String.format(template, voteTalkModel.count));
+    }
+
+    @Override
+    public void onTalkVotesError() {
+        // TODO Handle it.
+    }
+
+    @Override
+    public void onVoteForTalkSucceed() {
+        Toast.makeText(getContext(), "Zagłosowałeś!", Toast.LENGTH_SHORT).show();
+        talkVoter.getVotesCountForTalk(talkId, this);
+    }
+
+    @Override
+    public void onVoteForTalkFailed() {
+        Toast.makeText(getContext(), "Problem podczas głosowania.", Toast.LENGTH_SHORT).show();
     }
 }
