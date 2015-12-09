@@ -9,7 +9,6 @@ import io.scalac.degree.connection.vote.VoteConnection;
 import io.scalac.degree.connection.vote.model.VoteTalkModel;
 import io.scalac.degree.data.vote.interfaces.IOnGetTalkVotesListener;
 import io.scalac.degree.data.vote.interfaces.IOnVoteForTalkListener;
-import io.scalac.degree.data.vote.interfaces.ITalkVoter;
 import io.scalac.degree33.R;
 import retrofit.Call;
 import retrofit.Callback;
@@ -22,7 +21,7 @@ import retrofit.Retrofit;
  * 25/11/2015.
  */
 @EBean
-public class TalkVoter implements ITalkVoter {
+public class TalkVoter extends AbstractVoter {
 
     @StringRes(R.string.devoxx_conference)
     String confCode;

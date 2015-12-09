@@ -13,7 +13,7 @@ import io.scalac.degree.data.vote.interfaces.ITalkVoter;
  * 08/12/2015.
  */
 @EBean
-public class FakeVoter implements ITalkVoter {
+public class FakeVoter extends AbstractVoter {
 
     @Override
     public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {

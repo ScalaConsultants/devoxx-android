@@ -15,7 +15,6 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -52,7 +51,7 @@ import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener,
         AbstractDataManager.IDataManagerListener<SlotApiModel> {
 
@@ -139,12 +138,19 @@ public class MainActivity extends AppCompatActivity
         if (menuItemId == R.id.drawer_menu_feedback) {
             navigationView.setCheckedItem(lastClickedMenuItemId);
             handleFeedbackClick();
+        } else if (menuItemId == R.id.drawer_menu_register) {
+            navigationView.setCheckedItem(lastClickedMenuItemId);
+            handleRegisterClick();
         } else {
             lastClickedMenuItemId = menuItemId;
             drawerLayout.closeDrawers();
         }
 
         return true;
+    }
+
+    private void handleRegisterClick() {
+        RegisterUserActivity_.intent(this).start();
     }
 
     @Override
