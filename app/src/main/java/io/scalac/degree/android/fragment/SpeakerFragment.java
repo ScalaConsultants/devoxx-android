@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -129,10 +130,14 @@ public class SpeakerFragment extends BaseFragment implements
                 buttonItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final SlotApiModel slotModel = slotsDataManager
-                                .getSlotByTalkId(talkModel.id);
-                        getMainActivity().replaceFragment(TalkFragment_.builder()
-                                .slotModel(slotModel).build(), true);
+                        final SlotApiModel slotModel = slotsDataManager.
+                                getSlotByTalkId(talkModel.id);
+                        if (slotModel != null) {
+                            getMainActivity().replaceFragment(TalkFragment_.builder()
+                                    .slotModel(slotModel).build(), true);
+                        } else {
+                            Toast.makeText(getContext(), "Brak talka.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
                 linearLayoutTalks.addView(buttonItem);

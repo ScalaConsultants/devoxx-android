@@ -134,6 +134,10 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
     }
 
     private void init() {
+        roomTabLabels = new ArrayList<>();
+        timeTabLabels = new ArrayList<>();
+        datesNamesList = new ArrayList<>();
+
         datesList = slotsDataManager.createDateList();
         if (!datesList.isEmpty()) {
             final Date currentDate = datesList.get(currentDatePosition);
@@ -150,7 +154,6 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
                     logFlurryEvent("Schedule_by_time_watched");
                     break;
             }
-            datesNamesList = new ArrayList<>();
             DateFormat dateFormat = android.text.format.DateFormat.
                     getMediumDateFormat(getActivity().getApplicationContext());
             for (Date date : datesList) {

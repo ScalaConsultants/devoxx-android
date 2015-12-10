@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.BiConsumer;
 import com.annimon.stream.function.Function;
@@ -68,13 +69,15 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
     }
 
     public SlotApiModel getSlotByTalkId(final String talkId) {
-        return Stream.of(allSlots).filter(new Predicate<SlotApiModel>() {
+        final Optional<SlotApiModel> modelOptional = Stream.of(allSlots).filter(new Predicate<SlotApiModel>() {
             @Override
             public boolean test(SlotApiModel value) {
                 return value.isTalk() && !value.isBreak()
                         && value.talk.id.equals(talkId);
             }
-        }).findFirst().get();
+        }).findFirst();
+
+        return modelOptional.orElse(null);
     }
 
     public List<SlotApiModel> getLastTalks() {

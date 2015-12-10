@@ -151,7 +151,8 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         if (!closeDrawerIfNeeded()) {
             final boolean shouldBackToMainFragment =
-                    lastClickedMenuItemId != R.id.drawer_menu_schedule_by_time &&
+                    lastClickedMenuItemId != 0 &&
+                            lastClickedMenuItemId != R.id.drawer_menu_schedule_by_time &&
                             getSupportFragmentManager().getBackStackEntryCount() == 0;
 
             if (shouldBackToMainFragment) {
