@@ -68,16 +68,14 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
                 .collect(Collectors.<SlotApiModel>toList()));
     }
 
-    public SlotApiModel getSlotByTalkId(final String talkId) {
-        final Optional<SlotApiModel> modelOptional = Stream.of(allSlots).filter(new Predicate<SlotApiModel>() {
+    public Optional<SlotApiModel> getSlotByTalkId(final String talkId) {
+        return Stream.of(allSlots).filter(new Predicate<SlotApiModel>() {
             @Override
             public boolean test(SlotApiModel value) {
                 return value.isTalk() && !value.isBreak()
                         && value.talk.id.equals(talkId);
             }
         }).findFirst();
-
-        return modelOptional.orElse(null);
     }
 
     public List<SlotApiModel> getLastTalks() {

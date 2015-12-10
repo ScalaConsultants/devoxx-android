@@ -59,7 +59,8 @@ public class SpeakersFragment extends BaseFragment implements
     void afterViews() {
         logFlurryEvent("Speakers_watched");
 
-        speakersDataManager.fetchSpeakers(conferenceCode, this);
+        speakersDataManager.fetchSpeakers(conferenceCode,
+                new AbstractDataManager.FragmentAwareListener<>(this, this));
 
         listView = (ListView) getView();
         final View footer = Utils.getFooterView(getActivity(), listView);

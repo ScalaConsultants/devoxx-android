@@ -1,6 +1,7 @@
 package io.scalac.degree.android.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -123,7 +124,11 @@ public class MainActivity extends AppCompatActivity
         FlurryAgent.onStartSession(this, Utils.FLURRY_API_KEY);
 
         actionBarDrawerToggle.syncState();
-        slotsDataManager.fetchTalks(conferenceCode, this);
+
+        final Activity context = this;
+        final AbstractDataManager.IDataManagerListener<SlotApiModel> listener = this;
+        slotsDataManager.fetchTalks(conferenceCode,
+                new AbstractDataManager.ActivityAwareListener<>(context, listener));
     }
 
     @Override

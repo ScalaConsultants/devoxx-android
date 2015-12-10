@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.annimon.stream.Optional;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -105,7 +106,8 @@ public class SpeakerFragment extends BaseFragment implements
         } else {
             uuid = speakerShortApiModel.uuid;
         }
-        speakerDataManager.fetchSpeaker(conferenceCode, uuid, this);
+        speakerDataManager.fetchSpeaker(conferenceCode, uuid,
+                new AbstractDataManager.FragmentAwareListener<>(this, this));
     }
 
     private void initImageLoader() {
@@ -130,11 +132,11 @@ public class SpeakerFragment extends BaseFragment implements
                 buttonItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final SlotApiModel slotModel = slotsDataManager.
+                        final Optional<SlotApiModel> slotModel = slotsDataManager.
                                 getSlotByTalkId(talkModel.id);
-                        if (slotModel != null) {
+                        if (slotModel.isPresent()) {
                             getMainActivity().replaceFragment(TalkFragment_.builder()
-                                    .slotModel(slotModel).build(), true);
+                                    .slotModel(slotModel.get()).build(), true);
                         } else {
                             Toast.makeText(getContext(), "Brak talka.", Toast.LENGTH_SHORT).show();
                         }
