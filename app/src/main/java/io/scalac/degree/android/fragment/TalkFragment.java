@@ -155,7 +155,13 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
                         .speaker(slotModel.talk.speakers.get(1)).build(), true);
                 break;
             case R.id.voteButton:
-                talkVoter.voteForTalk(talkId, this);
+                if (talkVoter.isVotingEnabled()) {
+                    talkVoter.voteForTalk(talkId, this);
+                } else {
+                    // TODO Should I open RegisterActivity?
+                    Toast.makeText(getContext(), R.string.vote_not_legged_message,
+                            Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

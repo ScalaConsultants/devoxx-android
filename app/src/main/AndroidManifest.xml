@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="io.scalac.degree33">
 
@@ -9,6 +8,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
 
     <application
         android:name="io.scalac.degree.MainApplication_"
@@ -29,10 +34,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_" />
+        <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_" />
+
         <receiver
             android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
             android:enabled="true"
-            android:exported="false"></receiver>
+            android:exported="false" />
+
         <receiver
             android:name="io.scalac.degree.android.receiver.AppUpdatedReceiver_"
             android:enabled="true"
