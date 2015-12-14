@@ -22,6 +22,6 @@
             android:title="@string/drawer_menu_other_feedback_label"/>
         <item
             android:id="@+id/drawer_menu_register"
-            android:title="REGISTER"/>
+            android:title="@string/drawer_menu_other_register_label"/>
     </group>
 </menu>

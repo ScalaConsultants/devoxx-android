@@ -135,15 +135,19 @@ public class MainActivity extends BaseActivity
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         final int menuItemId = menuItem.getItemId();
 
-        if (menuItemId == R.id.drawer_menu_feedback) {
-            navigationView.setCheckedItem(lastClickedMenuItemId);
-            handleFeedbackClick();
-        } else if (menuItemId == R.id.drawer_menu_register) {
-            navigationView.setCheckedItem(lastClickedMenuItemId);
-            handleRegisterClick();
-        } else {
-            lastClickedMenuItemId = menuItemId;
-            drawerLayout.closeDrawers();
+        switch (menuItemId) {
+            case R.id.drawer_menu_feedback:
+                navigationView.setCheckedItem(lastClickedMenuItemId);
+                handleFeedbackClick();
+                break;
+            case R.id.drawer_menu_register:
+                navigationView.setCheckedItem(lastClickedMenuItemId);
+                handleRegisterClick();
+                break;
+            default:
+                lastClickedMenuItemId = menuItemId;
+                drawerLayout.closeDrawers();
+                break;
         }
 
         return true;

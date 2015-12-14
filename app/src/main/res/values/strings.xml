@@ -22,6 +22,8 @@
     <string name="drawer_menu_speakers_label">Speakers</string>
     <string name="drawer_menu_my_schedule_label">My schedule</string>
     <string name="drawer_menu_other_feedback_label">FEEDBACK</string>
+    <string name="drawer_menu_other_register_label">REGISTER</string>
+    <string name="vote_not_legged_message">Musisz być zalogowany aby głosować!</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
