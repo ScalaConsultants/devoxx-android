@@ -7,7 +7,7 @@ import io.realm.RealmObject;
  * jacek.modrakowski@scalac.io
  * 05/11/2015
  */
-public class SlotsAggregateModel extends RealmObject {
+public class RealmSlotsAggregate extends RealmObject {
 
     private String rawData;
 

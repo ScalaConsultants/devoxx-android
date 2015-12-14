@@ -26,7 +26,7 @@ import io.scalac.degree.android.activity.MainActivity_;
 import io.scalac.degree.android.receiver.AlarmReceiver_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.model.NotificationModel;
+import io.scalac.degree.data.model.RealmNotification;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.BuildConfig;
 import io.scalac.degree33.R;
@@ -93,7 +93,7 @@ public class NotificationsManager {
     public void unscheduleNotification(String slotId) {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
-        realm.where(NotificationModel.class).equalTo("slotId", slotId).findAll().clear();
+        realm.where(RealmNotification.class).equalTo("slotId", slotId).findAll().clear();
         realm.commitTransaction();
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -106,18 +106,18 @@ public class NotificationsManager {
 
     public boolean isNotificationScheduled(String slotId) {
         final Realm realm = realmProvider.getRealm();
-        return realm.where(NotificationModel.class)
+        return realm.where(RealmNotification.class)
                 .equalTo("slotId", slotId).count() > 0;
     }
 
     public void showNotification(String slotId) {
         final Realm realm = realmProvider.getRealm();
-        final NotificationModel notificationModel = realm
-                .where(NotificationModel.class)
+        final RealmNotification realmNotification = realm
+                .where(RealmNotification.class)
                 .equalTo("slotId", slotId)
                 .findFirst();
 
-        if (isNotificationBeforeEvent(notificationModel)) {
+        if (isNotificationBeforeEvent(realmNotification)) {
             Intent notificationIntent = new Intent(context, MainActivity_.class);
             notificationIntent.putExtra(EXTRA_TALK_ID, slotId);
             PendingIntent contentIntent = PendingIntent.getActivity(context,
@@ -126,15 +126,15 @@ public class NotificationsManager {
                     PendingIntent.FLAG_CANCEL_CURRENT);
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-            notificationBuilder.setContentTitle(notificationModel.getRoomName());
-            notificationBuilder.setContentText(notificationModel.getTalkName());
+            notificationBuilder.setContentTitle(realmNotification.getRoomName());
+            notificationBuilder.setContentText(realmNotification.getTalkName());
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(notificationModel.getTalkName()));
+                    .bigText(realmNotification.getTalkName()));
             notificationBuilder.setContentIntent(contentIntent);
             notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-            notificationBuilder.setWhen(notificationModel.getEventTime());
+            notificationBuilder.setWhen(realmNotification.getEventTime());
             notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-            notificationBuilder.setTicker(notificationModel.getTalkName());
+            notificationBuilder.setTicker(realmNotification.getTalkName());
 
             Notification notification = notificationBuilder.build();
             // notification.flags |= Notification.FLAG_ONGOING_EVENT;
@@ -152,14 +152,14 @@ public class NotificationsManager {
         }
     }
 
-    private boolean isNotificationBeforeEvent(NotificationModel notificationModel) {
-        return BuildConfig.DEBUG || notificationModel.getEventTime()
+    private boolean isNotificationBeforeEvent(RealmNotification realmNotification) {
+        return BuildConfig.DEBUG || realmNotification.getEventTime()
                 > System.currentTimeMillis() - 600000;
     }
 
-    public List<NotificationModel> getAlarms() {
+    public List<RealmNotification> getAlarms() {
         final Realm realm = realmProvider.getRealm();
-        return realm.where(NotificationModel.class).findAll();
+        return realm.where(RealmNotification.class).findAll();
     }
 
     @SuppressLint("Wakelock")
@@ -167,10 +167,10 @@ public class NotificationsManager {
         final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(
                 PowerManager.PARTIAL_WAKE_LOCK, "AlarmService");
         wakeLock.acquire();
-        final List<NotificationModel> notificationsList = getAlarms();
+        final List<RealmNotification> notificationsList = getAlarms();
         if (!notificationsList.isEmpty()) {
             final Intent intent = new Intent(context, AlarmReceiver_.class);
-            for (NotificationModel model : notificationsList) {
+            for (RealmNotification model : notificationsList) {
                 final String slotId = model.getSlotId();
                 intent.putExtra(EXTRA_TALK_ID, slotId);
                 final PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
@@ -194,7 +194,7 @@ public class NotificationsManager {
     private void storeNotification(ScheduleNotificationModel notifyModel) {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
-        final NotificationModel model = new NotificationModel();
+        final RealmNotification model = new RealmNotification();
         model.setAlarmTime(notifyModel.alarmTime);
         model.setEventTime(notifyModel.eventTime);
         model.setSlotId(notifyModel.slotId);
@@ -230,12 +230,12 @@ public class NotificationsManager {
         private boolean showToast;
 
         public static ScheduleNotificationModel create(
-                NotificationModel notificationModel, boolean showToast) {
+                RealmNotification realmNotification, boolean showToast) {
             final ScheduleNotificationModel result = new ScheduleNotificationModel();
-            result.roomName = notificationModel.getRoomName();
-            result.talkName = notificationModel.getTalkName();
-            result.slotId = notificationModel.getSlotId();
-            result.eventTime = notificationModel.getEventTime();
+            result.roomName = realmNotification.getRoomName();
+            result.talkName = realmNotification.getTalkName();
+            result.slotId = realmNotification.getSlotId();
+            result.eventTime = realmNotification.getEventTime();
             result.showToast = showToast;
             return result;
         }

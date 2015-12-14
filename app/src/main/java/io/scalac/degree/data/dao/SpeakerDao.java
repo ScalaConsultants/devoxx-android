@@ -8,7 +8,7 @@ import org.androidannotations.annotations.RootContext;
 
 import io.realm.Realm;
 import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.model.SpeakerDbModel;
+import io.scalac.degree.data.model.RealmSpeaker;
 
 /**
  * www.scalac.io
@@ -23,17 +23,17 @@ public class SpeakerDao {
     @Bean
     RealmProvider realmProvider;
 
-    public SpeakerDbModel saveSpeaker(SpeakerDbModel speakerDbModel) {
-        final Realm realm = realmProvider.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealm(speakerDbModel);
-        realm.commitTransaction();
-        return speakerDbModel;
-    }
+//    public RealmSpeaker saveSpeaker(RealmSpeaker speakerDbModel) {
+//        final Realm realm = realmProvider.getRealm();
+//        realm.beginTransaction();
+//        realm.copyToRealm(speakerDbModel);
+//        realm.commitTransaction();
+//        return speakerDbModel;
+//    }
 
-    public SpeakerDbModel getSpeakerByUuid(String uuid) {
+    public RealmSpeaker getSpeakerByUuid(String uuid) {
         final Realm realm = realmProvider.getRealm();
-        return realm.where(SpeakerDbModel.class)
+        return realm.where(RealmSpeaker.class)
                 .equalTo("uuid", uuid).findFirst();
     }
 }

@@ -30,6 +30,7 @@ public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
     private final List<String> AVAILABLE_CONFERENCE_DAYS = Collections.unmodifiableList(
             Arrays.asList("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
     );
+
     @Bean
     SlotsCache slotsCache;
 
@@ -70,7 +71,7 @@ public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
         for (String day : AVAILABLE_CONFERENCE_DAYS) {
             downloadTalkSlotsForDay(confCode, result, day);
         }
-        slotsCache.storeData(deserializeData(result), confCode);
+        slotsCache.upsert(deserializeData(result), confCode);
         return result;
     }
 

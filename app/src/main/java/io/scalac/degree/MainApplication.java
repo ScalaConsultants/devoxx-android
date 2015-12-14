@@ -43,7 +43,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         // StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath()..build());
         super.onCreate();
-		Crashlytics.start(this);
+//        Crashlytics.start(this);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
             try {

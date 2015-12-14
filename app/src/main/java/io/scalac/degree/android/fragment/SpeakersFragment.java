@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -22,21 +25,31 @@ import org.androidannotations.annotations.res.StringRes;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.scalac.degree.connection.model.SpeakerShortApiModel;
-import io.scalac.degree.data.manager.AbstractDataManager;
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.manager.SpeakersDataManager;
+import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
+import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.items_list_view)
-public class SpeakersFragment extends BaseFragment implements
-        AbstractDataManager.IDataManagerListener<SpeakerShortApiModel> {
+public class SpeakersFragment extends BaseFragment {
 
     @Bean
     SpeakersDataManager speakersDataManager;
+
+    @Bean
+    RealmProvider realmProvider;
+
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
+
     DisplayImageOptions imageLoaderOptions;
     private ImageLoader imageLoader = ImageLoader.getInstance();
     private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
@@ -59,8 +72,23 @@ public class SpeakersFragment extends BaseFragment implements
     void afterViews() {
         logFlurryEvent("Speakers_watched");
 
-        speakersDataManager.fetchSpeakers(conferenceCode,
-                new AbstractDataManager.FragmentAwareListener<>(this, this));
+        speakersDataManager.fetchSpeakers(conferenceCode).
+                subscribeOn(Schedulers.newThread()).
+                observeOn(AndroidSchedulers.mainThread()).
+                doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        getMainActivity().showLoader();
+                    }
+                }).
+                doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        getMainActivity().hideLoader();
+                        populateList();
+                    }
+                }).
+                subscribe();
 
         listView = (ListView) getView();
         final View footer = Utils.getFooterView(getActivity(), listView);
@@ -71,9 +99,8 @@ public class SpeakersFragment extends BaseFragment implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speakerShortApiModel(itemAdapter.getClickedItem(position))
+                        .speakerDbUuid(itemAdapter.getClickedItem(position).getUuid())
                         .build(), true);
-
             }
         });
     }
@@ -88,32 +115,29 @@ public class SpeakersFragment extends BaseFragment implements
         return false;
     }
 
-    @Override
-    public void onDataStartFetching() {
+    private void populateList() {
+        final Realm realm = realmProvider.getRealm();
+        final RealmResults<RealmSpeaker> realmList = realm.allObjects(RealmSpeaker.class);
 
-    }
+        final List<RealmSpeaker> finalResult = Stream.of(realmList).
+                sortBy(new Function<RealmSpeaker, Comparable>() {
+                    @Override
+                    public Comparable apply(RealmSpeaker value) {
+                        return value.getLastName();
+                    }
+                }).collect(Collectors.<RealmSpeaker>toList());
 
-    @Override
-    public void onDataAvailable(List<SpeakerShortApiModel> items) {
-        itemAdapter = new ItemAdapter(items);
+        Logger.l("Speakers to show: " + finalResult.size());
+
+        itemAdapter = new ItemAdapter(finalResult);
         listView.setAdapter(itemAdapter);
-    }
-
-    @Override
-    public void onDataAvailable(SpeakerShortApiModel item) {
-        // Nothing here.
-    }
-
-    @Override
-    public void onDataError() {
-        // Nothing here.
     }
 
     class ItemAdapter extends BaseAdapter {
 
-        private List<SpeakerShortApiModel> speakers = new ArrayList<>(0);
+        private List<RealmSpeaker> speakers = new ArrayList<>(0);
 
-        ItemAdapter(List<SpeakerShortApiModel> speakers) {
+        ItemAdapter(List<RealmSpeaker> speakers) {
             this.speakers.addAll(speakers);
         }
 
@@ -123,7 +147,7 @@ public class SpeakersFragment extends BaseFragment implements
         }
 
         @Override
-        public SpeakerShortApiModel getItem(int position) {
+        public RealmSpeaker getItem(int position) {
             return speakers.get(position);
         }
 
@@ -134,9 +158,8 @@ public class SpeakersFragment extends BaseFragment implements
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-
-            View viewItem;
-            ViewHolder holder;
+            final View viewItem;
+            final ViewHolder holder;
 
             if (convertView == null) {
                 viewItem = getActivity().getLayoutInflater().inflate(R.layout.speakers_all_list_item, parent, false);
@@ -150,11 +173,12 @@ public class SpeakersFragment extends BaseFragment implements
                 holder = (ViewHolder) viewItem.getTag();
             }
 
-            SpeakerShortApiModel speakerItem = getItem(position);
+            final RealmSpeaker speakerItem = getItem(position);
             holder.textSpeaker.setText(String.format("%s %s",
-                    speakerItem.firstName, speakerItem.lastName));
+                    speakerItem.getFirstName(), speakerItem.getLastName()));
+            holder.textBio.setText(speakerItem.getCompany());
 
-            imageLoader.displayImage(speakerItem.avatarURL,
+            imageLoader.displayImage(speakerItem.getAvatarURL(),
                     holder.imageSpeaker,
                     imageLoaderOptions,
                     animateFirstListener);
@@ -162,7 +186,7 @@ public class SpeakersFragment extends BaseFragment implements
             return viewItem;
         }
 
-        public SpeakerShortApiModel getClickedItem(int position) {
+        public RealmSpeaker getClickedItem(int position) {
             return speakers.get(position);
         }
 

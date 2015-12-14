@@ -7,7 +7,7 @@ import io.realm.RealmObject;
  * jacek.modrakowski@scalac.io
  * 30/10/2015
  */
-public class SlotsCacheObject extends RealmObject {
+public class CacheSlotsObject extends RealmObject {
     private String rawData;
     private long timestamp;
 

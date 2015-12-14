@@ -148,11 +148,11 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
         switch (view.getId()) {
             case R.id.buttonSpeaker:
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speaker(slotModel.talk.speakers.get(0)).build(), true);
+                        .speakerTalkModel(slotModel.talk.speakers.get(0)).build(), true);
                 break;
             case R.id.buttonSpeaker2:
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speaker(slotModel.talk.speakers.get(1)).build(), true);
+                        .speakerTalkModel(slotModel.talk.speakers.get(1)).build(), true);
                 break;
             case R.id.voteButton:
                 if (talkVoter.isVotingEnabled()) {

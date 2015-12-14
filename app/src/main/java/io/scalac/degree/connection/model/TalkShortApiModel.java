@@ -2,7 +2,7 @@ package io.scalac.degree.connection.model;
 
 import java.util.List;
 
-import io.scalac.degree.data.model.TalkDbModel;
+import io.scalac.degree.data.model.RealmTalk;
 
 /**
  * www.scalac.io
@@ -12,7 +12,7 @@ import io.scalac.degree.data.model.TalkDbModel;
 public class TalkShortApiModel extends TalkBaseApiModel {
     public List<LinkApiModel> links;
 
-    public static TalkShortApiModel fromDb(TalkDbModel dbModel) {
+    public static TalkShortApiModel fromDb(RealmTalk dbModel) {
         final TalkShortApiModel result = new TalkShortApiModel();
         result.id = dbModel.getId();
         result.title = dbModel.getTitle();

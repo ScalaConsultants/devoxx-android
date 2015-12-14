@@ -23,10 +23,13 @@
         android:theme="@style/AppTheme"
         tools:node="replace"
         tools:replace="android:label">
+
         <activity
             android:name="io.scalac.degree.android.activity.MainActivity_"
-            android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:label="${applicationLabel}"
+            android:launchMode="singleTop"
+            tools:node="replace"
+            tools:replace="android:label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

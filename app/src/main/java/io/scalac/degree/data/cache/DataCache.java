@@ -7,7 +7,7 @@ package io.scalac.degree.data.cache;
  */
 public interface DataCache<DataType, StorageType> {
 
-    void storeData(StorageType rawData, String query);
+    void upsert(StorageType rawData, String query);
 
     DataType getData();
 

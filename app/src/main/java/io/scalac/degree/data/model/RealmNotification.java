@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
  * jacek.modrakowski@scalac.io
  * 03/11/2015
  */
-public class NotificationModel extends RealmObject {
+public class RealmNotification extends RealmObject {
 
     @PrimaryKey
     private String slotId;

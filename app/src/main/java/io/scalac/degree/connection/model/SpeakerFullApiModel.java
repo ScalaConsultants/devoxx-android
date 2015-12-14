@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
-import io.scalac.degree.data.model.SpeakerDbModel;
-import io.scalac.degree.data.model.TalkDbModel;
+import io.scalac.degree.data.model.RealmSpeaker;
+import io.scalac.degree.data.model.RealmTalk;
 
 /**
  * www.scalac.io
@@ -22,7 +22,7 @@ public class SpeakerFullApiModel extends SpeakerBaseApiModel {
     public List<LinkApiModel> links;
     public List<TalkShortApiModel> acceptedTalks;
 
-    public static SpeakerFullApiModel fromDb(SpeakerDbModel dbModel) {
+    public static SpeakerFullApiModel fromDb(RealmSpeaker dbModel) {
         final SpeakerFullApiModel result = new SpeakerFullApiModel();
         result.avatarURL = dbModel.getAvatarURL();
         result.firstName = dbModel.getFirstName();
@@ -35,11 +35,11 @@ public class SpeakerFullApiModel extends SpeakerBaseApiModel {
         result.links = new ArrayList<>();
         result.twitter = dbModel.getTwitter();
 
-        final RealmList<TalkDbModel> talks = dbModel.getAcceptedTalks();
+        final RealmList<RealmTalk> talks = dbModel.getAcceptedTalks();
         result.acceptedTalks = new ArrayList<>(talks.size());
 
-        for (TalkDbModel talkDbModel : talks) {
-            result.acceptedTalks.add(TalkShortApiModel.fromDb(talkDbModel));
+        for (RealmTalk realmTalk : talks) {
+            result.acceptedTalks.add(TalkShortApiModel.fromDb(realmTalk));
         }
 
         return result;

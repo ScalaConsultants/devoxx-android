@@ -1,22 +1,17 @@
 package io.scalac.degree.data.manager;
 
-import android.support.annotation.Nullable;
-
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.annimon.stream.function.Function;
-
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import io.scalac.degree.connection.model.SpeakerShortApiModel;
+import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.downloader.SpeakersDownloader;
+import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.utils.Logger;
+import rx.Observable;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * www.scalac.io
@@ -24,39 +19,52 @@ import io.scalac.degree.utils.Logger;
  * 29/10/2015
  */
 @EBean
-public class SpeakersDataManager extends AbstractDataManager<SpeakerShortApiModel> {
+public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
 
     @Bean
     SpeakersDownloader speakersDownloader;
 
-    private List<SpeakerShortApiModel> speakers = new ArrayList<>();
+    @Bean
+    RealmProvider realmProvider;
 
-    public List<SpeakerShortApiModel> getSpeakers() {
-        return speakers;
+    public Observable<RealmSpeaker> fetchSpeaker(final String confCode, final String uuid) {
+        return Observable.create(new Observable.OnSubscribe<RealmSpeaker>() {
+            @Override
+            public void call(Subscriber<? super RealmSpeaker> observer) {
+                if (!observer.isUnsubscribed()) {
+                    try {
+                        observer.onStart();
+                        speakersDownloader.downloadSpeakerSync(confCode, uuid);
+                        observer.onCompleted();
+                    } catch (IOException e) {
+                        Logger.exc(e);
+                        observer.onError(e);
+                    }
+                }
+            }
+        });
     }
 
-    @Background
-    public void fetchSpeakers(
-            final String confCode,
-            @Nullable IDataManagerListener<SpeakerShortApiModel> listener) {
+    public Observable<Void> fetchSpeakers(final String confCode) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> observer) {
+                if (!observer.isUnsubscribed()) {
+                    try {
+                        observer.onStart();
+                        speakersDownloader.downloadSpeakersSync(confCode);
+                        observer.onCompleted();
+                    } catch (IOException e) {
+                        Logger.exc(e);
+                        observer.onError(e);
+                    }
+                }
+            }
+        });
+    }
 
-        try {
-            notifyAboutStart(listener);
-            speakers.clear();
-            final List<SpeakerShortApiModel> speakers = speakersDownloader
-                    .downloadSpeakers(confCode);
-            speakers.addAll(Stream.of(speakers)
-                    .sortBy(new Function<SpeakerShortApiModel, Comparable>() {
-                        @Override
-                        public Comparable apply(SpeakerShortApiModel value) {
-                            return value.lastName;
-                        }
-                    })
-                    .collect(Collectors.<SpeakerShortApiModel>toList()));
-            notifyAboutSuccess(listener, speakers);
-        } catch (IOException e) {
-            Logger.exc(e);
-            notifyAboutFailed(listener);
-        }
+    public RealmSpeaker getByUuid(String uuid) {
+        return realmProvider.getRealm().where(RealmSpeaker.class).
+                equalTo("uuid", uuid).findFirst();
     }
 }
