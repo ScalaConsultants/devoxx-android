@@ -17,7 +17,7 @@ import io.realm.Realm;
 import io.scalac.degree.Configuration;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.cache.model.SlotsCacheObject;
+import io.scalac.degree.data.cache.model.CacheSlotsObject;
 
 /**
  * www.scalac.io
@@ -36,13 +36,13 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
     RealmProvider realmProvider;
 
     @Override
-    public void storeData(String rawData, String query) {
+    public void upsert(String rawData, String query) {
         clearCache();
 
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
-        final SlotsCacheObject cacheObject = realm
-                .createObject(SlotsCacheObject.class);
+        final CacheSlotsObject cacheObject = realm
+                .createObject(CacheSlotsObject.class);
         cacheObject.setRawData(rawData);
         cacheObject.setTimestamp(System.currentTimeMillis());
         realm.commitTransaction();
@@ -51,8 +51,8 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
     @Override
     public List<SlotApiModel> getData() {
         final Realm realm = realmProvider.getRealm();
-        final SlotsCacheObject cacheObject = realm
-                .where(SlotsCacheObject.class).findFirst();
+        final CacheSlotsObject cacheObject = realm
+                .where(CacheSlotsObject.class).findFirst();
         final String rawData = cacheObject.getRawData();
         return new Gson().fromJson(rawData, getType());
     }
@@ -65,8 +65,8 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
     @Override
     public boolean isValid() {
         final Realm realm = realmProvider.getRealm();
-        final SlotsCacheObject cacheObject = realm
-                .where(SlotsCacheObject.class).findFirst();
+        final CacheSlotsObject cacheObject = realm
+                .where(CacheSlotsObject.class).findFirst();
         final boolean isObjectAvailable = cacheObject != null;
         return isObjectAvailable && (System.currentTimeMillis() -
                 cacheObject.getTimestamp() < CACHE_LIFE_TIME_MS);
@@ -81,7 +81,7 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
     public void clearCache() {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
-        realm.where(SlotsCacheObject.class).findAll().clear();
+        realm.where(CacheSlotsObject.class).findAll().clear();
         realm.commitTransaction();
     }
 

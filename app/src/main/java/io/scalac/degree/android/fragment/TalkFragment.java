@@ -148,11 +148,11 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
         switch (view.getId()) {
             case R.id.buttonSpeaker:
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speaker(slotModel.talk.speakers.get(0)).build(), true);
+                        .speakerTalkModel(slotModel.talk.speakers.get(0)).build(), true);
                 break;
             case R.id.buttonSpeaker2:
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speaker(slotModel.talk.speakers.get(1)).build(), true);
+                        .speakerTalkModel(slotModel.talk.speakers.get(1)).build(), true);
                 break;
             case R.id.voteButton:
                 if (talkVoter.isVotingEnabled()) {
@@ -168,6 +168,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
     @Override
     public void onTalkVotesAvailable(VoteTalkModel voteTalkModel) {
+        // TODO Dev code, do not comment.
         final int count = Integer.parseInt(voteTalkModel.count);
         final String template = count == 0 ? "VOTES" : "%s VOTES";
         voteLabel.setText(String.format(template, voteTalkModel.count));
@@ -180,12 +181,14 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
     @Override
     public void onVoteForTalkSucceed() {
+        // TODO Dev code, do not comment.
         Toast.makeText(getContext(), "Zagłosowałeś!", Toast.LENGTH_SHORT).show();
         talkVoter.getVotesCountForTalk(talkId, this);
     }
 
     @Override
     public void onVoteForTalkFailed() {
+        // TODO Dev code, do not comment.
         Toast.makeText(getContext(), "Problem podczas głosowania.", Toast.LENGTH_SHORT).show();
     }
 }

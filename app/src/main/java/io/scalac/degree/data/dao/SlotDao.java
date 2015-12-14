@@ -17,7 +17,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.model.SlotsAggregateModel;
+import io.scalac.degree.data.model.RealmSlotsAggregate;
 
 /**
  * www.scalac.io
@@ -36,21 +36,21 @@ public class SlotDao {
 
     public void saveSlots(List<SlotApiModel> slots) {
         final Realm realm = realmProvider.getRealm();
-        final SlotsAggregateModel aggModel = new SlotsAggregateModel();
+        final RealmSlotsAggregate aggModel = new RealmSlotsAggregate();
         final Type listType = new TypeToken<List<SlotApiModel>>() {
         }.getType();
         aggModel.setRawData(gson.toJson(slots, listType));
 
         realm.beginTransaction();
-        realm.allObjects(SlotsAggregateModel.class).clear();
+        realm.allObjects(RealmSlotsAggregate.class).clear();
         realm.copyToRealm(aggModel);
         realm.commitTransaction();
     }
 
     public List<SlotApiModel> getAllSlots() {
         final Realm realm = realmProvider.getRealm();
-        final SlotsAggregateModel aggModel = realm
-                .where(SlotsAggregateModel.class).findFirst();
+        final RealmSlotsAggregate aggModel = realm
+                .where(RealmSlotsAggregate.class).findFirst();
         final String rawData = aggModel != null ? aggModel.getRawData() : "";
 
         final List<SlotApiModel> result = new ArrayList<>();

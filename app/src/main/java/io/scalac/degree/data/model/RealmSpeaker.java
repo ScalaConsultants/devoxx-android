@@ -1,17 +1,16 @@
 package io.scalac.degree.data.model;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.scalac.degree.connection.model.SpeakerFullApiModel;
-import io.scalac.degree.connection.model.TalkShortApiModel;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * www.scalac.io
  * jacek.modrakowski@scalac.io
  * 30/10/2015
  */
-public class SpeakerDbModel extends RealmObject {
+public class RealmSpeaker extends RealmObject {
+    @PrimaryKey
     private String uuid;
     private String firstName;
     private String lastName;
@@ -22,32 +21,7 @@ public class SpeakerDbModel extends RealmObject {
     private String blog;
     private String twitter;
     private String lang;
-    private RealmList<TalkDbModel> acceptedTalks;
-
-    public static SpeakerDbModel fromApiModel(Realm realm, SpeakerFullApiModel apiModel) {
-        final SpeakerDbModel result = new SpeakerDbModel();
-        result.setAvatarURL(apiModel.avatarURL);
-        result.setBio(apiModel.bio);
-        result.setBioAsHtml(apiModel.bioAsHtml);
-        result.setBlog(apiModel.blog);
-        result.setCompany(apiModel.company);
-        result.setFirstName(apiModel.firstName);
-        result.setLang(apiModel.lang);
-        result.setLastName(apiModel.lastName);
-        result.setTwitter(apiModel.twitter);
-        result.setUuid(apiModel.uuid);
-
-        final RealmList<TalkDbModel> talks = new RealmList<>();
-        for (TalkShortApiModel talkShortApiModel : apiModel.acceptedTalks) {
-            talks.add(TalkDbModel.fromApiModel(talkShortApiModel));
-        }
-
-        realm.beginTransaction();
-        result.setAcceptedTalks(talks);
-        realm.commitTransaction();
-
-        return result;
-    }
+    private RealmList<RealmTalk> acceptedTalks;
 
     public String getUuid() {
         return uuid;
@@ -129,11 +103,15 @@ public class SpeakerDbModel extends RealmObject {
         this.lang = lang;
     }
 
-    public RealmList<TalkDbModel> getAcceptedTalks() {
+    public RealmList<RealmTalk> getAcceptedTalks() {
         return acceptedTalks;
     }
 
-    public void setAcceptedTalks(RealmList<TalkDbModel> acceptedTalks) {
+    public void setAcceptedTalks(RealmList<RealmTalk> acceptedTalks) {
         this.acceptedTalks = acceptedTalks;
+    }
+
+    public static class Contract {
+        public static final String UUID = "uuid";
     }
 }

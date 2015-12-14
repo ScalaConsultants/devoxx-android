@@ -7,19 +7,9 @@ import io.realm.RealmObject;
  * jacek.modrakowski@scalac.io
  * 30/10/2015
  */
-public class SpeakerCacheObject extends RealmObject {
-
-    private long timestamp;
-    private String query;
+public class CacheSlotsObject extends RealmObject {
     private String rawData;
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
-    }
+    private long timestamp;
 
     public String getRawData() {
         return rawData;

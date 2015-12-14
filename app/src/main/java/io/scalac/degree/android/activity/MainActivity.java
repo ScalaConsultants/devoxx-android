@@ -12,7 +12,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +20,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -48,6 +48,7 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.AbstractDataManager;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -57,19 +58,27 @@ public class MainActivity extends BaseActivity
         AbstractDataManager.IDataManagerListener<SlotApiModel> {
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
+
     @Bean
     SlotsDataManager slotsDataManager;
+
+    @Bean
+    SpeakersDataManager speakersDataManager;
+
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
+
     @ViewById(R.id.toolbarWithSpinner)
     Toolbar toolbar;
+
     @ViewById(R.id.navigationView)
     NavigationView navigationView;
+
     @ViewById(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
     @ViewById(R.id.homeProgressBar)
-    ContentLoadingProgressBar progressBar;
+    ProgressBar progressBar;
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private Spinner toolbarSpinner;
@@ -422,14 +431,22 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    public void showLoader() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoader() {
+        progressBar.setVisibility(View.GONE);
+    }
+
     @Override
     public void onDataStartFetching() {
-        progressBar.show();
+        showLoader();
     }
 
     @Override
     public void onDataAvailable(List<SlotApiModel> items) {
-        progressBar.hide();
+        hideLoader();
 
         if (TextUtils.isEmpty(incomingSlotId)) {
             final Intent intent = getIntent();
@@ -471,6 +488,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onDataError() {
-        progressBar.hide();
+        hideLoader();
     }
 }

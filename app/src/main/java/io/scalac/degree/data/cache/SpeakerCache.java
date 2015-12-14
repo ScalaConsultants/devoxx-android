@@ -11,9 +11,10 @@ import org.androidannotations.annotations.RootContext;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.scalac.degree.Configuration;
 import io.scalac.degree.connection.model.SpeakerFullApiModel;
 import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.cache.model.SpeakerCacheObject;
+import io.scalac.degree.data.cache.model.CacheSpeakerObject;
 
 /**
  * www.scalac.io
@@ -23,8 +24,8 @@ import io.scalac.degree.data.cache.model.SpeakerCacheObject;
 @EBean
 public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
 
-    private static final long CACHE_LIFE_TIME_MS =
-            TimeUnit.SECONDS.toMillis(30);
+    public static final long CACHE_LIFE_TIME_MS =
+            TimeUnit.MINUTES.toMillis(Configuration.SPEAKERS_CACHE_LIFE_TIME_MINS);
 
     @RootContext
     Context context;
@@ -32,15 +33,24 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     RealmProvider realmProvider;
 
     @Override
-    public void storeData(String rawData, String query) {
+    public void upsert(String rawData, String query) {
         final Realm realm = realmProvider.getRealm();
-        realm.beginTransaction();
-        final SpeakerCacheObject cacheObject = realm
-                .createObject(SpeakerCacheObject.class);
-        cacheObject.setRawData(rawData);
-        cacheObject.setQuery(query);
-        cacheObject.setTimestamp(System.currentTimeMillis());
-        realm.commitTransaction();
+        final CacheSpeakerObject object = realm.where(CacheSpeakerObject.class).
+                equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
+        if (object != null) {
+            realm.beginTransaction();
+            object.setRawData(rawData);
+            object.setTimestamp(System.currentTimeMillis());
+            realm.commitTransaction();
+        } else {
+            realm.beginTransaction();
+            final CacheSpeakerObject cacheObject = realm
+                    .createObject(CacheSpeakerObject.class);
+            cacheObject.setRawData(rawData);
+            cacheObject.setQuery(query);
+            cacheObject.setTimestamp(System.currentTimeMillis());
+            realm.commitTransaction();
+        }
     }
 
     @Override
@@ -51,8 +61,8 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     @Override
     public SpeakerFullApiModel getData(String query) {
         final Realm realm = realmProvider.getRealm();
-        final String rawData = realm.where(SpeakerCacheObject.class)
-                .equalTo("query", query).findFirst().getRawData();
+        final String rawData = realm.where(CacheSpeakerObject.class)
+                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst().getRawData();
         return new Gson().fromJson(rawData, SpeakerFullApiModel.class);
     }
 
@@ -64,9 +74,9 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     @Override
     public boolean isValid(String query) {
         final Realm realm = realmProvider.getRealm();
-        final SpeakerCacheObject cacheObject = realm
-                .where(SpeakerCacheObject.class)
-                .equalTo("query", query).findFirst();
+        final CacheSpeakerObject cacheObject = realm
+                .where(CacheSpeakerObject.class)
+                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
         final boolean isCacheAvailable = cacheObject != null;
         return isCacheAvailable && (System.currentTimeMillis() -
                 cacheObject.getTimestamp() < CACHE_LIFE_TIME_MS);
@@ -74,6 +84,12 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
 
     @Override
     public void clearCache() {
-
+        final Realm realm = realmProvider.getRealm();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.allObjects(CacheSpeakerObject.class).clear();
+            }
+        });
     }
 }

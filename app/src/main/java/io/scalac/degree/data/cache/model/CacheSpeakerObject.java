@@ -7,9 +7,19 @@ import io.realm.RealmObject;
  * jacek.modrakowski@scalac.io
  * 30/10/2015
  */
-public class SlotsCacheObject extends RealmObject {
-    private String rawData;
+public class CacheSpeakerObject extends RealmObject {
+
     private long timestamp;
+    private String query;
+    private String rawData;
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
 
     public String getRawData() {
         return rawData;
@@ -25,5 +35,9 @@ public class SlotsCacheObject extends RealmObject {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public static class Contract {
+        public static final String QUERY = "query";
     }
 }

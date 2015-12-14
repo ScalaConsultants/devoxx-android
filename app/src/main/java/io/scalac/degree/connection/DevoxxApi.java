@@ -1,5 +1,7 @@
 package io.scalac.degree.connection;
 
+import com.squareup.okhttp.ResponseBody;
+
 import java.util.List;
 
 import io.scalac.degree.connection.model.ConferenceSingleApiModel;
@@ -29,7 +31,13 @@ public interface DevoxxApi {
     );
 
     @GET("/api/conferences/{confCode}/speakers/{uuid}")
-    Call<SpeakerFullApiModel> speaker(
+    Call<ResponseBody> speaker(
+            @Path("confCode") String confCode,
+            @Path("uuid") String uuid
+    );
+
+    @GET("/api/conferences/{confCode}/speakers/{uuid}")
+    Call<SpeakerFullApiModel> speakerModel(
             @Path("confCode") String confCode,
             @Path("uuid") String uuid
     );

@@ -1,6 +1,5 @@
 package io.scalac.degree.android.fragment;
 
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -24,28 +23,27 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
 
-import java.util.List;
-
 import io.scalac.degree.connection.model.SlotApiModel;
-import io.scalac.degree.connection.model.SpeakerFullApiModel;
-import io.scalac.degree.connection.model.SpeakerShortApiModel;
-import io.scalac.degree.connection.model.TalkShortApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
-import io.scalac.degree.data.manager.AbstractDataManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
-import io.scalac.degree.data.manager.SpeakerDataManager;
+import io.scalac.degree.data.manager.SpeakersDataManager;
+import io.scalac.degree.data.model.RealmSpeaker;
+import io.scalac.degree.data.model.RealmTalk;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree33.R;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_speaker)
-public class SpeakerFragment extends BaseFragment implements
-        AbstractDataManager.IDataManagerListener<SpeakerFullApiModel> {
+public class SpeakerFragment extends BaseFragment {
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
+
     @FragmentArg
-    TalkSpeakerApiModel speaker;
+    TalkSpeakerApiModel speakerTalkModel;
     @FragmentArg
-    SpeakerShortApiModel speakerShortApiModel;
+    String speakerDbUuid;
     @ViewById(R.id.imageSpeaker)
     ImageView imageView;
     @ViewById(R.id.textName)
@@ -57,14 +55,17 @@ public class SpeakerFragment extends BaseFragment implements
     @ViewById(R.id.textViewTalks)
     View textViewTalks;
     @Bean
-    SpeakerDataManager speakerDataManager;
+    SpeakersDataManager speakersDataManager;
     @Bean
     SlotsDataManager slotsDataManager;
+
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
+
     DisplayImageOptions imageLoaderOptions;
-    private ImageLoadingListener animateFirstListener =
-            new AnimateFirstDisplayListener();
+
+    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+    private RealmSpeaker realmSpeaker;
 
     @AfterViews
     void afterViews() {
@@ -72,7 +73,43 @@ public class SpeakerFragment extends BaseFragment implements
 
         initImageLoader();
 
-        setupView();
+        final String uuid;
+        if (speakerTalkModel != null) {
+            uuid = TalkSpeakerApiModel.getUuidFromLink(speakerTalkModel.link);
+        } else {
+            uuid = speakerDbUuid;
+        }
+
+        final Subscriber<RealmSpeaker> s = new Subscriber<RealmSpeaker>() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                getMainActivity().showLoader();
+            }
+
+            @Override
+            public void onCompleted() {
+                getMainActivity().hideLoader();
+                realmSpeaker = speakersDataManager.getByUuid(uuid);
+                setupView();
+
+                getMainActivity().invalidateToolbarTitle();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                getMainActivity().hideLoader();
+            }
+
+            @Override
+            public void onNext(RealmSpeaker o) {
+
+            }
+        };
+
+        speakersDataManager.fetchSpeaker(conferenceCode, uuid)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(s);
     }
 
     @Override
@@ -87,11 +124,13 @@ public class SpeakerFragment extends BaseFragment implements
     }
 
     private String determineName() {
-        return speaker != null ? speaker.name : speakerShortApiModel.getName();
+        return speakerTalkModel != null ? speakerTalkModel.name :
+                realmSpeaker != null ? realmSpeaker.getFirstName() : null;
     }
 
     private String determineImageUrl() {
-        return speaker != null ? speaker.avatarURL : speakerShortApiModel.avatarURL;
+        return speakerTalkModel != null ? speakerTalkModel.avatarURL :
+                realmSpeaker != null ? realmSpeaker.getAvatarURL() : null;
     }
 
     private void setupView() {
@@ -100,40 +139,18 @@ public class SpeakerFragment extends BaseFragment implements
 
         textName.setText(getTitleAsString());
 
-        final String uuid;
-        if (speaker != null) {
-            uuid = Uri.parse(speaker.link.href).getLastPathSegment();
-        } else {
-            uuid = speakerShortApiModel.uuid;
-        }
-        speakerDataManager.fetchSpeaker(conferenceCode, uuid,
-                new AbstractDataManager.FragmentAwareListener<>(this, this));
-    }
-
-    private void initImageLoader() {
-        imageLoaderOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.th_background)
-                .showImageForEmptyUri(R.drawable.no_photo)
-                .showImageOnFail(R.drawable.no_photo)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-    }
-
-    @Override
-    public void onDataAvailable(SpeakerFullApiModel speakerFullApiModel) {
-        textBio.setText(Html.fromHtml(speakerFullApiModel.bioAsHtml));
+        textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml()));
         textBio.setMovementMethod(LinkMovementMethod.getInstance());
-        if (speakerFullApiModel.acceptedTalks.size() > 0) {
-            for (final TalkShortApiModel talkModel : speakerFullApiModel.acceptedTalks) {
+        if (realmSpeaker.getAcceptedTalks().size() > 0) {
+            for (final RealmTalk talkModel : realmSpeaker.getAcceptedTalks()) {
                 Button buttonItem = (Button) LayoutInflater.from(getActivity())
                         .inflate(R.layout.button_item, linearLayoutTalks, false);
-                buttonItem.setText(talkModel.title);
+                buttonItem.setText(talkModel.getTitle());
                 buttonItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final Optional<SlotApiModel> slotModel = slotsDataManager.
-                                getSlotByTalkId(talkModel.id);
+                                getSlotByTalkId(talkModel.getId());
                         if (slotModel.isPresent()) {
                             getMainActivity().replaceFragment(TalkFragment_.builder()
                                     .slotModel(slotModel.get()).build(), true);
@@ -149,22 +166,17 @@ public class SpeakerFragment extends BaseFragment implements
             linearLayoutTalks.setVisibility(View.GONE);
         }
 
-        imageLoader.displayImage(speakerFullApiModel.avatarURL, imageView,
+        imageLoader.displayImage(realmSpeaker.getAvatarURL(), imageView,
                 imageLoaderOptions, animateFirstListener);
     }
 
-    @Override
-    public void onDataStartFetching() {
-
-    }
-
-    @Override
-    public void onDataAvailable(List<SpeakerFullApiModel> items) {
-
-    }
-
-    @Override
-    public void onDataError() {
-
+    private void initImageLoader() {
+        imageLoaderOptions = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.th_background)
+                .showImageForEmptyUri(R.drawable.no_photo)
+                .showImageOnFail(R.drawable.no_photo)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
     }
 }

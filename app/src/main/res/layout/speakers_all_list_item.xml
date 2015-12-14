@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,8 +8,7 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="8dp"
-    >
+    android:paddingTop="8dp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageSpeaker"
@@ -22,7 +20,7 @@
         android:scaleType="centerCrop"
         app:riv_border_color="@color/rounded_image_border"
         app:riv_border_width="@dimen/rounded_image_border"
-        app:riv_oval="true"/>
+        app:riv_oval="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +39,7 @@
             android:lines="1"
             android:textColor="@color/primary_text_90"
             android:textSize="16dp"
-            tools:text="Jacek Modrakowski"/>
+            tools:text="Jacek Modrakowski" />
 
         <TextView
             android:id="@+id/textBio"
@@ -54,8 +52,7 @@
             android:singleLine="true"
             android:textColor="@color/primary_text_45"
             android:textSize="12dp"
-            android:visibility="gone"
-            tools:text="Hi my name is Jacek and I am a Developer of Android Framework"/>
+            tools:text="Hi my name is Jacek and I am a Developer of Android Framework" />
 
     </LinearLayout>
 

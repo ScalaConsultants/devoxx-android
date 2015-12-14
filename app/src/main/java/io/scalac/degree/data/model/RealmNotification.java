@@ -8,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
  * jacek.modrakowski@scalac.io
  * 03/11/2015
  */
-public class NotificationModel extends RealmObject {
+public class RealmNotification extends RealmObject {
 
     @PrimaryKey
     private String slotId;
@@ -55,5 +55,9 @@ public class NotificationModel extends RealmObject {
 
     public void setTalkName(String talkName) {
         this.talkName = talkName;
+    }
+
+    public static class Contract {
+        public static final String SLOT_ID = "slotId";
     }
 }
