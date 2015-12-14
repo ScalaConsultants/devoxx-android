@@ -110,4 +110,8 @@ public class RealmSpeaker extends RealmObject {
     public void setAcceptedTalks(RealmList<RealmTalk> acceptedTalks) {
         this.acceptedTalks = acceptedTalks;
     }
+
+    public static class Contract {
+        public static final String UUID = "uuid";
+    }
 }

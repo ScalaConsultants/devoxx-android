@@ -36,7 +36,7 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     public void upsert(String rawData, String query) {
         final Realm realm = realmProvider.getRealm();
         final CacheSpeakerObject object = realm.where(CacheSpeakerObject.class).
-                equalTo("query", query).findFirst();
+                equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
         if (object != null) {
             realm.beginTransaction();
             object.setRawData(rawData);
@@ -62,7 +62,7 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     public SpeakerFullApiModel getData(String query) {
         final Realm realm = realmProvider.getRealm();
         final String rawData = realm.where(CacheSpeakerObject.class)
-                .equalTo("query", query).findFirst().getRawData();
+                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst().getRawData();
         return new Gson().fromJson(rawData, SpeakerFullApiModel.class);
     }
 
@@ -76,7 +76,7 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
         final Realm realm = realmProvider.getRealm();
         final CacheSpeakerObject cacheObject = realm
                 .where(CacheSpeakerObject.class)
-                .equalTo("query", query).findFirst();
+                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
         final boolean isCacheAvailable = cacheObject != null;
         return isCacheAvailable && (System.currentTimeMillis() -
                 cacheObject.getTimestamp() < CACHE_LIFE_TIME_MS);

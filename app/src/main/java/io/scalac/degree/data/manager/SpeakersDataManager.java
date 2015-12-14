@@ -65,6 +65,6 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
 
     public RealmSpeaker getByUuid(String uuid) {
         return realmProvider.getRealm().where(RealmSpeaker.class).
-                equalTo("uuid", uuid).findFirst();
+                equalTo(RealmSpeaker.Contract.UUID, uuid).findFirst();
     }
 }

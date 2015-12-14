@@ -93,7 +93,8 @@ public class NotificationsManager {
     public void unscheduleNotification(String slotId) {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
-        realm.where(RealmNotification.class).equalTo("slotId", slotId).findAll().clear();
+        realm.where(RealmNotification.class).equalTo(RealmNotification.Contract.SLOT_ID,
+                slotId).findAll().clear();
         realm.commitTransaction();
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -107,14 +108,14 @@ public class NotificationsManager {
     public boolean isNotificationScheduled(String slotId) {
         final Realm realm = realmProvider.getRealm();
         return realm.where(RealmNotification.class)
-                .equalTo("slotId", slotId).count() > 0;
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).count() > 0;
     }
 
     public void showNotification(String slotId) {
         final Realm realm = realmProvider.getRealm();
         final RealmNotification realmNotification = realm
                 .where(RealmNotification.class)
-                .equalTo("slotId", slotId)
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId)
                 .findFirst();
 
         if (isNotificationBeforeEvent(realmNotification)) {

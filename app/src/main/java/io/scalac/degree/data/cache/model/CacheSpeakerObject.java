@@ -36,4 +36,8 @@ public class CacheSpeakerObject extends RealmObject {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    public static class Contract {
+        public static final String QUERY = "query";
+    }
 }

@@ -56,4 +56,8 @@ public class RealmNotification extends RealmObject {
     public void setTalkName(String talkName) {
         this.talkName = talkName;
     }
+
+    public static class Contract {
+        public static final String SLOT_ID = "slotId";
+    }
 }
