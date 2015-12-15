@@ -210,12 +210,9 @@
 
                 <ImageView
                     android:id="@+id/scheduleIcon"
+                    style="@style/ScheduleImageButtonStyle"
                     android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_star"
-                    android:tint="@color/drawer_divider_color"
-                    tools:tint="@color/scheduled_star_color" />
+                    android:layout_height="32dp" />
 
                 <TextView
                     android:id="@+id/scheduleText"
