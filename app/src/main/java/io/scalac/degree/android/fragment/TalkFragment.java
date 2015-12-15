@@ -1,14 +1,14 @@
 package io.scalac.degree.android.fragment;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.Switch;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +18,7 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.ColorRes;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -46,24 +47,42 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
     @ViewById(R.id.textTopic)
     TextView topic;
+
     @ViewById(R.id.textDesc)
     TextView desc;
+
     @ViewById(R.id.textDate)
     TextView date;
+
     @ViewById(R.id.textTimeStart)
     TextView start;
+
     @ViewById(R.id.textTimeEnd)
     TextView end;
+
     @ViewById(R.id.textRoom)
     TextView room;
+
     @ViewById(R.id.buttonSpeaker)
     Button speaker;
+
     @ViewById(R.id.buttonSpeaker2)
     Button speaker2;
+
     @ViewById(R.id.switchNotify)
-    Switch notifySwitch;
+    View scheduleViewContainer;
+
+    @ViewById(R.id.scheduleIcon)
+    ImageView scheduleIcon;
+
+    @ViewById(R.id.scheduleText)
+    TextView scheduleText;
+
     @ViewById(R.id.talkFragmentVoteLabel)
     TextView voteLabel;
+
+    @ColorRes(R.color.scheduled_star_color)
+    int scheduledIconColor;
 
     private String talkId;
 
@@ -122,18 +141,19 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
             speaker2.setVisibility(View.GONE);
         }
 
-        notifySwitch.setChecked(notificationsManager.isNotificationScheduled(slotModel.slotId));
-        notifySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        setupNotificationView();
 
+        scheduleViewContainer.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                final NotificationsManager.ScheduleNotificationModel model =
-                        NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
-                if (isChecked) {
-                    final boolean checkResult = notificationsManager.scheduleNotification(model);
-                    buttonView.setChecked(checkResult);
-                } else {
+            public void onClick(View v) {
+                if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
                     notificationsManager.unscheduleNotification(slotModel.slotId);
+                    setupNotActiveScheduleView();
+                } else {
+                    final NotificationsManager.ScheduleNotificationModel model =
+                            NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
+                    notificationsManager.scheduleNotification(model);
+                    setupActiveScheduleView();
                 }
             }
         });
@@ -141,6 +161,24 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
         getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
 
         talkVoter.getVotesCountForTalk(talkId, this);
+    }
+
+    private void setupNotificationView() {
+        if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
+            setupActiveScheduleView();
+        } else {
+            setupNotActiveScheduleView();
+        }
+    }
+
+    private void setupNotActiveScheduleView() {
+        scheduleIcon.clearColorFilter();
+        scheduleText.setText(R.string.add_to_my_schedule);
+    }
+
+    private void setupActiveScheduleView() {
+        scheduleIcon.setColorFilter(scheduledIconColor, PorterDuff.Mode.MULTIPLY);
+        scheduleText.setText(R.string.remove_to_my_schedule);
     }
 
     @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton})
