@@ -77,6 +77,32 @@
                 android:tint="#9e9e9e" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/questionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textRoom"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_toEndOf="@+id/voteButton"
+            android:layout_toRightOf="@+id/voteButton"
+            android:background="@drawable/clickable_background"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ask question"
+                android:textAllCaps="true"
+                android:textColor="@color/primary_text_90"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                tools:text="Ask question!" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/textTopic"
             android:layout_width="match_parent"

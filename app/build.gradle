@@ -1,25 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.21.2'
     }
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'http://download.crashlytics.com/maven' }
-}
-
-
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
+apply plugin: 'io.fabric'
 apply plugin: 'android-apt'
 
 def PACKAGE_NAME = "io.scalac.degree33"
+def VERSION_NAME = "1.0"
+def SUPPORT_VERSION = "23.1.1"
 
 android {
     compileSdkVersion 23
@@ -30,7 +26,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1010100
-        versionName "1.0"
+        versionName VERSION_NAME
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
     }
 
@@ -85,21 +81,22 @@ apt {
 dependencies {
     repositories {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url 'https://maven.fabric.io/public' }
+        mavenCentral()
     }
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
-    compile 'com.android.support:support-v4:23.0.1'
+    compile "com.android.support:appcompat-v7:${SUPPORT_VERSION}"
+    compile "com.android.support:design:${SUPPORT_VERSION}"
+    compile "com.android.support:support-v4:${SUPPORT_VERSION}"
 
     compile 'org.jetbrains:annotations:13.0'
-    compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.makeramen:roundedimageview:2.2.0'
 
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.code.gson:gson:2.4'
 
     compile 'com.annimon:stream:1.0.3'
     compile 'io.realm:realm-android:0.84.0'
@@ -111,4 +108,12 @@ dependencies {
 
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.0'
+
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.2@aar') {
+        transitive = true
+    }
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.3@aar') {
+        transitive = true
+    }
 }
