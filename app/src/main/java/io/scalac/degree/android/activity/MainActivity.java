@@ -12,9 +12,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -81,7 +83,7 @@ public class MainActivity extends BaseActivity
     ProgressBar progressBar;
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private Spinner toolbarSpinner;
+    private AppCompatSpinner toolbarSpinner;
     private int lastClickedMenuItemId;
     private int currentClickedMenuItemId;
     private boolean isColdStart;
@@ -313,7 +315,7 @@ public class MainActivity extends BaseActivity
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        toolbarSpinner = new Spinner(actionBar.getThemedContext());
+        toolbarSpinner = new AppCompatSpinner(actionBar.getThemedContext());
         toolbar.addView(toolbarSpinner);
     }
 
