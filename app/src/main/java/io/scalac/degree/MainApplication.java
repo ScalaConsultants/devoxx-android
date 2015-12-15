@@ -18,6 +18,8 @@ import org.androidannotations.annotations.EApplication;
 
 import java.lang.reflect.Field;
 
+import io.fabric.sdk.android.Fabric;
+
 @EApplication
 public class MainApplication extends Application {
 
@@ -43,7 +45,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         // StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath()..build());
         super.onCreate();
-//        Crashlytics.start(this);
+//        Fabric.with(this, new Crashlytics());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
             try {

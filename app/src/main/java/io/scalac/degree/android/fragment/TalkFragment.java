@@ -3,14 +3,18 @@ package io.scalac.degree.android.fragment;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -35,6 +39,9 @@ import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListener, IOnVoteForTalkListener {
+
+    private static final int QUESTION_MIN_CHARS_LENGTH = 3;
+    private static final int QUESTION_MAX_CHARS_LENGTH = 140;
 
     @FragmentArg
     SlotApiModel slotModel;
@@ -181,7 +188,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
         scheduleText.setText(R.string.remove_to_my_schedule);
     }
 
-    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton})
+    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton, R.id.questionButton})
     void onSpeakersClick(View view) {
         switch (view.getId()) {
             case R.id.buttonSpeaker:
@@ -193,15 +200,41 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
                         .speakerTalkModel(slotModel.talk.speakers.get(1)).build(), true);
                 break;
             case R.id.voteButton:
-                if (talkVoter.isVotingEnabled()) {
-                    talkVoter.voteForTalk(talkId, this);
-                } else {
-                    // TODO Should I open RegisterActivity?
-                    Toast.makeText(getContext(), R.string.vote_not_legged_message,
-                            Toast.LENGTH_SHORT).show();
-                }
+                onVoteButtonClick();
+                break;
+            case R.id.questionButton:
+                onQuestionButtonClick();
                 break;
         }
+    }
+
+    private void onVoteButtonClick() {
+        if (talkVoter.isVotingEnabled()) {
+            talkVoter.voteForTalk(talkId, this);
+        } else {
+            // TODO Should I open RegisterActivity?
+            Toast.makeText(getContext(), R.string.vote_not_legged_message,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onQuestionButtonClick() {
+        // TODO Labels will be changed!
+        new MaterialDialog.Builder(getContext())
+                .title("Ask about talk")
+                .inputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_PERSON_NAME |
+                        InputType.TYPE_TEXT_FLAG_CAP_WORDS |
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE)
+                .inputRange(QUESTION_MIN_CHARS_LENGTH, QUESTION_MAX_CHARS_LENGTH)
+                .positiveText("Submit")
+                .input("Type question here...", "", false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                        Toast.makeText(getContext(), "Question sent...",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
     @Override
