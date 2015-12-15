@@ -7,6 +7,7 @@
     <color name="accent">#FF9800</color>
 
     <color name="scheduled_star_color">#ffc400</color>
+    <color name="scheduled_not_star_color">#dedede</color>
 
     <color name="degree_link">#A30E0B</color>
     <color name="tab_strip">#FF0000</color>

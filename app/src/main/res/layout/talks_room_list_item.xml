@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:descendantFocusability="blocksDescendants"
-              android:orientation="horizontal"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
     <LinearLayout
         android:id="@+id/linearLayoutTime"
@@ -25,7 +26,7 @@
             android:fontFamily="sans-serif-condensed"
             android:textColor="@color/primary_text_90"
             android:textStyle="bold"
-            tools:text="10:00"/>
+            tools:text="10:00" />
 
         <TextView
             android:id="@+id/textTimeEnd"
@@ -34,7 +35,7 @@
             android:fontFamily="sans-serif-condensed"
             android:textColor="@color/primary_text_45"
             android:textStyle="bold"
-            tools:text="10:00"/>
+            tools:text="10:00" />
     </LinearLayout>
 
     <LinearLayout
@@ -52,30 +53,19 @@
             style="@style/talks_topic_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Topic"/>
+            tools:text="Topic" />
 
         <TextView
             android:id="@+id/textSpeakers"
             style="@style/talks_speakers_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Speakers"/>
+            tools:text="Speakers" />
 
     </LinearLayout>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/imageButtonNotify"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="-4dp"
-        android:contentDescription="@null"
-        android:minHeight="48dp"
-        android:minWidth="48dp"
-        android:padding="0dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_action_alarm_add"
-        android:tint="@color/primary_text_45"/>
+        style="@style/ScheduleImageButtonStyle" />
 
 </LinearLayout>
