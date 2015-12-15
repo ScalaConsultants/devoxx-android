@@ -6,6 +6,8 @@
     <color name="primary_dark">#084076</color>
     <color name="accent">#FF9800</color>
 
+    <color name="scheduled_star_color">#ffc400</color>
+
     <color name="degree_link">#A30E0B</color>
     <color name="tab_strip">#FF0000</color>
     <color name="drawer_bg">#f7f7f7</color>
