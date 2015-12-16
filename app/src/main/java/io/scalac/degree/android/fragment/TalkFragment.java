@@ -91,6 +91,9 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
     @ColorRes(R.color.scheduled_star_color)
     int scheduledIconColor;
 
+    @ColorRes(R.color.scheduled_not_star_color)
+    int notscheduledStarColor;
+
     private String talkId;
 
     @Override
@@ -179,7 +182,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
     }
 
     private void setupNotActiveScheduleView() {
-        scheduleIcon.clearColorFilter();
+        scheduleIcon.setColorFilter(notscheduledStarColor);
         scheduleText.setText(R.string.add_to_my_schedule);
     }
 

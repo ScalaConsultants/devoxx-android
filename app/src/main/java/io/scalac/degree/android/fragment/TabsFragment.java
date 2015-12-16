@@ -125,8 +125,10 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
         final MainActivity mainActivity = getMainActivity();
         ArrayAdapter<String> spinnerAbAdapter = new ArrayAdapter<>(
                 mainActivity.getSupportActionBarHelper().getThemedContext(),
-                android.R.layout.simple_spinner_item, datesNamesList);
-        spinnerAbAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                android.R.layout.simple_spinner_dropdown_item, datesNamesList);
+
+        spinnerAbAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
         final Spinner spinner = getToolbarSpinner();
         spinner.setAdapter(spinnerAbAdapter);
         spinner.setOnItemSelectedListener(this);

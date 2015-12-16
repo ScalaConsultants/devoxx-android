@@ -1,7 +1,6 @@
 package io.scalac.degree.android.fragment;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -24,7 +23,6 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.res.StringRes;
 
 import java.text.Collator;
 import java.text.DateFormat;
@@ -60,11 +58,11 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @FragmentArg
     long dateMs;
 
-    @StringRes(R.string.devoxx_conference)
-    String conferenceCode;
-
     @ColorRes(R.color.scheduled_star_color)
     int scheduledStarColor;
+
+    @ColorRes(R.color.scheduled_not_star_color)
+    int notscheduledStarColor;
 
     private ItemAdapter listAdapter;
     private DateFormat timeFormat;
@@ -291,9 +289,9 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
             boolean isAlarmSet = notificationsManager
                     .isNotificationScheduled(slotModel.slotId);
             if (isAlarmSet) {
-                holder.imageButtonNotify.setColorFilter(scheduledStarColor, PorterDuff.Mode.MULTIPLY);
+                holder.imageButtonNotify.setColorFilter(scheduledStarColor);
             } else {
-                holder.imageButtonNotify.clearColorFilter();
+                holder.imageButtonNotify.setColorFilter(notscheduledStarColor);
             }
             holder.imageButtonNotify.setTag(position);
         }
