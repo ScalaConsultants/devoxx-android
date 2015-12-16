@@ -12,7 +12,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,12 +38,11 @@ import org.androidannotations.annotations.res.StringRes;
 import java.util.List;
 
 import io.scalac.degree.android.fragment.BaseFragment;
+import io.scalac.degree.android.fragment.MapsFragment_;
 import io.scalac.degree.android.fragment.SpeakersFragment_;
-import io.scalac.degree.android.fragment.TabsFragment.TabType;
 import io.scalac.degree.android.fragment.TabsFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
-import io.scalac.degree.android.fragment.TalksFragment.TalksType;
 import io.scalac.degree.android.fragment.TalksFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.AbstractDataManager;
@@ -178,11 +176,11 @@ public class MainActivity extends BaseActivity
         if (!closeDrawerIfNeeded()) {
             final boolean shouldBackToMainFragment =
                     lastClickedMenuItemId != 0 &&
-                            lastClickedMenuItemId != R.id.drawer_menu_schedule_by_time &&
+                            lastClickedMenuItemId != R.id.drawer_menu_schedule &&
                             getSupportFragmentManager().getBackStackEntryCount() == 0;
 
             if (shouldBackToMainFragment) {
-                selectItem(R.id.drawer_menu_schedule_by_time);
+                selectItem(R.id.drawer_menu_schedule);
             } else {
                 super.onBackPressed();
             }
@@ -342,15 +340,9 @@ public class MainActivity extends BaseActivity
         removeFragments();
 
         switch (menuItemId) {
-            case R.id.drawer_menu_schedule_by_time:
+            case R.id.drawer_menu_schedule:
                 replaceFragment(TabsFragment_.builder().currentDatePosition(
-                        slotsDataManager.getInitialDatePosition())
-                        .tabTypeEnumName(TabType.TIME.name()).build(), false);
-                break;
-            case R.id.drawer_menu_schedule_by_rooms:
-                replaceFragment(TabsFragment_.builder().currentDatePosition(
-                        slotsDataManager.getInitialDatePosition())
-                        .tabTypeEnumName(TabType.ROOM.name()).build(), false);
+                        slotsDataManager.getInitialDatePosition()).build(), false);
                 break;
             case R.id.drawer_menu_talks:
                 replaceFragment(TalksFragment_.builder().build(), false);
@@ -358,9 +350,8 @@ public class MainActivity extends BaseActivity
             case R.id.drawer_menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
                 break;
-            case R.id.drawer_menu_my_schedule:
-                replaceFragment(TalksFragment_.builder().
-                        talksTypeEnumName(TalksType.NOTIFICATION.name()).build(), false);
+            case R.id.drawer_menu_map:
+                replaceFragment(MapsFragment_.builder().build(), false);
                 break;
         }
 
@@ -476,10 +467,10 @@ public class MainActivity extends BaseActivity
 
                 syncActionBarArrowState();
             } else {
-                selectItem(R.id.drawer_menu_schedule_by_time);
+                selectItem(R.id.drawer_menu_schedule);
             }
         } else {
-            selectItem(R.id.drawer_menu_schedule_by_time);
+            selectItem(R.id.drawer_menu_schedule);
         }
     }
 

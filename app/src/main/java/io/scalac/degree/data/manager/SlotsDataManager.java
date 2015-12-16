@@ -224,33 +224,6 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         }).collect(Collectors.<SlotApiModel>toList());
     }
 
-    public List<SlotApiModel> extractRoomLabelsForDate(Date requestedDate) {
-        return Stream.of(allSlots)
-                .filter(new SameDayPredicate(requestedDate.getTime()))
-                .map(new Function<SlotApiModel, SingleTuple<String, SlotApiModel>>() {
-                    @Override
-                    public SingleTuple<String, SlotApiModel> apply(SlotApiModel value) {
-                        return new SingleTuple<>(value.roomId, value);
-                    }
-                })
-                .distinct()
-                .map(new Function<SingleTuple<String, SlotApiModel>, SlotApiModel>() {
-                    @Override
-                    public SlotApiModel apply(SingleTuple<String, SlotApiModel> value) {
-                        return value.object;
-                    }
-                })
-                .sorted(new Comparator<SlotApiModel>() {
-                    final Collator collator = Collator.getInstance(Locale.getDefault());
-
-                    @Override
-                    public int compare(SlotApiModel lhs, SlotApiModel rhs) {
-                        return collator.compare(lhs.roomName, rhs.roomName);
-                    }
-                })
-                .collect(Collectors.<SlotApiModel>toList());
-    }
-
     public List<SlotApiModel> getTalksForSpecificTimeAndRoom(final String roomID, long dateMs) {
         final DateTime rqDt = new DateTime(dateMs);
         final DateTime dT = new DateTime();
