@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
@@ -23,7 +22,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.scalac.degree.android.activity.MainActivity;
 import io.scalac.degree.android.view.SlidingTabLayout;
@@ -38,23 +36,20 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
     SlotsDataManager slotsDataManager;
 
     @FragmentArg
-    String tabTypeEnumName;
-    @FragmentArg
     int currentDatePosition;
 
     @ViewById(R.id.pager)
     ViewPager viewPager;
+
     @ViewById(R.id.sliding_tabs)
     SlidingTabLayout slidingTabLayout;
 
-    List<SlotApiModel> roomTabLabels;
     List<SlotApiModel> timeTabLabels;
 
     List<Date> datesList;
     ArrayList<String> datesNamesList;
     SectionsPagerAdapter sectionsPagerAdapter;
     int currentTabPosition = 0;
-    private TabType tabType;
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -62,17 +57,12 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
             currentDatePosition = position;
             final MainActivity mainActivity = getMainActivity();
             mainActivity.replaceFragment(TabsFragment_.builder()
-                    .currentDatePosition(position).tabTypeEnumName(tabType.name()).build());
+                    .currentDatePosition(position).build());
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-    }
-
-    @AfterInject
-    void afterInject() {
-        tabType = TabType.valueOf(tabTypeEnumName);
     }
 
     @Override
@@ -136,36 +126,22 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
     }
 
     private void init() {
-        roomTabLabels = new ArrayList<>();
         timeTabLabels = new ArrayList<>();
         datesNamesList = new ArrayList<>();
 
         datesList = slotsDataManager.createDateList();
         if (!datesList.isEmpty()) {
             final Date currentDate = datesList.get(currentDatePosition);
-            roomTabLabels = slotsDataManager.extractRoomLabelsForDate(currentDate);
             timeTabLabels = slotsDataManager.extractTimeLabelsForDate(currentDate);
 
-            switch (tabType) {
-                case ROOM:
-                    logFlurryEvent("Schedule_by_room_watched");
-                    break;
-                case TIME:
-                    // TODO Do it!
-                    // currentTabPosition = TimeslotItem.getInitialTimePosition(timeTabLabels);
-                    logFlurryEvent("Schedule_by_time_watched");
-                    break;
-            }
+            // currentTabPosition = TimeslotItem.getInitialTimePosition(timeTabLabels);
+            logFlurryEvent("Schedule_by_time_watched");
             DateFormat dateFormat = android.text.format.DateFormat.
                     getMediumDateFormat(getActivity().getApplicationContext());
             for (Date date : datesList) {
                 datesNamesList.add(dateFormat.format(date));
             }
         }
-    }
-
-    public enum TabType {
-        ROOM, TIME
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -176,49 +152,31 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
 
         @Override
         public Fragment getItem(int position) {
-            switch (tabType) {
-                case TIME:
-                    final SlotApiModel slotModel = timeTabLabels.get(position);
-                    if (slotModel.isBreak()) {
-                        return BreaksFragment_.builder().
-                                timeslotID(slotModel).build();
-                    } else {
-                        return TalksFragment_.builder().
-                                slotModel(slotModel).
-                                talksTypeEnumName(TalksFragment.TalksType.TIME.name()).
-                                build();
-                    }
-                default:
-                    return TalksFragment_.builder().roomID(roomTabLabels.get(position).roomId).
-                            dateMs(datesList.get(currentDatePosition).getTime()).
-                            talksTypeEnumName(TalksFragment.TalksType.ROOM.name()).build();
+            final SlotApiModel slotModel = timeTabLabels.get(position);
+            if (slotModel.isBreak()) {
+                return BreaksFragment_.builder().
+                        timeslotID(slotModel).build();
+            } else {
+                return TalksFragment_.builder().
+                        slotModel(slotModel).
+                        talksTypeEnumName(TalksFragment.TalksType.TIME.name()).
+                        build();
             }
         }
 
         @Override
         public int getCount() {
-            switch (tabType) {
-                case TIME:
-                    return timeTabLabels.size();
-                default:
-                    return roomTabLabels.size();
-            }
+            return timeTabLabels.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (tabType) {
-                case TIME:
-                    final SlotApiModel timeslotItem = timeTabLabels.get(position);
-                    final DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(
-                            getActivity().getApplicationContext());
-                    final String timeStart = timeFormat.format(new Date(timeslotItem.fromTimeMillis));
-                    final String timeEnd = timeFormat.format(new Date(timeslotItem.toTimeMillis));
-                    return Html.fromHtml(String.format("%s %s", timeStart, timeEnd));
-                default:
-                    return roomTabLabels.get(position).roomName.toUpperCase(l);
-            }
+            final SlotApiModel timeslotItem = timeTabLabels.get(position);
+            final DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(
+                    getActivity().getApplicationContext());
+            final String timeStart = timeFormat.format(new Date(timeslotItem.fromTimeMillis));
+            final String timeEnd = timeFormat.format(new Date(timeslotItem.toTimeMillis));
+            return Html.fromHtml(String.format("%s %s", timeStart, timeEnd));
         }
     }
 }

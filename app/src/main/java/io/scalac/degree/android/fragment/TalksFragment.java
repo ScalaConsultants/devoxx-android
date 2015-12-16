@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,7 +24,6 @@ import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.res.ColorRes;
 
 import java.text.Collator;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -50,9 +48,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     String talksTypeEnumName;
 
     @FragmentArg
-    String roomID;
-
-    @FragmentArg
     SlotApiModel slotModel;
 
     @FragmentArg
@@ -65,8 +60,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     int notscheduledStarColor;
 
     private ItemAdapter listAdapter;
-    private DateFormat timeFormat;
-    private boolean is12HourFormat;
     private TalksType talksType = TalksType.ALL;
 
     private int itemLayoutID;
@@ -75,10 +68,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     void afterInject() {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
-
-        final Context appContext = getActivity().getApplicationContext();
-        timeFormat = android.text.format.DateFormat.getTimeFormat(appContext);
-        is12HourFormat = !android.text.format.DateFormat.is24HourFormat(appContext);
         listAdapter = new ItemAdapter();
     }
 
@@ -89,21 +78,12 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     }
 
     private void init() {
-        List<SlotApiModel> slots = new ArrayList<>();
+        List<SlotApiModel> slots;
 
         switch (talksType) {
-            case ROOM:
-                slots = slotsDataManager.getTalksForSpecificTimeAndRoom(roomID, dateMs);
-                itemLayoutID = R.layout.talks_room_list_item;
-                break;
             case TIME:
                 slots = slotsDataManager.getTalksForSpecificTime(slotModel.fromTimeMillis);
                 itemLayoutID = R.layout.talks_time_list_item;
-                break;
-            case NOTIFICATION:
-                logFlurryEvent("Notifications_watched");
-
-                itemLayoutID = R.layout.talks_notify_list_item;
                 break;
             default:
                 logFlurryEvent("Talks_watched");
@@ -146,9 +126,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         switch (talksType) {
             case ALL:
                 return R.string.drawer_menu_talks_label;
-            case NOTIFICATION:
-                return R.string.drawer_menu_my_schedule_label;
-            case ROOM:
             case TIME:
             default:
                 return -1;
@@ -170,9 +147,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     private boolean setupSpinnerVisibility() {
         switch (talksType) {
             case ALL:
-            case NOTIFICATION:
                 return false;
-            case ROOM:
             case TIME:
             default:
                 return true;
@@ -180,7 +155,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     }
 
     public enum TalksType {
-        ALL, ROOM, TIME, NOTIFICATION;
+        ALL, TIME;
     }
 
     class ItemAdapter extends BaseAdapter {
@@ -227,16 +202,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
                 switch (talksType) {
                     case ALL:
-                    case NOTIFICATION:
                         holder.text3 = (TextView) viewItem.findViewById(R.id.textTime);
-                        break;
-                    case ROOM:
-                        holder.textTimeStart = (TextView) viewItem.findViewById(R.id.textTimeStart);
-                        holder.textTimeEnd = (TextView) viewItem.findViewById(R.id.textTimeEnd);
-                        if (is12HourFormat) {
-                            LinearLayout llTime = (LinearLayout) viewItem.findViewById(R.id.linearLayoutTime);
-                            llTime.getLayoutParams().width = getResources().getDimensionPixelSize(R.dimen.width_12h);
-                        }
                         break;
                     case TIME:
                         holder.text3 = (TextView) viewItem.findViewById(R.id.textRoom);
@@ -269,16 +235,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                             DateUtils.formatDateTime(appContext, slotModel.fromTimeMillis,
                                     FORMAT_DATE_FLAGS), slotModel.roomName);
                     holder.text3.setText(text);
-                    break;
-                case NOTIFICATION:
-                    final long alarmTime = notificationsManager
-                            .calculateAlarmTime(slotModel.fromTimeMillis);
-                    holder.text3.setText(DateUtils.formatDateTime(getActivity()
-                            .getApplicationContext(), alarmTime, FORMAT_DATE_FLAGS));
-                    break;
-                case ROOM:
-                    holder.textTimeStart.setText(timeFormat.format(slotModel.fromTimeMillis));
-                    holder.textTimeEnd.setText(timeFormat.format(slotModel.toTimeMillis));
                     break;
                 case TIME:
                     holder.text3.setText(slotModel.roomName);

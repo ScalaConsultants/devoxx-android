@@ -17,14 +17,13 @@
     <string name="title_talks_list">Talk(s):</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
-    <string name="drawer_menu_schedule_time_label">Schedule by event time</string>
-    <string name="drawer_menu_schedule_room_label">Schedule by rooms</string>
+    <string name="drawer_menu_schedule_label">Schedule</string>
     <string name="drawer_menu_talks_label">Talks</string>
     <string name="drawer_menu_speakers_label">Speakers</string>
-    <string name="drawer_menu_my_schedule_label">My schedule</string>
     <string name="drawer_menu_other_feedback_label">FEEDBACK</string>
     <string name="drawer_menu_other_register_label">REGISTER</string>
     <string name="vote_not_legged_message">Musisz być zalogowany aby głosować!</string>
+    <string name="drawer_menu_map_label">Map</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
