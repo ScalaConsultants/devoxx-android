@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -34,8 +35,10 @@ import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.items_list_view)
@@ -72,6 +75,23 @@ public class SpeakersFragment extends BaseFragment {
     void afterViews() {
         logFlurryEvent("Speakers_watched");
 
+        final Subscriber<Void> subscriber = new Subscriber<Void>() {
+            @Override
+            public void onCompleted() {
+                populateList();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // Nothing.
+            }
+
+            @Override
+            public void onNext(Void aVoid) {
+                // Nothing.
+            }
+        };
+
         speakersDataManager.fetchSpeakers(conferenceCode).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
@@ -85,10 +105,16 @@ public class SpeakersFragment extends BaseFragment {
                     @Override
                     public void call() {
                         getMainActivity().hideLoader();
-                        populateList();
                     }
                 }).
-                subscribe();
+                doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(getMainActivity(), "Connection error!", Toast.LENGTH_SHORT).show();
+                        getMainActivity().hideLoader();
+                    }
+                }).
+                subscribe(subscriber);
 
         listView = (ListView) getView();
         final View footer = Utils.getFooterView(getActivity(), listView);
