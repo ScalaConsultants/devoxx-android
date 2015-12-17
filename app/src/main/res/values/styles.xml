@@ -48,4 +48,12 @@
         <item name="android:src">@drawable/ic_star</item>
         <item name="android:tint">@color/scheduled_not_star_color</item>
     </style>
+
+    <style name="tabButtonStyle">
+        <item name="android:background">@drawable/tab_button_background</item>
+        <item name="android:fontFamily">@string/font_fontFamily_medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@drawable/tab_text_selector</item>
+        <item name="android:textSize">12dp</item>
+    </style>
 </resources>
