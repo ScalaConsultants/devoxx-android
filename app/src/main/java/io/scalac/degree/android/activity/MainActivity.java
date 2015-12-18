@@ -38,7 +38,6 @@ import org.androidannotations.annotations.res.StringRes;
 import java.util.List;
 
 import io.scalac.degree.android.fragment.BaseFragment;
-import io.scalac.degree.android.fragment.MapsFragment_;
 import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TabsFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
@@ -165,6 +164,10 @@ public class MainActivity extends BaseActivity
         }
 
         return true;
+    }
+
+    private void handleMapClick() {
+        MapActivity_.intent(this).start();
     }
 
     private void handleRegisterClick() {
@@ -328,6 +331,13 @@ public class MainActivity extends BaseActivity
     }
 
     private void selectItem(final int menuItemId) {
+        if (menuItemId == R.id.drawer_menu_map) {
+            navigationView.setCheckedItem(lastClickedMenuItemId);
+            drawerLayout.closeDrawers();
+            handleMapClick();
+            return;
+        }
+
         lastClickedMenuItemId = menuItemId;
         navigationView.setCheckedItem(lastClickedMenuItemId);
 
@@ -349,9 +359,6 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.drawer_menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
-                break;
-            case R.id.drawer_menu_map:
-                replaceFragment(MapsFragment_.builder().build(), false);
                 break;
         }
 

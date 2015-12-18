@@ -24,6 +24,8 @@
     <string name="drawer_menu_other_register_label">REGISTER</string>
     <string name="vote_not_legged_message">Musisz być zalogowany aby głosować!</string>
     <string name="drawer_menu_map_label">Map</string>
+    <string name="drive_map">DRIVE MAP</string>
+    <string name="conf_map">CONF MAP</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>

@@ -15,6 +15,10 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <application
         android:name="io.scalac.degree.MainApplication_"
         android:allowBackup="true"
@@ -39,6 +43,7 @@
 
         <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_" />
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_" />
+        <activity android:name="io.scalac.degree.android.activity.MapActivity_" />
 
         <receiver
             android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
@@ -77,6 +82,14 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="83064b423b9aeb9774cd2592a9fbb97c345edf6a" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyByFI8g9HcBES-5KCWhP0j_gof_onP-8TY" />
     </application>
 
 </manifest>

@@ -25,4 +25,6 @@
 
     <color name="rounded_image_border">#A0ffffff</color>
 
+    <color name="tab_text_selected">#FFFFFF</color>
+    <color name="tab_text_unselected">#A0FFFFFF</color>
 </resources>
