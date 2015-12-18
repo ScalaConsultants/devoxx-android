@@ -83,7 +83,7 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
     }
 
     public int getInitialDatePosition() {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
