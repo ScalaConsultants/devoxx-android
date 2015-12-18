@@ -1,6 +1,7 @@
 package io.scalac.degree.android.fragment;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -21,7 +22,9 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.res.ColorRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -29,9 +32,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import io.scalac.degree.android.activity.MainActivity;
+import io.scalac.degree.android.view.ForegroundLinearLayout;
 import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -43,6 +50,9 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     @Bean
     NotificationsManager notificationsManager;
+
+    @Pref
+    Settings_ settings;
 
     @FragmentArg
     String talksTypeEnumName;
@@ -64,11 +74,14 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     private int itemLayoutID;
 
+    @ColorRes(R.color.primary_text_45)
+    int unscheduledItemColorForeground;
+
     @AfterInject
     void afterInject() {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
-        listAdapter = new ItemAdapter();
+        listAdapter = new ItemAdapter(shouldFilter());
     }
 
     @Override
@@ -105,20 +118,14 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         listAdapter.notifyDataSetChanged();
     }
 
-//	TODO Do it!
-//	public void onResume() {
-//		super.onResume();
-//		if (talksType == TalksType.NOTIFICATION && slots != null) {
-//			slots.clear();
-//			slots.addAll(TalkItem.getNotificationTalkList(dataSource.getTalkItemsList(),
-//					dataSource.getNotifyMap()));
-//		}
-//		listAdapter.notifyDataSetChanged();
-//	}
-
     @Override
     public boolean needsToolbarSpinner() {
         return setupSpinnerVisibility();
+    }
+
+    @Override
+    public boolean needsFilterToolbarIcon() {
+        return true;
     }
 
     @Override
@@ -144,6 +151,16 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         init();
     }
 
+    @Receiver(actions = {MainActivity.INTENT_FILTER_TALKS_ACTION})
+    void onFilterEvent() {
+        Logger.l("Fragment.onFilterEvent()");
+        listAdapter.notifyDataSetChangedCustom(shouldFilter());
+    }
+
+    private boolean shouldFilter() {
+        return settings.filterTalksBySchedule().getOr(false);
+    }
+
     private boolean setupSpinnerVisibility() {
         switch (talksType) {
             case ALL:
@@ -164,14 +181,21 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
         private final AlarmOnClick alarmOnClick = new AlarmOnClick();
         private List<SlotApiModel> data;
+        private boolean shouldFilterScheduledItems;
 
-        ItemAdapter() {
+        ItemAdapter(boolean shouldFilter) {
+            shouldFilterScheduledItems = shouldFilter;
             this.data = new ArrayList<>();
         }
 
         public void setData(List<SlotApiModel> data) {
             this.data.clear();
             this.data = data;
+        }
+
+        public void notifyDataSetChangedCustom(boolean shouldFilter) {
+            shouldFilterScheduledItems = shouldFilter;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -198,6 +222,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
             if (convertView == null) {
                 viewItem = getActivity().getLayoutInflater().inflate(itemLayoutID, parent, false);
                 holder = new ViewHolder();
+                holder.container = viewItem;
                 holder.textTopic = (TextView) viewItem.findViewById(R.id.textTopic);
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
                 switch (talksType) {
@@ -223,7 +248,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
             return viewItem;
         }
 
-        private void fillHolder(ViewHolder holder, int position) {
+        private void fillHolder(final ViewHolder holder, int position) {
             final SlotApiModel slotModel = data.get(position);
             holder.textSpeaker.setText(slotModel.talk.getReadableSpeakers());
             holder.textTopic.setText(slotModel.talk.title);
@@ -242,14 +267,24 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 default:
                     break;
             }
+
             boolean isAlarmSet = notificationsManager
                     .isNotificationScheduled(slotModel.slotId);
+
             if (isAlarmSet) {
                 holder.imageButtonNotify.setColorFilter(scheduledStarColor);
             } else {
                 holder.imageButtonNotify.setColorFilter(notscheduledStarColor);
             }
+
             holder.imageButtonNotify.setTag(position);
+
+            final ForegroundLinearLayout fl = (ForegroundLinearLayout) holder.container;
+            if (shouldFilterScheduledItems && !isAlarmSet) {
+                fl.setForeground(new ColorDrawable(unscheduledItemColorForeground));
+            } else {
+                fl.setForeground(null);
+            }
         }
 
         public SlotApiModel getClickedItem(int position) {
@@ -276,6 +311,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         }
 
         private class ViewHolder {
+            public View container;
             public TextView textTopic;
             public TextView text3;
             public TextView textSpeaker;

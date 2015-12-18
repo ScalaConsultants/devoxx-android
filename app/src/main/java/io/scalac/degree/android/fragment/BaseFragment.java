@@ -32,6 +32,10 @@ public class BaseFragment extends Fragment {
         return true;
     }
 
+    public boolean needsFilterToolbarIcon() {
+        return false;
+    }
+
     public
     @StringRes
     int getTitle() {

@@ -188,7 +188,7 @@ public class NotificationsManager {
 
     public long calculateAlarmTime(long talkStartMS) {
         return BuildConfig.DEBUG
-                ? System.currentTimeMillis() + 3000 // 3sec after set for testing
+                ? System.currentTimeMillis() + 60000 // 60secs after set for testing
                 : talkStartMS - 600000; // 10 mins before start
     }
 
