@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -35,10 +38,17 @@ import java.util.Locale;
 import io.scalac.degree.android.activity.MainActivity;
 import io.scalac.degree.android.view.ForegroundLinearLayout;
 import io.scalac.degree.connection.model.SlotApiModel;
+<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Logger;
+=======
+import io.scalac.degree.data.downloader.TracksDownloader;
+import io.scalac.degree.data.manager.NotificationsManager;
+import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.utils.AnimateFirstDisplayListener;
+>>>>>>> Adds track icons on list items.
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -51,8 +61,13 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @Bean
     NotificationsManager notificationsManager;
 
+<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
     @Pref
     Settings_ settings;
+=======
+    @Bean
+    TracksDownloader tracksDownloader;
+>>>>>>> Adds track icons on list items.
 
     @FragmentArg
     String talksTypeEnumName;
@@ -72,7 +87,11 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     private ItemAdapter listAdapter;
     private TalksType talksType = TalksType.ALL;
 
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
     private int itemLayoutID;
+    private DisplayImageOptions imageLoaderOptions;
 
     @ColorRes(R.color.primary_text_45)
     int unscheduledItemColorForeground;
@@ -81,7 +100,20 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     void afterInject() {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
+<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
         listAdapter = new ItemAdapter(shouldFilter());
+=======
+        listAdapter = new ItemAdapter();
+
+        imageLoaderOptions = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.th_background)
+                .showImageForEmptyUri(R.drawable.no_photo)
+                .showImageOnFail(R.drawable.no_photo)
+                .delayBeforeLoading(200)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
+>>>>>>> Adds track icons on list items.
     }
 
     @Override
@@ -237,6 +269,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 }
                 holder.imageButtonNotify = (ImageView) viewItem.findViewById(R.id.imageButtonNotify);
                 holder.imageButtonNotify.setOnClickListener(alarmOnClick);
+                holder.trackIcon = (ImageView) viewItem.findViewById(R.id.talkTrackIcon);
                 viewItem.setTag(holder);
             } else {
                 viewItem = convertView;
@@ -279,12 +312,18 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
             holder.imageButtonNotify.setTag(position);
 
+<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
             final ForegroundLinearLayout fl = (ForegroundLinearLayout) holder.container;
             if (shouldFilterScheduledItems && !isAlarmSet) {
                 fl.setForeground(new ColorDrawable(unscheduledItemColorForeground));
             } else {
                 fl.setForeground(null);
             }
+=======
+            final String trackIconUrl = tracksDownloader.getTrackIconUrl(slotModel.talk.track);
+            imageLoader.displayImage(trackIconUrl, holder.trackIcon,
+                    imageLoaderOptions, animateFirstListener);
+>>>>>>> Adds track icons on list items.
         }
 
         public SlotApiModel getClickedItem(int position) {
@@ -318,6 +357,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
             public TextView textTimeStart;
             public TextView textTimeEnd;
             public ImageView imageButtonNotify;
+            public ImageView trackIcon;
         }
     }
 }

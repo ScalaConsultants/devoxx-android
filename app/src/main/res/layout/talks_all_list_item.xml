@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
 <io.scalac.degree.android.view.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/talkListItemContainer"
+=======
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+>>>>>>> Adds track icons on list items.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
@@ -8,6 +13,17 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <ImageView
+        android:id="@+id/talkTrackIcon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        tools:src="@drawable/ic_thumb"
+        tools:tint="#ff0000" />
 
     <LinearLayout
         android:layout_width="0dp"

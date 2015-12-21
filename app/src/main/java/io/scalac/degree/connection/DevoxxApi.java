@@ -12,6 +12,7 @@ import io.scalac.degree.connection.model.SpeakerFullApiModel;
 import io.scalac.degree.connection.model.SpeakerShortApiModel;
 import io.scalac.degree.connection.model.SpecificScheduleApiModel;
 import io.scalac.degree.connection.model.TalkFullApiModel;
+import io.scalac.degree.connection.model.TracksApiModel;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
@@ -45,6 +46,11 @@ public interface DevoxxApi {
     @GET
     Call<SpeakerFullApiModel> speaker(
             @Url String url
+    );
+
+    @GET("/api/conferences/{confCode}/tracks")
+    Call<TracksApiModel> tracks(
+            @Path("confCode") String confCode
     );
 
     @GET("/api/conferences")
