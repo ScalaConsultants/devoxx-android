@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -36,8 +39,10 @@ import io.scalac.degree.android.activity.MainActivity;
 import io.scalac.degree.android.view.ForegroundLinearLayout;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
+import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
@@ -45,6 +50,7 @@ import io.scalac.degree33.R;
 @EFragment(R.layout.items_list_view)
 public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
+    private static final int IMAGE_LOADING_DELAY_MS = 200;
     @Bean
     SlotsDataManager slotsDataManager;
 
@@ -53,6 +59,9 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     @Pref
     Settings_ settings;
+
+    @Bean
+    TracksDownloader tracksDownloader;
 
     @FragmentArg
     String talksTypeEnumName;
@@ -72,7 +81,11 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     private ItemAdapter listAdapter;
     private TalksType talksType = TalksType.ALL;
 
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
     private int itemLayoutID;
+    private DisplayImageOptions imageLoaderOptions;
 
     @ColorRes(R.color.primary_text_45)
     int unscheduledItemColorForeground;
@@ -82,6 +95,15 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
         listAdapter = new ItemAdapter(shouldFilter());
+
+        imageLoaderOptions = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.th_background)
+                .showImageForEmptyUri(R.drawable.no_photo)
+                .showImageOnFail(R.drawable.no_photo)
+                .delayBeforeLoading(IMAGE_LOADING_DELAY_MS)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
     }
 
     @Override
@@ -227,16 +249,17 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeakers);
                 switch (talksType) {
                     case ALL:
-                        holder.text3 = (TextView) viewItem.findViewById(R.id.textTime);
+                        holder.textDateRoom = (TextView) viewItem.findViewById(R.id.textTime);
                         break;
                     case TIME:
-                        holder.text3 = (TextView) viewItem.findViewById(R.id.textRoom);
+                        holder.textDateRoom = (TextView) viewItem.findViewById(R.id.textRoom);
                         break;
                     default:
                         break;
                 }
                 holder.imageButtonNotify = (ImageView) viewItem.findViewById(R.id.imageButtonNotify);
                 holder.imageButtonNotify.setOnClickListener(alarmOnClick);
+                holder.trackIcon = (ImageView) viewItem.findViewById(R.id.talkTrackIcon);
                 viewItem.setTag(holder);
             } else {
                 viewItem = convertView;
@@ -250,33 +273,26 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
         private void fillHolder(final ViewHolder holder, int position) {
             final SlotApiModel slotModel = data.get(position);
-            holder.textSpeaker.setText(slotModel.talk.getReadableSpeakers());
-            holder.textTopic.setText(slotModel.talk.title);
+            fillTitleAndTopic(holder, slotModel);
+            fillDateAndRoom(holder, slotModel);
+            setupNotificationIcon(holder, position, slotModel);
+            fillTrackImage(holder, slotModel);
+        }
 
-            switch (talksType) {
-                case ALL:
-                    final Context appContext = getActivity().getApplicationContext();
-                    final String text = String.format("%s %s",
-                            DateUtils.formatDateTime(appContext, slotModel.fromTimeMillis,
-                                    FORMAT_DATE_FLAGS), slotModel.roomName);
-                    holder.text3.setText(text);
-                    break;
-                case TIME:
-                    holder.text3.setText(slotModel.roomName);
-                    break;
-                default:
-                    break;
-            }
+        private void fillTrackImage(ViewHolder holder, SlotApiModel slotModel) {
+            final String trackIconUrl = tracksDownloader.getTrackIconUrl(slotModel.talk.track);
+            imageLoader.displayImage(trackIconUrl, holder.trackIcon,
+                    imageLoaderOptions, animateFirstListener);
+        }
 
+        private void setupNotificationIcon(ViewHolder holder, int position, SlotApiModel slotModel) {
             boolean isAlarmSet = notificationsManager
                     .isNotificationScheduled(slotModel.slotId);
-
             if (isAlarmSet) {
                 holder.imageButtonNotify.setColorFilter(scheduledStarColor);
             } else {
                 holder.imageButtonNotify.setColorFilter(notscheduledStarColor);
             }
-
             holder.imageButtonNotify.setTag(position);
 
             final ForegroundLinearLayout fl = (ForegroundLinearLayout) holder.container;
@@ -285,6 +301,29 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
             } else {
                 fl.setForeground(null);
             }
+        }
+
+        private void fillDateAndRoom(ViewHolder holder, SlotApiModel slotModel) {
+            switch (talksType) {
+                case ALL:
+                    final Context appContext = getActivity().getApplicationContext();
+                    final String text = String.format("%s %s",
+                            DateUtils.formatDateTime(appContext, slotModel.fromTimeMillis,
+                                    FORMAT_DATE_FLAGS), slotModel.roomName);
+                    holder.textDateRoom.setText(text);
+                    break;
+                case TIME:
+                    holder.textDateRoom.setText(slotModel.roomName);
+                    break;
+                default:
+                    // Nothing.
+                    break;
+            }
+        }
+
+        private void fillTitleAndTopic(ViewHolder holder, SlotApiModel slotModel) {
+            holder.textSpeaker.setText(slotModel.talk.getReadableSpeakers());
+            holder.textTopic.setText(slotModel.talk.title);
         }
 
         public SlotApiModel getClickedItem(int position) {
@@ -313,11 +352,10 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         private class ViewHolder {
             public View container;
             public TextView textTopic;
-            public TextView text3;
+            public TextView textDateRoom;
             public TextView textSpeaker;
-            public TextView textTimeStart;
-            public TextView textTimeEnd;
             public ImageView imageButtonNotify;
+            public ImageView trackIcon;
         }
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <io.scalac.degree.android.view.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/talkListItemContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,6 +9,17 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <ImageView
+        android:id="@+id/talkTrackIcon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        tools:src="@drawable/ic_thumb"
+        tools:tint="#ff0000" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -42,6 +54,8 @@
 
     <ImageView
         android:id="@+id/imageButtonNotify"
-        style="@style/ScheduleImageButtonStyle" />
+        style="@style/ScheduleImageButtonStyle"
+        tools:src="@drawable/ic_star"
+        tools:tint="#ff0000" />
 
 </io.scalac.degree.android.view.ForegroundLinearLayout>

@@ -19,21 +19,18 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 
 import java.io.IOException;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.dao.SlotDao;
 import io.scalac.degree.data.downloader.SlotsDownloader;
+import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.utils.Logger;
-import io.scalac.degree.utils.SingleTuple;
 import io.scalac.degree.utils.Tuple;
 
 /**
@@ -46,8 +43,12 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
 
     @Bean
     SlotsDownloader slotsDownloader;
+
     @Bean
     SlotDao slotDao;
+
+    @Bean
+    TracksDownloader tracksDownloader;
 
     private List<SlotApiModel> allSlots = new ArrayList<>();
     private List<SlotApiModel> talks = new ArrayList<>();
@@ -158,6 +159,8 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
             @Nullable IDataManagerListener<SlotApiModel> dataListener) {
         try {
             notifyAboutStart(dataListener);
+
+            tracksDownloader.downloadTracksDescriptions(confCode);
 
             allSlots.clear();
             allSlots = slotsDownloader.downloadTalks(confCode);
