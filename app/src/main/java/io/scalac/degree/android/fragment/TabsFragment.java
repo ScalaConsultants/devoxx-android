@@ -77,12 +77,7 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
         logFlurryEvent("Schedule_by_time_watched");
         setHasOptionsMenu(true);
         init();
-    }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init();
     }
 
     @Override
