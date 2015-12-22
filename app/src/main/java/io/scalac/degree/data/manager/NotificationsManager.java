@@ -20,6 +20,7 @@ import org.androidannotations.annotations.SystemService;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.scalac.degree.android.activity.MainActivity_;
@@ -40,7 +41,10 @@ import io.scalac.degree33.R;
 public class NotificationsManager {
 
     public static final String EXTRA_TALK_ID = "io.scalac.degree.android.intent.extra.TALK_ID";
-
+    private static final long POST_TALK_NOTIFICATION_DELAY_MINUTES = 1;
+    public static final String EXTRA_NOTIFICATION_TYPE = "io.scalac.degree.android.intent.extra.EXTRA_NOTIFICATION_TYPE";
+    private static final long DEBUG_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.SECONDS.toMillis(10);
+    private static final long PROD_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.HOURS.toMillis(1);
     @RootContext
     Context context;
     @Bean
@@ -56,7 +60,11 @@ public class NotificationsManager {
     public boolean scheduleNotification(ScheduleNotificationModel scheduleNotificationModel) {
         final long talkStartTimeMs = scheduleNotificationModel.eventTime;
         final boolean showToast = scheduleNotificationModel.showToast;
-        final long alarmTime = calculateAlarmTime(talkStartTimeMs);
+
+        final long beforeTalkNotification = BuildConfig.DEBUG ?
+                DEBUG_BEFORE_TALK_NOTIFICATION_SPAN_MS : PROD_BEFORE_TALK_NOTIFICATION_SPAN_MS;
+
+        final long alarmTime = calculateAlarmTime(talkStartTimeMs, beforeTalkNotification);
         scheduleNotificationModel.setAlarmTime(alarmTime);
 
         if (alarmTime < System.currentTimeMillis()) {
@@ -65,6 +73,9 @@ public class NotificationsManager {
                         context.getString(R.string.toast_notification_not_set),
                         Toast.LENGTH_SHORT).show();
             }
+
+            Logger.l("Can't set alarm for talk notification: " + new Date(alarmTime));
+
             return false;
         }
 
@@ -72,6 +83,10 @@ public class NotificationsManager {
 
         storeNotification(scheduleNotificationModel);
         scheduleAlarm(context, alarmTime, slotId);
+
+        final long postTime = alarmTime + beforeTalkNotification + TimeUnit.MINUTES.
+                toMillis(POST_TALK_NOTIFICATION_DELAY_MINUTES);
+        schedulePostAlarm(context, postTime, slotId);
 
         if (showToast) {
             final DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
@@ -90,12 +105,31 @@ public class NotificationsManager {
         return true;
     }
 
-    public void unscheduleNotification(String slotId) {
+    private void schedulePostAlarm(Context context, long postTime, String slotId) {
+        Logger.logDate("Schedule POST alarm, on: " +
+                new Date(System.currentTimeMillis()), postTime);
+
+        final Intent intent = new Intent(context, AlarmReceiver_.class);
+        intent.putExtra(EXTRA_TALK_ID, slotId);
+        intent.putExtra(EXTRA_NOTIFICATION_TYPE, "post_notification");
+        final PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(context, (int) (slotId.hashCode() + postTime), intent, 0);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, postTime, pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, postTime, pendingIntent);
+        }
+    }
+
+    public void unscheduleNotification(String slotId, boolean removeRealmModel) {
         final Realm realm = realmProvider.getRealm();
-        realm.beginTransaction();
-        realm.where(RealmNotification.class).equalTo(RealmNotification.Contract.SLOT_ID,
-                slotId).findAll().clear();
-        realm.commitTransaction();
+        if (removeRealmModel) {
+            realm.beginTransaction();
+            realm.where(RealmNotification.class).equalTo(RealmNotification.Contract.SLOT_ID,
+                    slotId).findAll().clear();
+            realm.commitTransaction();
+        }
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver_.class);
@@ -109,6 +143,44 @@ public class NotificationsManager {
         final Realm realm = realmProvider.getRealm();
         return realm.where(RealmNotification.class)
                 .equalTo(RealmNotification.Contract.SLOT_ID, slotId).count() > 0;
+    }
+
+    public void showPostNotification(String slotId, String title, String desc) {
+        final Realm realm = realmProvider.getRealm();
+        final RealmNotification realmNotification = realm
+                .where(RealmNotification.class)
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId)
+                .findFirst();
+
+        if (isNotificationBeforeEvent(realmNotification)) {
+            Intent notificationIntent = new Intent(context, MainActivity_.class);
+            notificationIntent.putExtra(EXTRA_TALK_ID, slotId);
+            PendingIntent contentIntent = PendingIntent.getActivity(context,
+                    slotId.hashCode(),
+                    notificationIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+            notificationBuilder.setContentTitle(title);
+            notificationBuilder.setContentText(desc);
+            notificationBuilder.setContentIntent(contentIntent);
+            notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+            notificationBuilder.setWhen(realmNotification.getEventTime());
+            notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+            notificationBuilder.setTicker(desc);
+
+            Notification notification = notificationBuilder.build();
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+            notification.defaults |= Notification.DEFAULT_SOUND;
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
+            notification.defaults |= Notification.DEFAULT_LIGHTS;
+
+            notificationManager.notify(slotId.hashCode(), notification);
+            unscheduleNotification(slotId, true);
+        } else {
+            unscheduleNotification(slotId, true);
+        }
     }
 
     public void showNotification(String slotId) {
@@ -138,8 +210,6 @@ public class NotificationsManager {
             notificationBuilder.setTicker(realmNotification.getTalkName());
 
             Notification notification = notificationBuilder.build();
-            // notification.flags |= Notification.FLAG_ONGOING_EVENT;
-            // notification.flags |= Notification.FLAG_NO_CLEAR;
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
             notification.defaults |= Notification.DEFAULT_SOUND;
@@ -147,9 +217,9 @@ public class NotificationsManager {
             notification.defaults |= Notification.DEFAULT_LIGHTS;
 
             notificationManager.notify(slotId.hashCode(), notification);
-            unscheduleNotification(slotId);
+            unscheduleNotification(slotId, false);
         } else {
-            unscheduleNotification(slotId);
+            unscheduleNotification(slotId, false);
         }
     }
 
@@ -186,10 +256,10 @@ public class NotificationsManager {
         wakeLock.release();
     }
 
-    public long calculateAlarmTime(long talkStartMS) {
+    public long calculateAlarmTime(long talkStartMS, long beforeTalkTimeSpan) {
         return BuildConfig.DEBUG
-                ? System.currentTimeMillis() + 60000 // 60secs after set for testing
-                : talkStartMS - 600000; // 10 mins before start
+                ? System.currentTimeMillis() + beforeTalkTimeSpan
+                : talkStartMS - beforeTalkTimeSpan;
     }
 
     private void storeNotification(ScheduleNotificationModel notifyModel) {

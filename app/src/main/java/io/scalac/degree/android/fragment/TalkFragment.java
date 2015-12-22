@@ -157,7 +157,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
             @Override
             public void onClick(View v) {
                 if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
-                    notificationsManager.unscheduleNotification(slotModel.slotId);
+                    notificationsManager.unscheduleNotification(slotModel.slotId, true);
                     setupNotActiveScheduleView();
                 } else {
                     final NotificationsManager.ScheduleNotificationModel model =

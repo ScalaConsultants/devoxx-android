@@ -341,7 +341,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 final NotificationsManager.ScheduleNotificationModel scheduleNotificationModel =
                         NotificationsManager.ScheduleNotificationModel.create(talkItem, true);
                 if (isAlarmSet) {
-                    notificationsManager.unscheduleNotification(talkItem.slotId);
+                    notificationsManager.unscheduleNotification(talkItem.slotId, true);
                 } else {
                     notificationsManager.scheduleNotification(scheduleNotificationModel);
                 }
