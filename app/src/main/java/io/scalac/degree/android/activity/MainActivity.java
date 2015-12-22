@@ -19,6 +19,7 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -34,6 +35,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.List;
 
@@ -44,6 +46,7 @@ import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.AbstractDataManager;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
@@ -57,12 +60,17 @@ public class MainActivity extends BaseActivity
         AbstractDataManager.IDataManagerListener<SlotApiModel> {
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
+    public static final String INTENT_FILTER_TALKS_ACTION = "INTENT_FILTER_TALKS_ACTION";
+    private static final int UNKNOWN_MENU_RES = -1;
 
     @Bean
     SlotsDataManager slotsDataManager;
 
     @Bean
     SpeakersDataManager speakersDataManager;
+
+    @Pref
+    Settings_ settings;
 
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
@@ -84,6 +92,7 @@ public class MainActivity extends BaseActivity
     private int lastClickedMenuItemId;
     private int currentClickedMenuItemId;
     private boolean isColdStart;
+    private int toolbarMenuRes = UNKNOWN_MENU_RES;
     private FragmentManager.OnBackStackChangedListener
             onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
         @Override
@@ -92,8 +101,21 @@ public class MainActivity extends BaseActivity
             final Fragment currentFragment = getCurrentFragment();
             setupToolbarSpinnerVisibility(currentFragment);
             setupToolbarTitle(currentFragment);
+            setupToolbarMenu(currentFragment);
         }
     };
+
+    private void setupToolbarMenu(Fragment currentFragment) {
+        boolean needsFilterIcon = false;
+        if (currentFragment instanceof BaseFragment) {
+            needsFilterIcon = ((BaseFragment) currentFragment).needsFilterToolbarIcon();
+        }
+
+        toolbarMenuRes = needsFilterIcon ? R.menu.menu_toolbar : UNKNOWN_MENU_RES;
+
+        supportInvalidateOptionsMenu();
+    }
+
     private String incomingSlotId;
 
     @AfterViews
@@ -164,6 +186,40 @@ public class MainActivity extends BaseActivity
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (toolbarMenuRes != UNKNOWN_MENU_RES) {
+            toolbar.inflateMenu(toolbarMenuRes);
+
+            final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
+            if (settings.filterTalksBySchedule().getOr(false)) {
+                item.setIcon(R.drawable.ic_visibility_white_24dp);
+            } else {
+                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if ((item.getItemId() == R.id.action_filter_scheduled)) {
+            final boolean currentState = settings.filterTalksBySchedule().getOr(false);
+            settings.filterTalksBySchedule().put(!currentState);
+
+            if (!currentState) {
+                item.setIcon(R.drawable.ic_visibility_white_24dp);
+            } else {
+                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
+            }
+
+            sendBroadcast(new Intent(INTENT_FILTER_TALKS_ACTION));
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void handleMapClick() {
@@ -242,6 +298,7 @@ public class MainActivity extends BaseActivity
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
         setupToolbarSpinnerVisibility(fragment);
+        setupToolbarMenu(fragment);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();

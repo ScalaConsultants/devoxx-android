@@ -1,5 +1,6 @@
 package io.scalac.degree.android.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -68,6 +70,7 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         init();
     }
 
@@ -79,6 +82,11 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
 
     @Override
     public boolean needsToolbarSpinner() {
+        return true;
+    }
+
+    @Override
+    public boolean needsFilterToolbarIcon() {
         return true;
     }
 
