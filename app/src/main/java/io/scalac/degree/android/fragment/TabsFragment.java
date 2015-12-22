@@ -22,8 +22,10 @@ import org.androidannotations.annotations.ViewById;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.scalac.degree.android.activity.MainActivity;
 import io.scalac.degree.android.view.SlidingTabLayout;
@@ -33,6 +35,8 @@ import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_tabs)
 public class TabsFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
+
+    private static final long TAB_POSTITION_SLOT_CHECK_WINDOW_MS = TimeUnit.MINUTES.toMillis(10);
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -70,14 +74,10 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logFlurryEvent("Schedule_by_time_watched");
         setHasOptionsMenu(true);
         init();
-    }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init();
     }
 
     @Override
@@ -110,6 +110,7 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
                 return getResources().getColor(R.color.tab_strip);
             }
         });
+
         viewPager.setCurrentItem(currentTabPosition);
 
         slidingTabLayout.setTabTextColor(Color.WHITE);
@@ -142,14 +143,28 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
             final Date currentDate = datesList.get(currentDatePosition);
             timeTabLabels = slotsDataManager.extractTimeLabelsForDate(currentDate);
 
-            // currentTabPosition = TimeslotItem.getInitialTimePosition(timeTabLabels);
-            logFlurryEvent("Schedule_by_time_watched");
+            final long now = Calendar.getInstance().getTimeInMillis();
+            final int size = timeTabLabels.size();
+            for (int i = 0; i < size; i++) {
+                final SlotApiModel slotApiModel = timeTabLabels.get(i);
+                if (checkSlot(slotApiModel, now, TAB_POSTITION_SLOT_CHECK_WINDOW_MS)) {
+                    currentTabPosition = i;
+                    break;
+                }
+            }
+
             DateFormat dateFormat = android.text.format.DateFormat.
                     getMediumDateFormat(getActivity().getApplicationContext());
             for (Date date : datesList) {
                 datesNamesList.add(dateFormat.format(date));
             }
         }
+    }
+
+    private boolean checkSlot(SlotApiModel slotApiModel, long nowMillis, long windowMillis) {
+        final long start = slotApiModel.fromTimeMillis - windowMillis;
+        final long stop = slotApiModel.toTimeMillis + windowMillis;
+        return nowMillis >= start && nowMillis <= stop;
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
