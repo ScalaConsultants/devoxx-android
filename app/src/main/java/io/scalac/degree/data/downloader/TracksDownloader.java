@@ -30,17 +30,19 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
     @Background
     public void downloadTracksDescriptions(String confCode) {
         final Call<TracksApiModel> tracksCall = connection.getDevoxxApi().tracks(confCode);
+        final Realm realm = realmProvider.getRealm();
         try {
             final Response<TracksApiModel> response = tracksCall.execute();
             final TracksApiModel tracksApiModel = response.body();
-            final Realm realm = realmProvider.getRealm();
+            realm.beginTransaction();
             for (TrackApiModel apiModel : tracksApiModel.tracks) {
-                realm.beginTransaction();
                 realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
-                realm.commitTransaction();
             }
+            realm.commitTransaction();
         } catch (IOException e) {
             Logger.exc(e);
+            realm.cancelTransaction();
+            realm.close();
         }
     }
 
