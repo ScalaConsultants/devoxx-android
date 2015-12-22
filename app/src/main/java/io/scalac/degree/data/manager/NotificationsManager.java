@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
@@ -41,19 +42,24 @@ import io.scalac.degree33.R;
 public class NotificationsManager {
 
     public static final String EXTRA_TALK_ID = "io.scalac.degree.android.intent.extra.TALK_ID";
-    private static final long POST_TALK_NOTIFICATION_DELAY_MINUTES = 1;
     public static final String EXTRA_NOTIFICATION_TYPE = "io.scalac.degree.android.intent.extra.EXTRA_NOTIFICATION_TYPE";
+
+    private static final long POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.MINUTES.toMillis(1);
     private static final long DEBUG_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.SECONDS.toMillis(10);
     private static final long PROD_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.HOURS.toMillis(1);
+
     @RootContext
+
     Context context;
     @Bean
     RealmProvider realmProvider;
 
     @SystemService
     AlarmManager alarmManager;
+
     @SystemService
     NotificationManager notificationManager;
+
     @SystemService
     PowerManager powerManager;
 
@@ -84,8 +90,7 @@ public class NotificationsManager {
         storeNotification(scheduleNotificationModel);
         scheduleAlarm(context, alarmTime, slotId);
 
-        final long postTime = alarmTime + beforeTalkNotification + TimeUnit.MINUTES.
-                toMillis(POST_TALK_NOTIFICATION_DELAY_MINUTES);
+        final long postTime = alarmTime + beforeTalkNotification + POST_TALK_NOTIFICATION_DELAY_MS;
         schedulePostAlarm(context, postTime, slotId);
 
         if (showToast) {
@@ -160,27 +165,36 @@ public class NotificationsManager {
                     notificationIntent,
                     PendingIntent.FLAG_CANCEL_CURRENT);
 
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-            notificationBuilder.setContentTitle(title);
-            notificationBuilder.setContentText(desc);
-            notificationBuilder.setContentIntent(contentIntent);
-            notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-            notificationBuilder.setWhen(realmNotification.getEventTime());
-            notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-            notificationBuilder.setTicker(desc);
-
-            Notification notification = notificationBuilder.build();
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-            notification.defaults |= Notification.DEFAULT_SOUND;
-            notification.defaults |= Notification.DEFAULT_VIBRATE;
-            notification.defaults |= Notification.DEFAULT_LIGHTS;
+            final Notification notification = createPostNotification(
+                    title, desc, realmNotification, contentIntent);
 
             notificationManager.notify(slotId.hashCode(), notification);
             unscheduleNotification(slotId, true);
         } else {
             unscheduleNotification(slotId, true);
         }
+    }
+
+    @NonNull
+    private Notification createPostNotification(
+            String title, String desc,
+            RealmNotification realmNotification, PendingIntent contentIntent) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+        notificationBuilder.setContentTitle(title);
+        notificationBuilder.setContentText(desc);
+        notificationBuilder.setContentIntent(contentIntent);
+        notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+        notificationBuilder.setWhen(realmNotification.getEventTime());
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        notificationBuilder.setTicker(desc);
+
+        Notification notification = notificationBuilder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+        notification.defaults |= Notification.DEFAULT_LIGHTS;
+        return notification;
     }
 
     public void showNotification(String slotId) {
@@ -198,29 +212,36 @@ public class NotificationsManager {
                     notificationIntent,
                     PendingIntent.FLAG_CANCEL_CURRENT);
 
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
-            notificationBuilder.setContentTitle(realmNotification.getRoomName());
-            notificationBuilder.setContentText(realmNotification.getTalkName());
-            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(realmNotification.getTalkName()));
-            notificationBuilder.setContentIntent(contentIntent);
-            notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
-            notificationBuilder.setWhen(realmNotification.getEventTime());
-            notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
-            notificationBuilder.setTicker(realmNotification.getTalkName());
-
-            Notification notification = notificationBuilder.build();
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-            notification.defaults |= Notification.DEFAULT_SOUND;
-            notification.defaults |= Notification.DEFAULT_VIBRATE;
-            notification.defaults |= Notification.DEFAULT_LIGHTS;
+            final Notification notification = createTalkNotification(
+                    realmNotification, contentIntent);
 
             notificationManager.notify(slotId.hashCode(), notification);
             unscheduleNotification(slotId, false);
         } else {
             unscheduleNotification(slotId, false);
         }
+    }
+
+    @NonNull
+    private Notification createTalkNotification(RealmNotification realmNotification, PendingIntent contentIntent) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+        notificationBuilder.setContentTitle(realmNotification.getRoomName());
+        notificationBuilder.setContentText(realmNotification.getTalkName());
+        notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                .bigText(realmNotification.getTalkName()));
+        notificationBuilder.setContentIntent(contentIntent);
+        notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+        notificationBuilder.setWhen(realmNotification.getEventTime());
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        notificationBuilder.setTicker(realmNotification.getTalkName());
+
+        Notification notification = notificationBuilder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+        notification.defaults |= Notification.DEFAULT_LIGHTS;
+        return notification;
     }
 
     private boolean isNotificationBeforeEvent(RealmNotification realmNotification) {
