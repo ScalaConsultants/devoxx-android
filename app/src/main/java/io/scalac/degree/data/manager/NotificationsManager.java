@@ -127,14 +127,15 @@ public class NotificationsManager {
         }
     }
 
-    public void unscheduleNotification(String slotId, boolean removeRealmModel) {
+    public void unscheduleNotification(String slotId, boolean finishNotification) {
         final Realm realm = realmProvider.getRealm();
-        if (removeRealmModel) {
-            realm.beginTransaction();
-            realm.where(RealmNotification.class).equalTo(RealmNotification.Contract.SLOT_ID,
-                    slotId).findAll().clear();
-            realm.commitTransaction();
+        realm.beginTransaction();
+        if (finishNotification) {
+            flagNotificationAsComplete(realm, slotId);
+        } else {
+            flagNotificationAsFiredForTalk(realm, slotId);
         }
+        realm.commitTransaction();
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver_.class);
@@ -144,10 +145,24 @@ public class NotificationsManager {
         alarmManager.cancel(pendingIntent);
     }
 
+    private void flagNotificationAsFiredForTalk(Realm realm, String slotId) {
+        final RealmNotification notification = realm.where(RealmNotification.class)
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
+        if (notification != null) {
+            notification.setFiredForTalk(true);
+        }
+    }
+
+    private void flagNotificationAsComplete(Realm realm, String slotId) {
+        realm.where(RealmNotification.class).equalTo(RealmNotification.Contract.SLOT_ID,
+                slotId).findAll().clear();
+    }
+
     public boolean isNotificationScheduled(String slotId) {
         final Realm realm = realmProvider.getRealm();
-        return realm.where(RealmNotification.class)
-                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).count() > 0;
+        final RealmNotification notification = realm.where(RealmNotification.class)
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
+        return notification != null && !notification.isFiredForTalk();
     }
 
     public void showPostNotification(String slotId, String title, String desc) {

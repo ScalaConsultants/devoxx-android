@@ -16,6 +16,15 @@ public class RealmNotification extends RealmObject {
     private String talkName;
     private long eventTime;
     private long alarmTime;
+    private boolean firedForTalk;
+
+    public boolean isFiredForTalk() {
+        return firedForTalk;
+    }
+
+    public void setFiredForTalk(boolean firedForTalk) {
+        this.firedForTalk = firedForTalk;
+    }
 
     public String getSlotId() {
         return slotId;
