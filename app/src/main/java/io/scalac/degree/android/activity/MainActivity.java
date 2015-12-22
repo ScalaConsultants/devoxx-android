@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (toolbarMenuRes != UNKNOWN_MENU_RES) {
-            toolbar.inflateMenu(R.menu.menu_toolbar);
+            toolbar.inflateMenu(toolbarMenuRes);
 
             final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
             if (settings.filterTalksBySchedule().getOr(false)) {
