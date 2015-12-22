@@ -38,17 +38,12 @@ import java.util.Locale;
 import io.scalac.degree.android.activity.MainActivity;
 import io.scalac.degree.android.view.ForegroundLinearLayout;
 import io.scalac.degree.connection.model.SlotApiModel;
-<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
 import io.scalac.degree.data.Settings_;
-import io.scalac.degree.data.manager.NotificationsManager;
-import io.scalac.degree.data.manager.SlotsDataManager;
-import io.scalac.degree.utils.Logger;
-=======
 import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.AnimateFirstDisplayListener;
->>>>>>> Adds track icons on list items.
+import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
@@ -62,13 +57,11 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @Bean
     NotificationsManager notificationsManager;
 
-<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
     @Pref
     Settings_ settings;
-=======
+
     @Bean
     TracksDownloader tracksDownloader;
->>>>>>> Adds track icons on list items.
 
     @FragmentArg
     String talksTypeEnumName;
@@ -101,10 +94,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     void afterInject() {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
-<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
         listAdapter = new ItemAdapter(shouldFilter());
-=======
-        listAdapter = new ItemAdapter();
 
         imageLoaderOptions = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.th_background)
@@ -114,7 +104,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
->>>>>>> Adds track icons on list items.
     }
 
     @Override
@@ -305,6 +294,13 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 holder.imageButtonNotify.setColorFilter(notscheduledStarColor);
             }
             holder.imageButtonNotify.setTag(position);
+
+            final ForegroundLinearLayout fl = (ForegroundLinearLayout) holder.container;
+            if (shouldFilterScheduledItems && !isAlarmSet) {
+                fl.setForeground(new ColorDrawable(unscheduledItemColorForeground));
+            } else {
+                fl.setForeground(null);
+            }
         }
 
         private void fillDateAndRoom(ViewHolder holder, SlotApiModel slotModel) {
@@ -323,38 +319,11 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                     // Nothing.
                     break;
             }
-<<<<<<< 97b285aae5fa908c6f3281e76a1603a83067f1d6
-
-            boolean isAlarmSet = notificationsManager
-                    .isNotificationScheduled(slotModel.slotId);
-
-            if (isAlarmSet) {
-                holder.imageButtonNotify.setColorFilter(scheduledStarColor);
-            } else {
-                holder.imageButtonNotify.setColorFilter(notscheduledStarColor);
-            }
-
-            holder.imageButtonNotify.setTag(position);
-
-<<<<<<< cb08200ca7e9fdff9c9e4857da0645eb5f707259
-            final ForegroundLinearLayout fl = (ForegroundLinearLayout) holder.container;
-            if (shouldFilterScheduledItems && !isAlarmSet) {
-                fl.setForeground(new ColorDrawable(unscheduledItemColorForeground));
-            } else {
-                fl.setForeground(null);
-            }
-=======
-            final String trackIconUrl = tracksDownloader.getTrackIconUrl(slotModel.talk.track);
-            imageLoader.displayImage(trackIconUrl, holder.trackIcon,
-                    imageLoaderOptions, animateFirstListener);
->>>>>>> Adds track icons on list items.
-=======
         }
 
         private void fillTitleAndTopic(ViewHolder holder, SlotApiModel slotModel) {
             holder.textSpeaker.setText(slotModel.talk.getReadableSpeakers());
             holder.textTopic.setText(slotModel.talk.title);
->>>>>>> Fixes comments.
         }
 
         public SlotApiModel getClickedItem(int position) {
