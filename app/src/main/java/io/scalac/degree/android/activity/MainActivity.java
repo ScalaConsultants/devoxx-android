@@ -61,6 +61,7 @@ public class MainActivity extends BaseActivity
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
     public static final String INTENT_FILTER_TALKS_ACTION = "INTENT_FILTER_TALKS_ACTION";
+    private static final int UNKNOWN_MENU_RES = -1;
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -91,7 +92,7 @@ public class MainActivity extends BaseActivity
     private int lastClickedMenuItemId;
     private int currentClickedMenuItemId;
     private boolean isColdStart;
-    private int toolbarMenuRes = -1;
+    private int toolbarMenuRes = UNKNOWN_MENU_RES;
     private FragmentManager.OnBackStackChangedListener
             onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
         @Override
@@ -110,10 +111,7 @@ public class MainActivity extends BaseActivity
             needsFilterIcon = ((BaseFragment) currentFragment).needsFilterToolbarIcon();
         }
 
-        toolbarMenuRes = -1;
-        if (needsFilterIcon) {
-            toolbarMenuRes = R.menu.menu_toolbar;
-        }
+        toolbarMenuRes = needsFilterIcon ? R.menu.menu_toolbar : UNKNOWN_MENU_RES;
 
         supportInvalidateOptionsMenu();
     }
@@ -192,7 +190,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (toolbarMenuRes != -1) {
+        if (toolbarMenuRes != UNKNOWN_MENU_RES) {
             toolbar.inflateMenu(R.menu.menu_toolbar);
 
             final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
