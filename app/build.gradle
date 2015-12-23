@@ -119,4 +119,5 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.3@aar') {
         transitive = true
     }
+    compile project(path: ':scanner')
 }

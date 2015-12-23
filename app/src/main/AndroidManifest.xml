@@ -45,7 +45,7 @@
         <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_" />
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_" />
         <activity android:name="io.scalac.degree.android.activity.MapActivity_" />
-        <activity android:name="scanner.BarcodeCaptureActivity" />
+        <activity android:name="io.scalac.scanner.BarcodeCaptureActivity" />
 
         <receiver
             android:name="io.scalac.degree.android.receiver.AlarmReceiver_"

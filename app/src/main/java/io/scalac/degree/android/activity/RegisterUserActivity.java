@@ -7,7 +7,7 @@ import org.androidannotations.annotations.EActivity;
 
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
-import scanner.BarcodeCaptureActivity;
+import io.scalac.scanner.BarcodeCaptureActivity;
 
 /**
  * www.scalac.io

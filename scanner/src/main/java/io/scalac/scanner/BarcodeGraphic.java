@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scanner;
+package io.scalac.scanner;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,7 +22,7 @@ import android.graphics.RectF;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
-import scanner.ui.camera.GraphicOverlay;
+import io.scalac.scanner.camera.GraphicOverlay;
 
 /**
  * Graphic instance for rendering barcode position, size, and ID within an associated graphic

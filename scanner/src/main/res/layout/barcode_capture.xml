@@ -7,16 +7,16 @@
     android:keepScreenOn="true"
     android:orientation="vertical">
 
-    <scanner.ui.camera.CameraSourcePreview
+    <io.scalac.scanner.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <scanner.ui.camera.GraphicOverlay
+        <io.scalac.scanner.camera.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </scanner.ui.camera.CameraSourcePreview>
+    </io.scalac.scanner.camera.CameraSourcePreview>
 
 </LinearLayout>

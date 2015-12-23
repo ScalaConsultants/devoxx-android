@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scanner;
+package io.scalac.scanner;
 
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
 
-import scanner.ui.camera.GraphicOverlay;
+import io.scalac.scanner.camera.GraphicOverlay;
 
 /**
  * Generic tracker which is used for tracking or reading a barcode (and can really be used for
