@@ -90,7 +90,8 @@ dependencies {
     compile "com.android.support:design:${SUPPORT_VERSION}"
     compile "com.android.support:support-v4:${SUPPORT_VERSION}"
 
-    compile 'com.google.android.gms:play-services-maps:8.3.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-vision:8.4.0'
 
     compile 'org.jetbrains:annotations:13.0'
     compile 'com.github.bumptech.glide:glide:3.6.0'

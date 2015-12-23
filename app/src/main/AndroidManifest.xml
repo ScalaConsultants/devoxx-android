@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.scalac.degree33">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -44,6 +45,7 @@
         <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_" />
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_" />
         <activity android:name="io.scalac.degree.android.activity.MapActivity_" />
+        <activity android:name="scanner.BarcodeCaptureActivity" />
 
         <receiver
             android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
