@@ -16,11 +16,6 @@ import io.scalac.degree.utils.Logger;
 import retrofit.Call;
 import retrofit.Response;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 21/12/2015.
- */
 @EBean
 public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 

@@ -33,11 +33,6 @@ import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.BuildConfig;
 import io.scalac.degree33.R;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 03/11/2015
- */
 @EBean
 public class NotificationsManager {
 

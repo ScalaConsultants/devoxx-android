@@ -23,11 +23,6 @@ import io.scalac.degree.data.Settings_;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 09/12/2015
- */
 @EActivity(R.layout.activity_register_nfc)
 public class NfcScanningActivity extends BaseActivity {
 
@@ -44,8 +39,7 @@ public class NfcScanningActivity extends BaseActivity {
     private IntentFilter[] intentFilters;
     private PendingIntent pendingIntent;
 
-    @AfterViews
-    void afterViews() {
+    @AfterViews void afterViews() {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |

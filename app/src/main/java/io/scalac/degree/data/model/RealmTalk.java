@@ -2,11 +2,6 @@ package io.scalac.degree.data.model;
 
 import io.realm.RealmObject;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 30/10/2015
- */
 public class RealmTalk extends RealmObject {
     private String title;
     private String talkType;

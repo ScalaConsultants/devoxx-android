@@ -14,11 +14,6 @@ import android.widget.LinearLayout;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 18/12/2015
- */
 public class ForegroundLinearLayout extends LinearLayout {
     private Drawable mForeground;
 

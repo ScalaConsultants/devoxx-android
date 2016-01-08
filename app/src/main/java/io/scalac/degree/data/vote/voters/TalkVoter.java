@@ -15,11 +15,6 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 25/11/2015.
- */
 @EBean
 public class TalkVoter extends AbstractVoter {
 

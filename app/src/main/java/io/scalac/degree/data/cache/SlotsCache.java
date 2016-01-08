@@ -19,11 +19,6 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.cache.model.CacheSlotsObject;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 30/10/2015
- */
 @EBean
 public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
 

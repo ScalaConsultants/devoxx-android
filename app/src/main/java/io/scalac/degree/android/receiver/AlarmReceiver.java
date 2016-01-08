@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
-import com.flurry.android.FlurryAgent;
-
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EReceiver;
 import org.androidannotations.annotations.SystemService;
@@ -52,7 +50,5 @@ public class AlarmReceiver extends BroadcastReceiver {
         final String slotId = intent.getStringExtra(NotificationsManager.EXTRA_TALK_ID);
         notificationsManager.showNotification(slotId);
         wl.release();
-
-        FlurryAgent.logEvent("Alarm_received");
     }
 }

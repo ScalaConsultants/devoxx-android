@@ -4,11 +4,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.scalac.degree.connection.model.TrackApiModel;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 21/12/2015.
- */
 public class RealmTrack extends RealmObject {
 
     @PrimaryKey

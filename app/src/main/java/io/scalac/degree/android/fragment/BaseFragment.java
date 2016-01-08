@@ -5,8 +5,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.widget.Spinner;
 
-import com.flurry.android.FlurryAgent;
-
 import org.androidannotations.annotations.EFragment;
 
 import io.scalac.degree.android.activity.MainActivity;
@@ -18,10 +16,6 @@ public class BaseFragment extends Fragment {
 
     MainActivity getMainActivity() {
         return (MainActivity) getActivity();
-    }
-
-    void logFlurryEvent(String eventName) {
-        FlurryAgent.logEvent(eventName);
     }
 
     Spinner getToolbarSpinner() {
@@ -36,15 +30,11 @@ public class BaseFragment extends Fragment {
         return false;
     }
 
-    public
-    @StringRes
-    int getTitle() {
+    @StringRes public int getTitle() {
         return UNKNOWN_TITLE_RES;
     }
 
-    public
-    @Nullable
-    String getTitleAsString() {
+    @Nullable public String getTitleAsString() {
         return null;
     }
 

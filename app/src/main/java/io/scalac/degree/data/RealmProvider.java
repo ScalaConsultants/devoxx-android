@@ -8,11 +8,6 @@ import org.androidannotations.annotations.RootContext;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 04/11/2015
- */
 @EBean(scope = EBean.Scope.Singleton)
 public class RealmProvider {
 

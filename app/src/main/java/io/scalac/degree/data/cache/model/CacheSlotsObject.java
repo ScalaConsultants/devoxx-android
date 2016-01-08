@@ -2,11 +2,6 @@ package io.scalac.degree.data.cache.model;
 
 import io.realm.RealmObject;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 30/10/2015
- */
 public class CacheSlotsObject extends RealmObject {
     private String rawData;
     private long timestamp;

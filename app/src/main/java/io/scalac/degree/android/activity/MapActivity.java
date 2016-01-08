@@ -16,11 +16,6 @@ import org.androidannotations.annotations.ViewById;
 
 import io.scalac.degree33.R;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 17/12/2015
- */
 @EActivity
 public class MapActivity extends BaseActivity {
 

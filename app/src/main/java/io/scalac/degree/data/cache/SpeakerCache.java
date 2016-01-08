@@ -16,11 +16,6 @@ import io.scalac.degree.connection.model.SpeakerFullApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.cache.model.CacheSpeakerObject;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 30/10/2015
- */
 @EBean
 public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
 

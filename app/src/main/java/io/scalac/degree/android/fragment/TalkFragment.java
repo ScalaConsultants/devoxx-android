@@ -99,7 +99,6 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        logFlurryEvent("Talk_info_watched");
     }
 
     @Nullable
@@ -256,13 +255,13 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
     @Override
     public void onVoteForTalkSucceed() {
         // TODO Dev code, do not comment.
-        Toast.makeText(getContext(), "Zagłosowałeś!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Voted!", Toast.LENGTH_SHORT).show();
         talkVoter.getVotesCountForTalk(talkId, this);
     }
 
     @Override
     public void onVoteForTalkFailed() {
         // TODO Dev code, do not comment.
-        Toast.makeText(getContext(), "Problem podczas głosowania.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Voted error", Toast.LENGTH_SHORT).show();
     }
 }

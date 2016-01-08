@@ -1,5 +1,8 @@
 package io.scalac.degree.android.fragment;
 
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,9 +16,9 @@ import android.widget.Toast;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -31,9 +34,7 @@ import io.realm.RealmResults;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeaker;
-import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree.utils.Logger;
-import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -53,28 +54,12 @@ public class SpeakersFragment extends BaseFragment {
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
 
-    DisplayImageOptions imageLoaderOptions;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
-    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
     private ListView listView;
     private ItemAdapter itemAdapter;
 
-    @AfterInject
-    void afterInject() {
-        imageLoaderOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.th_background)
-                .showImageForEmptyUri(R.drawable.no_photo)
-                .showImageOnFail(R.drawable.no_photo)
-                .delayBeforeLoading(200)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-    }
 
     @AfterViews
     void afterViews() {
-        logFlurryEvent("Speakers_watched");
-
         final Subscriber<Void> subscriber = new Subscriber<Void>() {
             @Override
             public void onCompleted() {
@@ -117,8 +102,6 @@ public class SpeakersFragment extends BaseFragment {
                 subscribe(subscriber);
 
         listView = (ListView) getView();
-        final View footer = Utils.getFooterView(getActivity(), listView);
-        listView.addFooterView(footer);
         listView.setFooterDividersEnabled(false);
         listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -204,10 +187,23 @@ public class SpeakersFragment extends BaseFragment {
                     speakerItem.getFirstName(), speakerItem.getLastName()));
             holder.textBio.setText(speakerItem.getCompany());
 
-            imageLoader.displayImage(speakerItem.getAvatarURL(),
-                    holder.imageSpeaker,
-                    imageLoaderOptions,
-                    animateFirstListener);
+            Glide.with(getMainActivity()).load(speakerItem.getAvatarURL())
+                    .asBitmap()
+                    .centerCrop()
+                    .placeholder(R.drawable.th_background)
+                    .error(R.drawable.no_photo)
+                    .fallback(R.drawable.no_photo)
+                    .into(new BitmapImageViewTarget(holder.imageSpeaker) {
+                        @Override
+                        public void onResourceReady(
+                                Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            final RoundedBitmapDrawable circularBitmapDrawable =
+                                    RoundedBitmapDrawableFactory.create(
+                                            holder.imageSpeaker.getResources(), resource);
+                            circularBitmapDrawable.setCircular(true);
+                            holder.imageSpeaker.setImageDrawable(circularBitmapDrawable);
+                        }
+                    });
 
             return viewItem;
         }

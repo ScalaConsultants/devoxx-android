@@ -8,11 +8,6 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.vote.interfaces.ITalkVoter;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 09/12/2015.
- */
 @EBean
 public abstract class AbstractVoter implements ITalkVoter {
 

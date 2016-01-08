@@ -19,11 +19,6 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.model.RealmSlotsAggregate;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 05/11/2015
- */
 @EBean
 public class SlotDao {
 

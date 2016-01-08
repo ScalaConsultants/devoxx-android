@@ -3,11 +3,6 @@ package io.scalac.degree.connection.vote.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 08/12/2015.
- */
 public class VoteTalkModel extends VoteTalkSimpleModel {
     public String title;
     public String summary;

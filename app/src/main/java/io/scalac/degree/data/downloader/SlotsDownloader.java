@@ -19,11 +19,6 @@ import io.scalac.degree.data.cache.SlotsCache;
 import io.scalac.degree.utils.Logger;
 import retrofit.Call;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 27/10/2015
- */
 @EBean
 public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
 

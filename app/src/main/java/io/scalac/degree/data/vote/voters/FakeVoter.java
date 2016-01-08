@@ -7,11 +7,6 @@ import io.scalac.degree.data.vote.interfaces.IOnGetTalkVotesListener;
 import io.scalac.degree.data.vote.interfaces.IOnVoteForTalkListener;
 import io.scalac.degree.data.vote.interfaces.ITalkVoter;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 08/12/2015.
- */
 @EBean
 public class FakeVoter extends AbstractVoter {
 

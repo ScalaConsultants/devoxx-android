@@ -13,11 +13,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 29/10/2015
- */
 @EBean
 public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
 

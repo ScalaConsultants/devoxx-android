@@ -1,10 +1,5 @@
 package io.scalac.degree.utils;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 29/10/2015
- */
 public class SingleTuple<First, Second> {
     public final First first;
     public final Second object;
