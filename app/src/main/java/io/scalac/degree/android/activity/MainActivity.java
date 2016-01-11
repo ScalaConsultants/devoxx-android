@@ -147,38 +147,50 @@ public class MainActivity extends BaseActivity
     }
 
     private void loadCoreData() {
-        final List<SlotApiModel> items = slotsDataManager.getLastTalks();
-
         if (TextUtils.isEmpty(incomingSlotId)) {
-            final Intent intent = getIntent();
-            if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
-                incomingSlotId = intent.getStringExtra(
-                        NotificationsManager.EXTRA_TALK_ID);
-            }
+            initIncomingSlotId();
         }
 
-        if (isColdStart && !TextUtils.isEmpty(incomingSlotId)) {
-            final Optional<SlotApiModel> optModel = Stream.of(items)
-                    .filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
-                    .findFirst();
+        final boolean coldStartFromNotification =
+                isColdStart && !TextUtils.isEmpty(incomingSlotId);
 
-            if (optModel.isPresent()) {
-                final FragmentManager fm = getSupportFragmentManager();
-                final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
-                final SlotApiModel slotApiModel = optModel.get();
-                if (talkFragment instanceof TalkFragment) {
-                    ((TalkFragment) talkFragment).setupViews(slotApiModel);
-                } else {
-                    removeFragments();
-                    replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
-                }
-
-                syncActionBarArrowState();
-            } else {
-                selectItem(R.id.drawer_menu_schedule);
-            }
+        if (coldStartFromNotification) {
+            loadDataForNotificationOnColdStart();
         } else {
             selectItem(R.id.drawer_menu_schedule);
+        }
+    }
+
+    private void initIncomingSlotId() {
+        final Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
+            incomingSlotId = intent.getStringExtra(
+                    NotificationsManager.EXTRA_TALK_ID);
+        }
+    }
+
+    private void loadDataForNotificationOnColdStart() {
+        final List<SlotApiModel> items = slotsDataManager.getLastTalks();
+        final Optional<SlotApiModel> optModel = Stream.of(items)
+                .filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
+                .findFirst();
+
+        if (optModel.isPresent()) {
+            setupTalkFragment(optModel.get());
+            syncActionBarArrowState();
+        } else {
+            selectItem(R.id.drawer_menu_schedule);
+        }
+    }
+
+    private void setupTalkFragment(SlotApiModel slotApiModel) {
+        final FragmentManager fm = getSupportFragmentManager();
+        final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
+        if (talkFragment instanceof TalkFragment) {
+            ((TalkFragment) talkFragment).setupViews(slotApiModel);
+        } else {
+            removeFragments();
+            replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
         }
     }
 
