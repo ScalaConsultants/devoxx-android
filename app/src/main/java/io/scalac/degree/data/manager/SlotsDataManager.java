@@ -33,11 +33,6 @@ import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree.utils.Tuple;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 28/10/2015
- */
 @EBean(scope = EBean.Scope.Singleton)
 public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
 

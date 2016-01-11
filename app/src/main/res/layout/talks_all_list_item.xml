@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.scalac.degree.android.view.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<io.scalac.degree.android.view.ForegroundLinearLayout
     android:id="@+id/talkListItemContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
@@ -15,11 +16,11 @@
         android:layout_width="@dimen/track_icon_size"
         android:layout_height="@dimen/track_icon_size"
         android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:contentDescription="@null"
-        android:scaleType="centerInside"
         tools:src="@drawable/ic_thumb"
-        tools:tint="#ff0000" />
+        tools:tint="#ff0000"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -36,14 +37,14 @@
             style="@style/talks_topic_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Topic" />
+            android:text="Topic"/>
 
         <TextView
             android:id="@+id/textSpeakers"
             style="@style/talks_speakers_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Speakers" />
+            android:text="Speakers"/>
 
         <TextView
             android:id="@+id/textTime"
@@ -51,12 +52,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Time" />
+            android:text="Time"/>
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageButtonNotify"
-        style="@style/ScheduleImageButtonStyle" />
+        style="@style/ScheduleImageButtonStyle"
+        android:contentDescription="@null"/>
 
 </io.scalac.degree.android.view.ForegroundLinearLayout>

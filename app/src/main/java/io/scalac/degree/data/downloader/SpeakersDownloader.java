@@ -23,11 +23,6 @@ import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.utils.Logger;
 import retrofit.Call;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 29/10/2015
- */
 @EBean
 public class SpeakersDownloader extends AbstractDownloader<SpeakerShortApiModel> {
 

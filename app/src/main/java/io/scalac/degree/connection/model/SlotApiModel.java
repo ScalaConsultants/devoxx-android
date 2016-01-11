@@ -5,11 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 26/10/2015
- */
 public class SlotApiModel implements Serializable {
 
     /* nullability is mutually exclusive with talk field */

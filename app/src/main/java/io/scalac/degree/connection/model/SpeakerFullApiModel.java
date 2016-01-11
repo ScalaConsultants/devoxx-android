@@ -7,11 +7,6 @@ import io.realm.RealmList;
 import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.data.model.RealmTalk;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 26/10/2015
- */
 public class SpeakerFullApiModel extends SpeakerBaseApiModel {
     public String bio;
     public String bioAsHtml;

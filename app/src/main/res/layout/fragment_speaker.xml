@@ -11,21 +11,16 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <com.makeramen.roundedimageview.RoundedImageView
+        <ImageView
             android:id="@+id/imageSpeaker"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="@dimen/width_speaker_photo"
             android:layout_height="@dimen/width_speaker_photo"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:adjustViewBounds="true"
+            android:contentDescription="@null"
             android:maxWidth="@dimen/width_speaker_photo"
             android:minHeight="@dimen/width_speaker_photo"
-            android:minWidth="@dimen/width_speaker_photo"
-            android:scaleType="centerCrop"
-            app:riv_border_color="@color/rounded_image_border"
-            app:riv_border_width="@dimen/rounded_image_border"
-            app:riv_oval="true"/>
+            android:minWidth="@dimen/width_speaker_photo"/>
 
         <TextView
             android:id="@+id/textBio"

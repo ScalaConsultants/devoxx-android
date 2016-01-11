@@ -19,9 +19,6 @@ import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 @EFragment(R.layout.items_list_view)
 public class BreaksFragment extends BaseFragment {
 
@@ -57,11 +54,8 @@ public class BreaksFragment extends BaseFragment {
         listAdapter = new ItemAdapter();
     }
 
-    @AfterViews
-    void afterViews() {
+    @AfterViews void afterViews() {
         final ListView listViewBreaks = (ListView) getView();
-        final View footer = Utils.getFooterView(getActivity(), listViewBreaks);
-        listViewBreaks.addFooterView(footer);
         listViewBreaks.setFooterDividersEnabled(false);
         listViewBreaks.setAdapter(listAdapter);
         listViewBreaks.setOnItemClickListener(null);

@@ -4,11 +4,6 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 30/10/2015
- */
 public class RealmSpeaker extends RealmObject {
     @PrimaryKey
     private String uuid;

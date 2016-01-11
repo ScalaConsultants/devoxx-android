@@ -1,5 +1,18 @@
 package io.scalac.degree.android.fragment;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.bumptech.glide.Glide;
+
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.Receiver;
+import org.androidannotations.annotations.res.ColorRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
@@ -14,21 +27,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.Receiver;
-import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,9 +40,6 @@ import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
-import io.scalac.degree.utils.AnimateFirstDisplayListener;
-import io.scalac.degree.utils.Logger;
-import io.scalac.degree.utils.Utils;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.items_list_view)
@@ -81,11 +76,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     private ItemAdapter listAdapter;
     private TalksType talksType = TalksType.ALL;
 
-    private ImageLoader imageLoader = ImageLoader.getInstance();
-    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
-
     private int itemLayoutID;
-    private DisplayImageOptions imageLoaderOptions;
 
     @ColorRes(R.color.primary_text_45)
     int unscheduledItemColorForeground;
@@ -95,15 +86,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
                 : TalksType.valueOf(talksTypeEnumName);
         listAdapter = new ItemAdapter(shouldFilter());
-
-        imageLoaderOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.th_background)
-                .showImageForEmptyUri(R.drawable.no_photo)
-                .showImageOnFail(R.drawable.no_photo)
-                .delayBeforeLoading(IMAGE_LOADING_DELAY_MS)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
     }
 
     @Override
@@ -121,7 +103,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
                 itemLayoutID = R.layout.talks_time_list_item;
                 break;
             default:
-                logFlurryEvent("Talks_watched");
                 itemLayoutID = R.layout.talks_all_list_item;
 
                 slots = Stream.of(slotsDataManager.getLastTalks())
@@ -164,8 +145,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @AfterViews
     void afterViews() {
         final ListView listViewTalks = (ListView) getView();
-        final View footer = Utils.getFooterView(getActivity(), listViewTalks);
-        listViewTalks.addFooterView(footer);
         listViewTalks.setFooterDividersEnabled(false);
         listViewTalks.setAdapter(listAdapter);
         listViewTalks.setOnItemClickListener(this);
@@ -175,7 +154,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     @Receiver(actions = {MainActivity.INTENT_FILTER_TALKS_ACTION})
     void onFilterEvent() {
-        Logger.l("Fragment.onFilterEvent()");
         listAdapter.notifyDataSetChangedCustom(shouldFilter());
     }
 
@@ -281,8 +259,12 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
         private void fillTrackImage(ViewHolder holder, SlotApiModel slotModel) {
             final String trackIconUrl = tracksDownloader.getTrackIconUrl(slotModel.talk.track);
-            imageLoader.displayImage(trackIconUrl, holder.trackIcon,
-                    imageLoaderOptions, animateFirstListener);
+
+            Glide.with(getMainActivity()).load(trackIconUrl)
+                    .placeholder(R.drawable.th_background)
+                    .error(R.drawable.no_photo)
+                    .fallback(R.drawable.no_photo)
+                    .into(holder.trackIcon);
         }
 
         private void setupNotificationIcon(ViewHolder holder, int position, SlotApiModel slotModel) {

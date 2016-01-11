@@ -6,11 +6,6 @@ import java.util.Date;
 
 import io.scalac.degree33.BuildConfig;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 26/10/2015
- */
 public class Logger {
 
     public static final boolean isEnabled = BuildConfig.LOGGING;

@@ -28,7 +28,6 @@ import android.widget.Toast;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
-import com.flurry.android.FlurryAgent;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -150,20 +149,12 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onStart() {
         super.onStart();
-        FlurryAgent.onStartSession(this, Utils.FLURRY_API_KEY);
-
         actionBarDrawerToggle.syncState();
 
         final Activity context = this;
         final AbstractDataManager.IDataManagerListener<SlotApiModel> listener = this;
         slotsDataManager.fetchTalks(conferenceCode,
                 new AbstractDataManager.ActivityAwareListener<>(context, listener));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        FlurryAgent.onEndSession(this);
     }
 
     @Override
@@ -279,13 +270,6 @@ public class MainActivity extends BaseActivity
 
     public Toolbar getToolbar() {
         return toolbar;
-    }
-
-    public void buttonScalacOnClick(View v) {
-        FlurryAgent.logEvent("Scalac_clicked");
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse("http://scalac.io/"));
-        startActivity(i);
     }
 
     public void replaceFragment(Fragment fragment) {

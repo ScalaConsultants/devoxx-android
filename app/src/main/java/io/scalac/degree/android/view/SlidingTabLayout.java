@@ -67,6 +67,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
     private ViewPager mViewPager;
     private SparseArray<String> mContentDescriptions = new SparseArray<String>();
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
+
     public SlidingTabLayout(Context context) {
         this(context, null);
     }
@@ -157,11 +158,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
             populateTabStrip();
         }
     }
-
-//	public void setCustomTabView(int layoutResId, int textViewId) {
-//		mTabViewLayoutId = layoutResId;
-//		mTabViewTextViewId = textViewId;
-//	}
 
     /**
      * Create a default view to be used for tabs. This is called if a custom tab view is not set via

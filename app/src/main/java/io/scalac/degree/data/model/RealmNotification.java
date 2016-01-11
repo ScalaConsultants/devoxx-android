@@ -3,11 +3,6 @@ package io.scalac.degree.data.model;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 03/11/2015
- */
 public class RealmNotification extends RealmObject {
 
     @PrimaryKey

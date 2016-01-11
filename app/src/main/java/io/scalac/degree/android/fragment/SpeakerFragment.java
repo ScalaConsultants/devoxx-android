@@ -1,6 +1,21 @@
 package io.scalac.degree.android.fragment;
 
+import com.annimon.stream.Optional;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringRes;
+
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -11,25 +26,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.annimon.stream.Optional;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.StringRes;
-
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.data.model.RealmTalk;
-import io.scalac.degree.utils.AnimateFirstDisplayListener;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -38,41 +40,40 @@ import rx.schedulers.Schedulers;
 @EFragment(R.layout.fragment_speaker)
 public class SpeakerFragment extends BaseFragment {
 
-    protected ImageLoader imageLoader = ImageLoader.getInstance();
-
     @FragmentArg
     TalkSpeakerApiModel speakerTalkModel;
+
     @FragmentArg
     String speakerDbUuid;
+
     @ViewById(R.id.imageSpeaker)
     ImageView imageView;
+
     @ViewById(R.id.textName)
     TextView textName;
+
     @ViewById(R.id.textBio)
     TextView textBio;
+
     @ViewById(R.id.linearLayoutTalks)
     LinearLayout linearLayoutTalks;
+
     @ViewById(R.id.textViewTalks)
     View textViewTalks;
+
     @Bean
     SpeakersDataManager speakersDataManager;
+
     @Bean
     SlotsDataManager slotsDataManager;
 
     @StringRes(R.string.devoxx_conference)
     String conferenceCode;
 
-    DisplayImageOptions imageLoaderOptions;
-
-    private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
     private RealmSpeaker realmSpeaker;
 
     @AfterViews
     void afterViews() {
-        logFlurryEvent("Speaker_profile_watched");
-
-        initImageLoader();
-
         final String uuid;
         if (speakerTalkModel != null) {
             uuid = TalkSpeakerApiModel.getUuidFromLink(speakerTalkModel.link);
@@ -134,9 +135,6 @@ public class SpeakerFragment extends BaseFragment {
     }
 
     private void setupView() {
-        imageLoader.displayImage(determineImageUrl(), imageView,
-                imageLoaderOptions, animateFirstListener);
-
         textName.setText(getTitleAsString());
 
         textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml()));
@@ -155,7 +153,7 @@ public class SpeakerFragment extends BaseFragment {
                             getMainActivity().replaceFragment(TalkFragment_.builder()
                                     .slotModel(slotModel.get()).build(), true);
                         } else {
-                            Toast.makeText(getContext(), "Brak talka.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -166,17 +164,21 @@ public class SpeakerFragment extends BaseFragment {
             linearLayoutTalks.setVisibility(View.GONE);
         }
 
-        imageLoader.displayImage(realmSpeaker.getAvatarURL(), imageView,
-                imageLoaderOptions, animateFirstListener);
-    }
-
-    private void initImageLoader() {
-        imageLoaderOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.th_background)
-                .showImageForEmptyUri(R.drawable.no_photo)
-                .showImageOnFail(R.drawable.no_photo)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
+        Glide.with(this).load(realmSpeaker.getAvatarURL())
+                .asBitmap()
+                .placeholder(R.drawable.th_background)
+                .error(R.drawable.no_photo)
+                .fallback(R.drawable.no_photo)
+                .centerCrop()
+                .into(new BitmapImageViewTarget(imageView) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        final RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(
+                                        imageView.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        imageView.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
     }
 }

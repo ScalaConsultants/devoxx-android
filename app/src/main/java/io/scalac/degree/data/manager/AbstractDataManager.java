@@ -9,11 +9,6 @@ import org.androidannotations.annotations.UiThread;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 28/10/2015
- */
 @EBean
 public abstract class AbstractDataManager<T> {
 
@@ -52,54 +47,6 @@ public abstract class AbstractDataManager<T> {
     void notifyAboutFailed(IDataManagerListener<T> listener) {
         if (listener != null) {
             listener.onDataError();
-        }
-    }
-
-    public static class FragmentAwareListener<K> implements IDataManagerListener<K> {
-
-        private WeakReference<Fragment> activityWeakReference;
-        private WeakReference<IDataManagerListener<K>> listenerWeakReference;
-
-        public FragmentAwareListener(Fragment fragment, IDataManagerListener<K> listener) {
-            activityWeakReference = new WeakReference<>(fragment);
-            listenerWeakReference = new WeakReference<>(listener);
-        }
-
-        @Override
-        public final void onDataStartFetching() {
-            if (isLive()) {
-                listenerWeakReference.get().onDataStartFetching();
-            }
-        }
-
-        @Override
-        public final void onDataAvailable(List<K> items) {
-            if (isLive()) {
-                listenerWeakReference.get().onDataAvailable(items);
-            }
-        }
-
-        @Override
-        public final void onDataAvailable(K item) {
-            if (isLive()) {
-                listenerWeakReference.get().onDataAvailable(item);
-            }
-        }
-
-        @Override
-        public final void onDataError() {
-            if (isLive()) {
-                listenerWeakReference.get().onDataError();
-            }
-        }
-
-        private boolean isLive() {
-            return !activityWeakReference.isEnqueued() &&
-                    activityWeakReference.get() != null &&
-                    !activityWeakReference.get().getActivity().isFinishing() &&
-                    activityWeakReference.get().isAdded() &&
-                    !listenerWeakReference.isEnqueued() &&
-                    listenerWeakReference.get() != null;
         }
     }
 

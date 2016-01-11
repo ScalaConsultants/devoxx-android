@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.scalac.degree.android.view.ForegroundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<io.scalac.degree.android.view.ForegroundLinearLayout
     android:id="@+id/talkListItemContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
@@ -17,9 +18,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:contentDescription="@null"
-        android:scaleType="centerInside"
         tools:src="@drawable/ic_thumb"
-        tools:tint="#ff0000" />
+        tools:tint="#ff0000"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -36,26 +36,27 @@
             android:id="@+id/textTopic"
             style="@style/talks_topic_style"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/textSpeakers"
             style="@style/talks_speakers_style"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/textRoom"
             style="@style/talks_time_style"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageButtonNotify"
         style="@style/ScheduleImageButtonStyle"
+        android:contentDescription="@null"
         tools:src="@drawable/ic_star"
-        tools:tint="#ff0000" />
+        tools:tint="#ff0000"/>
 
 </io.scalac.degree.android.view.ForegroundLinearLayout>

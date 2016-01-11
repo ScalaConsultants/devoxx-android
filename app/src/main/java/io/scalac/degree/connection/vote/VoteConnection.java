@@ -18,11 +18,6 @@ import io.scalac.degree.utils.Logger;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 
-/**
- * scalac.io
- * jacek.modrakowski@scalac.io
- * 08/12/2015.
- */
 @EBean
 public class VoteConnection {
 

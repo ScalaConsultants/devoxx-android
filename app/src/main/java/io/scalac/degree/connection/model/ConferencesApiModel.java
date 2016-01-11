@@ -5,11 +5,6 @@ import android.net.Uri;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * www.scalac.io
- * jacek.modrakowski@scalac.io
- * 26/10/2015
- */
 public class ConferencesApiModel implements Serializable {
     public final String content;
     public final List<LinkApiModel> links;
