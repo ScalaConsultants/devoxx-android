@@ -2,8 +2,8 @@
 <resources>
 
     <color name="window_background">#f7f7f7</color>
-    <color name="primary">#0b559d</color>
-    <color name="primary_dark">#084076</color>
+    <color name="primary">#F3B62A</color>
+    <color name="primary_dark">#d7a125</color>
     <color name="accent">#FF9800</color>
 
     <color name="scheduled_star_color">#ffc400</color>

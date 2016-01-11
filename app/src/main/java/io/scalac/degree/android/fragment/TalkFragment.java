@@ -106,17 +106,6 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
-    @Override
-    public String getTitleAsString() {
-        return slotModel.talk.title;
-    }
-
-    @Override
-    public boolean needsToolbarSpinner() {
-        return false;
-    }
-
     @AfterViews
     void afterViews() {
         setHasOptionsMenu(true);
@@ -171,8 +160,6 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
                 }
             }
         });
-
-        getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
 
         talkVoter.getVotesCountForTalk(settings.activeConferenceCode().get(), talkId, this);
     }

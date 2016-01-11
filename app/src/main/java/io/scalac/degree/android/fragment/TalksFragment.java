@@ -45,7 +45,6 @@ import io.scalac.degree33.R;
 @EFragment(R.layout.items_list_view)
 public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
-    private static final int IMAGE_LOADING_DELAY_MS = 200;
     @Bean
     SlotsDataManager slotsDataManager;
 
@@ -121,27 +120,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
         listAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public boolean needsToolbarSpinner() {
-        return setupSpinnerVisibility();
-    }
-
-    @Override
-    public boolean needsFilterToolbarIcon() {
-        return true;
-    }
-
-    @Override
-    public int getTitle() {
-        switch (talksType) {
-            case ALL:
-                return R.string.drawer_menu_talks_label;
-            case TIME:
-            default:
-                return -1;
-        }
-    }
-
     @AfterViews
     void afterViews() {
         final ListView listViewTalks = (ListView) getView();
@@ -159,16 +137,6 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     private boolean shouldFilter() {
         return settings.filterTalksBySchedule().getOr(false);
-    }
-
-    private boolean setupSpinnerVisibility() {
-        switch (talksType) {
-            case ALL:
-                return false;
-            case TIME:
-            default:
-                return true;
-        }
     }
 
     public enum TalksType {

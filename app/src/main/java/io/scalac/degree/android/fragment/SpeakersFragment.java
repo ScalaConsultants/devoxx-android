@@ -102,16 +102,6 @@ public class SpeakersFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public int getTitle() {
-        return R.string.drawer_menu_speakers_label;
-    }
-
-    @Override
-    public boolean needsToolbarSpinner() {
-        return false;
-    }
-
     private void populateList() {
         final Realm realm = realmProvider.getRealm();
         final RealmResults<RealmSpeaker> realmList = realm.allObjects(RealmSpeaker.class);
