@@ -92,8 +92,6 @@ public class SpeakerFragment extends BaseFragment {
             public void onCompleted() {
                 realmSpeaker = speakersDataManager.getByUuid(uuid);
                 setupView();
-
-                getMainActivity().invalidateToolbarTitle();
             }
 
             @Override
@@ -111,17 +109,6 @@ public class SpeakerFragment extends BaseFragment {
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(s);
     }
 
-    @Override
-    public boolean needsToolbarSpinner() {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public String getTitleAsString() {
-        return determineName();
-    }
-
     private String determineName() {
         return speakerTalkModel != null ? speakerTalkModel.name :
                 realmSpeaker != null ? realmSpeaker.getFirstName() : null;
@@ -133,7 +120,7 @@ public class SpeakerFragment extends BaseFragment {
     }
 
     private void setupView() {
-        textName.setText(getTitleAsString());
+        textName.setText(determineName());
 
         textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml()));
         textBio.setMovementMethod(LinkMovementMethod.getInstance());

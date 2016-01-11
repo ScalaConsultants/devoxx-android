@@ -77,16 +77,6 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
 
     }
 
-    @Override
-    public boolean needsToolbarSpinner() {
-        return true;
-    }
-
-    @Override
-    public boolean needsFilterToolbarIcon() {
-        return true;
-    }
-
     @AfterViews
     void afterViews() {
         sectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
@@ -113,22 +103,6 @@ public class TabsFragment extends BaseFragment implements AdapterView.OnItemSele
         slidingTabLayout.setTabTextColor(Color.WHITE);
         slidingTabLayout.setDistributeEvenly(false);
         slidingTabLayout.populateTabStrip();
-
-        setupToolbarSpinner();
-    }
-
-    private void setupToolbarSpinner() {
-        final MainActivity mainActivity = getMainActivity();
-        ArrayAdapter<String> spinnerAbAdapter = new ArrayAdapter<>(
-                mainActivity.getSupportActionBarHelper().getThemedContext(),
-                android.R.layout.simple_spinner_dropdown_item, datesNamesList);
-
-        spinnerAbAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-
-        final Spinner spinner = getToolbarSpinner();
-        spinner.setAdapter(spinnerAbAdapter);
-        spinner.setOnItemSelectedListener(this);
-        spinner.setSelection(currentDatePosition);
     }
 
     private void init() {
