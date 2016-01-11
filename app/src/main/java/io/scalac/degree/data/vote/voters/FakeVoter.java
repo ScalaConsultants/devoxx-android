@@ -11,7 +11,7 @@ import io.scalac.degree.data.vote.interfaces.ITalkVoter;
 public class FakeVoter extends AbstractVoter {
 
     @Override
-    public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {
+    public void voteForTalk(String confCode, String talkId, IOnVoteForTalkListener listener) {
         if (System.currentTimeMillis() % 3 == 0) {
             listener.onVoteForTalkSucceed();
         } else {
@@ -20,7 +20,7 @@ public class FakeVoter extends AbstractVoter {
     }
 
     @Override
-    public void getVotesCountForTalk(String talkId, IOnGetTalkVotesListener listener) {
+    public void getVotesCountForTalk(String confCode, String talkId, IOnGetTalkVotesListener listener) {
         if (listener != null) {
             if (System.currentTimeMillis() % 2 == 0) {
                 listener.onTalkVotesAvailable(VoteTalkModel.createFake("3"));

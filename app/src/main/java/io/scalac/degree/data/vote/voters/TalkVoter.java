@@ -18,19 +18,16 @@ import retrofit.Retrofit;
 @EBean
 public class TalkVoter extends AbstractVoter {
 
-    @StringRes(R.string.devoxx_conference)
-    String confCode;
-
     @Bean
     VoteConnection voteConnection;
 
     @Override
-    public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {
+    public void voteForTalk(String confCode, String talkId, IOnVoteForTalkListener listener) {
         // TODO Connect to voting service. Handle user_id somehow (Huntly).
     }
 
     @Override
-    public void getVotesCountForTalk(String talkId, final IOnGetTalkVotesListener listener) {
+    public void getVotesCountForTalk(String confCode, String talkId, final IOnGetTalkVotesListener listener) {
         final VoteApi voteApi = voteConnection.getVoteApi();
         final Call<VoteTalkModel> voteTalkModelCall = voteApi.talk(confCode, talkId);
         voteTalkModelCall.enqueue(new Callback<VoteTalkModel>() {

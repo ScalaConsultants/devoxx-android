@@ -23,6 +23,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.connection.vote.model.VoteTalkModel;
+import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.vote.interfaces.IOnGetTalkVotesListener;
 import io.scalac.degree.data.vote.interfaces.IOnVoteForTalkListener;
@@ -93,6 +95,9 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
     @ColorRes(R.color.scheduled_not_star_color)
     int notscheduledStarColor;
+
+    @Pref
+    Settings_ settings;
 
     private String talkId;
 
@@ -169,7 +174,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
         getMainActivity().getSupportActionBarHelper().setDisplayHomeAsUpEnabled(true);
 
-        talkVoter.getVotesCountForTalk(talkId, this);
+        talkVoter.getVotesCountForTalk(settings.activeConferenceCode().get(), talkId, this);
     }
 
     private void setupNotificationView() {
@@ -212,7 +217,7 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
     private void onVoteButtonClick() {
         if (talkVoter.isVotingEnabled()) {
-            talkVoter.voteForTalk(talkId, this);
+            talkVoter.voteForTalk(settings.activeConferenceCode().get(), talkId, this);
         } else {
             // TODO Should I open RegisterActivity?
             Toast.makeText(getContext(), R.string.vote_not_legged_message,
@@ -255,8 +260,8 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
     @Override
     public void onVoteForTalkSucceed() {
         // TODO Dev code, do not comment.
-        Toast.makeText(getContext(), "Voted!", Toast.LENGTH_SHORT).show();
-        talkVoter.getVotesCountForTalk(talkId, this);
+        Toast.makeText(getContext(), "Zagłosowałeś!", Toast.LENGTH_SHORT).show();
+        talkVoter.getVotesCountForTalk(settings.activeConferenceCode().get(), talkId, this);
     }
 
     @Override

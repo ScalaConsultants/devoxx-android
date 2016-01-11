@@ -10,6 +10,9 @@ public interface Settings {
     @DefaultString("")
     String userId();
 
+    @DefaultString("")
+    String activeConferenceCode();
+
     @DefaultBoolean(false)
     boolean filterTalksBySchedule();
 }

@@ -71,9 +71,6 @@ public class MainActivity extends BaseActivity
     @Pref
     Settings_ settings;
 
-    @StringRes(R.string.devoxx_conference)
-    String conferenceCode;
-
     @ViewById(R.id.toolbarWithSpinner)
     Toolbar toolbar;
 
@@ -153,7 +150,7 @@ public class MainActivity extends BaseActivity
 
         final Activity context = this;
         final AbstractDataManager.IDataManagerListener<SlotApiModel> listener = this;
-        slotsDataManager.fetchTalks(conferenceCode,
+        slotsDataManager.fetchTalks(settings.activeConferenceCode().get(),
                 new AbstractDataManager.ActivityAwareListener<>(context, listener));
     }
 

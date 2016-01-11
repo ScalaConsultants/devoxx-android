@@ -10,7 +10,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
+import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeaker;
@@ -67,8 +68,8 @@ public class SpeakerFragment extends BaseFragment {
     @Bean
     SlotsDataManager slotsDataManager;
 
-    @StringRes(R.string.devoxx_conference)
-    String conferenceCode;
+    @Pref
+    Settings_ settings;
 
     private RealmSpeaker realmSpeaker;
 
@@ -108,7 +109,7 @@ public class SpeakerFragment extends BaseFragment {
             }
         };
 
-        speakersDataManager.fetchSpeaker(conferenceCode, uuid)
+        speakersDataManager.fetchSpeaker(settings.activeConferenceCode().get(), uuid)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(s);
     }

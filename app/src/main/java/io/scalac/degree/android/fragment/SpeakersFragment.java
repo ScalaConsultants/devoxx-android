@@ -25,6 +25,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.scalac.degree.data.RealmProvider;
+import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeaker;
 import io.scalac.degree.utils.Logger;
@@ -51,8 +53,8 @@ public class SpeakersFragment extends BaseFragment {
     @Bean
     RealmProvider realmProvider;
 
-    @StringRes(R.string.devoxx_conference)
-    String conferenceCode;
+    @Pref
+    Settings_ settings;
 
     private ListView listView;
     private ItemAdapter itemAdapter;
@@ -77,7 +79,7 @@ public class SpeakersFragment extends BaseFragment {
             }
         };
 
-        speakersDataManager.fetchSpeakers(conferenceCode).
+        speakersDataManager.fetchSpeakers(settings.activeConferenceCode().get()).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
                 doOnSubscribe(new Action0() {

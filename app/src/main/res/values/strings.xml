@@ -26,6 +26,7 @@
     <string name="drawer_menu_map_label">Map</string>
     <string name="drive_map">DRIVE MAP</string>
     <string name="conf_map">CONF MAP</string>
+    <string name="go">GO</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>

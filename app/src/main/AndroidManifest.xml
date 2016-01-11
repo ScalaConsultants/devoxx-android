@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="io.scalac.degree33">
+<manifest package="io.scalac.degree33"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
-    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.NFC"/>
 
     <uses-feature
         android:name="android.hardware.nfc"
-        android:required="true" />
+        android:required="true"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true" />
+        android:required="true"/>
 
     <application
         android:name="io.scalac.degree.MainApplication_"
@@ -30,38 +30,39 @@
         tools:replace="android:label">
 
         <activity
-            android:name="io.scalac.degree.android.activity.MainActivity_"
+            android:name="io.scalac.degree.android.activity.SelectorActivity_"
             android:label="${applicationLabel}"
             android:launchMode="singleTop"
             tools:node="replace"
             tools:replace="android:label">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_" />
-        <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_" />
-        <activity android:name="io.scalac.degree.android.activity.MapActivity_" />
-        <activity android:name="io.scalac.scanner.BarcodeCaptureActivity" />
+        <activity android:name="io.scalac.degree.android.activity.MainActivity_"/>
+        <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_"/>
+        <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_"/>
+        <activity android:name="io.scalac.degree.android.activity.MapActivity_"/>
+        <activity android:name="io.scalac.scanner.BarcodeCaptureActivity"/>
 
         <receiver
             android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <receiver
             android:name="io.scalac.degree.android.receiver.AppUpdatedReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
 
                 <data
                     android:path="io.scalac.degree"
-                    android:scheme="package" />
+                    android:scheme="package"/>
             </intent-filter>
         </receiver>
         <receiver
@@ -69,7 +70,7 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
         <receiver
@@ -77,21 +78,21 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="83064b423b9aeb9774cd2592a9fbb97c345edf6a" />
+            android:value="83064b423b9aeb9774cd2592a9fbb97c345edf6a"/>
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyByFI8g9HcBES-5KCWhP0j_gof_onP-8TY" />
+            android:value="AIzaSyByFI8g9HcBES-5KCWhP0j_gof_onP-8TY"/>
     </application>
 
 </manifest>
