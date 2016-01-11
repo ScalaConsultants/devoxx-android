@@ -86,12 +86,10 @@ public class SpeakerFragment extends BaseFragment {
             @Override
             public void onStart() {
                 super.onStart();
-                getMainActivity().showLoader();
             }
 
             @Override
             public void onCompleted() {
-                getMainActivity().hideLoader();
                 realmSpeaker = speakersDataManager.getByUuid(uuid);
                 setupView();
 
@@ -100,7 +98,6 @@ public class SpeakerFragment extends BaseFragment {
 
             @Override
             public void onError(Throwable e) {
-                getMainActivity().hideLoader();
             }
 
             @Override
