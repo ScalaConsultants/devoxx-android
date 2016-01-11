@@ -83,7 +83,6 @@ public class MainActivity extends BaseActivity
     private AppCompatSpinner toolbarSpinner;
     private int lastClickedMenuItemId;
     private int currentClickedMenuItemId;
-    private boolean isColdStart;
     private int toolbarMenuRes = UNKNOWN_MENU_RES;
     private FragmentManager.OnBackStackChangedListener
             onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
@@ -134,12 +133,6 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        isColdStart = savedInstanceState == null;
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         actionBarDrawerToggle.syncState();
@@ -151,10 +144,8 @@ public class MainActivity extends BaseActivity
             initIncomingSlotId();
         }
 
-        final boolean coldStartFromNotification =
-                isColdStart && !TextUtils.isEmpty(incomingSlotId);
-
-        if (coldStartFromNotification) {
+        final boolean fromNotification = !TextUtils.isEmpty(incomingSlotId);
+        if (fromNotification) {
             loadDataForNotificationOnColdStart();
         } else {
             selectItem(R.id.drawer_menu_schedule);
