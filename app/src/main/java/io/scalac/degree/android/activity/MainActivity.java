@@ -55,8 +55,7 @@ import io.scalac.degree33.R;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener,
-        AbstractDataManager.IDataManagerListener<SlotApiModel> {
+        implements NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
     public static final String INTENT_FILTER_TALKS_ACTION = "INTENT_FILTER_TALKS_ACTION";
@@ -79,9 +78,6 @@ public class MainActivity extends BaseActivity
 
     @ViewById(R.id.drawer_layout)
     DrawerLayout drawerLayout;
-
-    @ViewById(R.id.homeProgressBar)
-    ProgressBar progressBar;
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private AppCompatSpinner toolbarSpinner;
@@ -147,11 +143,43 @@ public class MainActivity extends BaseActivity
     protected void onStart() {
         super.onStart();
         actionBarDrawerToggle.syncState();
+        loadCoreData();
+    }
 
-        final Activity context = this;
-        final AbstractDataManager.IDataManagerListener<SlotApiModel> listener = this;
-        slotsDataManager.fetchTalks(settings.activeConferenceCode().get(),
-                new AbstractDataManager.ActivityAwareListener<>(context, listener));
+    private void loadCoreData() {
+        final List<SlotApiModel> items = slotsDataManager.getLastTalks();
+
+        if (TextUtils.isEmpty(incomingSlotId)) {
+            final Intent intent = getIntent();
+            if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
+                incomingSlotId = intent.getStringExtra(
+                        NotificationsManager.EXTRA_TALK_ID);
+            }
+        }
+
+        if (isColdStart && !TextUtils.isEmpty(incomingSlotId)) {
+            final Optional<SlotApiModel> optModel = Stream.of(items)
+                    .filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
+                    .findFirst();
+
+            if (optModel.isPresent()) {
+                final FragmentManager fm = getSupportFragmentManager();
+                final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
+                final SlotApiModel slotApiModel = optModel.get();
+                if (talkFragment instanceof TalkFragment) {
+                    ((TalkFragment) talkFragment).setupViews(slotApiModel);
+                } else {
+                    removeFragments();
+                    replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
+                }
+
+                syncActionBarArrowState();
+            } else {
+                selectItem(R.id.drawer_menu_schedule);
+            }
+        } else {
+            selectItem(R.id.drawer_menu_schedule);
+        }
     }
 
     @Override
@@ -467,65 +495,5 @@ public class MainActivity extends BaseActivity
         });
         drawerLayout.setDrawerListener(this);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    public void showLoader() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    public void hideLoader() {
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onDataStartFetching() {
-        showLoader();
-    }
-
-    @Override
-    public void onDataAvailable(List<SlotApiModel> items) {
-        hideLoader();
-
-        if (TextUtils.isEmpty(incomingSlotId)) {
-            final Intent intent = getIntent();
-            if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
-                incomingSlotId = intent.getStringExtra(
-                        NotificationsManager.EXTRA_TALK_ID);
-            }
-        }
-
-        if (isColdStart && !TextUtils.isEmpty(incomingSlotId)) {
-            final Optional<SlotApiModel> optModel = Stream.of(items)
-                    .filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
-                    .findFirst();
-
-            if (optModel.isPresent()) {
-                final FragmentManager fm = getSupportFragmentManager();
-                final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
-                final SlotApiModel slotApiModel = optModel.get();
-                if (talkFragment instanceof TalkFragment) {
-                    ((TalkFragment) talkFragment).setupViews(slotApiModel);
-                } else {
-                    removeFragments();
-                    replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
-                }
-
-                syncActionBarArrowState();
-            } else {
-                selectItem(R.id.drawer_menu_schedule);
-            }
-        } else {
-            selectItem(R.id.drawer_menu_schedule);
-        }
-    }
-
-    @Override
-    public void onDataAvailable(SlotApiModel item) {
-        // Nothing here.
-    }
-
-    @Override
-    public void onDataError() {
-        hideLoader();
     }
 }

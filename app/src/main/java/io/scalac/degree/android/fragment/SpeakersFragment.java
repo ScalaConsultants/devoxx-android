@@ -82,29 +82,15 @@ public class SpeakersFragment extends BaseFragment {
         speakersDataManager.fetchSpeakers(settings.activeConferenceCode().get()).
                 subscribeOn(Schedulers.newThread()).
                 observeOn(AndroidSchedulers.mainThread()).
-                doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        getMainActivity().showLoader();
-                    }
-                }).
-                doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        getMainActivity().hideLoader();
-                    }
-                }).
                 doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         Toast.makeText(getMainActivity(), "Connection error!", Toast.LENGTH_SHORT).show();
-                        getMainActivity().hideLoader();
                     }
                 }).
                 subscribe(subscriber);
 
         listView = (ListView) getView();
-        listView.setFooterDividersEnabled(false);
         listView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
