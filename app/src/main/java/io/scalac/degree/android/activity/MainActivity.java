@@ -28,6 +28,7 @@ import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment_;
+import io.scalac.degree.android.fragment.TracksFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
@@ -153,7 +154,7 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(TalksFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
-                infoUtil.showToast("TBD");
+                replaceFragment(TracksFragment_.builder().build(), false);
                 break;
             case R.id.menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
