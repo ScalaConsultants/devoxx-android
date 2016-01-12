@@ -1,6 +1,7 @@
 package io.scalac.degree.utils;
 
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
 
 import android.content.Context;
@@ -10,37 +11,39 @@ import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.widget.Toast;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class InfoUtil {
 
-    private static Toast toast;
+    @RootContext
+    Context context;
 
-    public void showToast(Context context, Spannable string) {
+    private Toast toast;
+
+    public void showToast(Spannable string) {
         showHelper(context, string.toString());
     }
 
-    public void showToastLong(Context context, String string) {
-        showOnUiThreadIfNeededLong(context, string);
+    public void showToastLong(String string) {
+        showOnUiThreadIfNeededLong(string);
     }
 
-
-    public void showToast(Context context, String string) {
-        showOnUiThreadIfNeeded(context, string);
+    public void showToast(String string) {
+        showOnUiThreadIfNeeded(string);
     }
 
-    public void showToast(Context context, @StringRes int string) {
-        showOnUiThreadIfNeeded(context, string);
+    public void showToast(@StringRes int string) {
+        showOnUiThreadIfNeeded(string);
     }
 
-    private void showOnUiThreadIfNeeded(Context context, @StringRes int string) {
+    private void showOnUiThreadIfNeeded(@StringRes int string) {
         showHelper(context, context.getResources().getString(string));
     }
 
-    private void showOnUiThreadIfNeededLong(Context context, String string) {
+    private void showOnUiThreadIfNeededLong(String string) {
         showHelper(context, string, Toast.LENGTH_LONG);
     }
 
-    private void showOnUiThreadIfNeeded(Context context, String string) {
+    private void showOnUiThreadIfNeeded(String string) {
         showHelper(context, string);
     }
 

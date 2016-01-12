@@ -153,13 +153,13 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(TalksFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
-                infoUtil.showToast(this, "TBD");
+                infoUtil.showToast("TBD");
                 break;
             case R.id.menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
                 break;
             case R.id.menu_map:
-                infoUtil.showToast(this, "TBD");
+                infoUtil.showToast("TBD");
                 break;
         }
     }
