@@ -5,6 +5,7 @@ import com.annimon.stream.Stream;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -18,10 +19,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.List;
 
 import io.scalac.degree.android.fragment.BaseFragment;
+import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment_;
@@ -30,6 +33,7 @@ import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.data.manager.SpeakersDataManager;
+import io.scalac.degree.utils.InfoUtil;
 import io.scalac.degree33.R;
 
 @EActivity(R.layout.activity_main)
@@ -44,6 +48,9 @@ public class MainActivity extends BaseActivity {
 
     @Bean
     SpeakersDataManager speakersDataManager;
+
+    @Bean
+    InfoUtil infoUtil;
 
     @Pref
     Settings_ settings;
@@ -68,7 +75,7 @@ public class MainActivity extends BaseActivity {
             needsFilterIcon = ((BaseFragment) currentFragment).needsFilterToolbarIcon();
         }
 
-        toolbarMenuRes = needsFilterIcon ? R.menu.menu_toolbar : UNKNOWN_MENU_RES;
+        toolbarMenuRes = needsFilterIcon ? R.menu.menu_main_toolbar : UNKNOWN_MENU_RES;
 
         supportInvalidateOptionsMenu();
     }
@@ -101,6 +108,60 @@ public class MainActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         loadCoreData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (toolbarMenuRes != UNKNOWN_MENU_RES) {
+            toolbar.inflateMenu(toolbarMenuRes);
+
+            final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
+            if (settings.filterTalksBySchedule().getOr(false)) {
+                item.setIcon(R.drawable.ic_visibility_white_24dp);
+            } else {
+                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if ((item.getItemId() == R.id.action_filter_scheduled)) {
+            final boolean currentState = settings.filterTalksBySchedule().getOr(false);
+            settings.filterTalksBySchedule().put(!currentState);
+
+            if (!currentState) {
+                item.setIcon(R.drawable.ic_visibility_white_24dp);
+            } else {
+                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
+            }
+
+            sendBroadcast(new Intent(INTENT_FILTER_TALKS_ACTION));
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
+    void onMainMenuClick(View view) {
+        removeFragments();
+
+        switch (view.getId()) {
+            case R.id.menu_schedule:
+                replaceFragment(TalksFragment_.builder().build(), false);
+                break;
+            case R.id.menu_tracks:
+                infoUtil.showToast("TBD");
+                break;
+            case R.id.menu_speakers:
+                replaceFragment(SpeakersFragment_.builder().build(), false);
+                break;
+            case R.id.menu_map:
+                infoUtil.showToast("TBD");
+                break;
+        }
     }
 
     private void loadCoreData() {
@@ -146,40 +207,6 @@ public class MainActivity extends BaseActivity {
             removeFragments();
             replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (toolbarMenuRes != UNKNOWN_MENU_RES) {
-            toolbar.inflateMenu(toolbarMenuRes);
-
-            final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
-            if (settings.filterTalksBySchedule().getOr(false)) {
-                item.setIcon(R.drawable.ic_visibility_white_24dp);
-            } else {
-                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if ((item.getItemId() == R.id.action_filter_scheduled)) {
-            final boolean currentState = settings.filterTalksBySchedule().getOr(false);
-            settings.filterTalksBySchedule().put(!currentState);
-
-            if (!currentState) {
-                item.setIcon(R.drawable.ic_visibility_white_24dp);
-            } else {
-                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
-            }
-
-            sendBroadcast(new Intent(INTENT_FILTER_TALKS_ACTION));
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void replaceFragment(Fragment fragment) {
