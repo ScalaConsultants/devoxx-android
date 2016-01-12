@@ -22,14 +22,14 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
     @Bean
     RealmProvider realmProvider;
 
-    public Observable<RealmSpeaker> fetchSpeaker(final String confCode, final String uuid) {
-        return Observable.create(new Observable.OnSubscribe<RealmSpeaker>() {
+    public Observable<Void> fetchSpeakers(final String confCode) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
-            public void call(Subscriber<? super RealmSpeaker> observer) {
+            public void call(Subscriber<? super Void> observer) {
                 if (!observer.isUnsubscribed()) {
                     try {
                         observer.onStart();
-                        speakersDownloader.downloadSpeakerSync(confCode, uuid);
+                        speakersDownloader.downloadSpeakersSync(confCode);
                         observer.onCompleted();
                     } catch (IOException e) {
                         Logger.exc(e);
@@ -40,14 +40,32 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
         });
     }
 
-    public Observable<Void> fetchSpeakers(final String confCode) {
+    public Observable<Void> fetchSpeakersShortInfo(final String confCode) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> observer) {
                 if (!observer.isUnsubscribed()) {
                     try {
                         observer.onStart();
-                        speakersDownloader.downloadSpeakersSync(confCode);
+                        speakersDownloader.downloadSpeakersShortInfoList(confCode);
+                        observer.onCompleted();
+                    } catch (IOException e) {
+                        Logger.exc(e);
+                        observer.onError(e);
+                    }
+                }
+            }
+        });
+    }
+
+    public Observable<RealmSpeaker> fetchSpeaker(final String confCode, final String uuid) {
+        return Observable.create(new Observable.OnSubscribe<RealmSpeaker>() {
+            @Override
+            public void call(Subscriber<? super RealmSpeaker> observer) {
+                if (!observer.isUnsubscribed()) {
+                    try {
+                        observer.onStart();
+                        speakersDownloader.downloadSpeakerSync(confCode, uuid);
                         observer.onCompleted();
                     } catch (IOException e) {
                         Logger.exc(e);

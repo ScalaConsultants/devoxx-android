@@ -1,56 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:descendantFocusability="blocksDescendants"
+              android:gravity="center_vertical"
               android:orientation="horizontal"
               android:paddingLeft="@dimen/activity_horizontal_margin"
               android:paddingRight="@dimen/activity_horizontal_margin"
               android:paddingTop="8dp">
 
+    <TextView
+        android:id="@+id/textSpeaker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="4dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:lines="1"
+        android:textColor="@color/primary_text_90"
+        android:textSize="@dimen/activity_horizontal_margin"
+        tools:text="Jacek Modrakowski"/>
+
     <ImageView
         android:id="@+id/imageSpeaker"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:contentDescription="@null"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textSpeaker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
-            android:lines="1"
-            android:textColor="@color/primary_text_90"
-            android:textSize="16dp"
-            tools:text="Jacek Modrakowski"/>
-
-        <TextView
-            android:id="@+id/textBio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif"
-            android:lines="1"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@color/primary_text_45"
-            android:textSize="12dp"
-            tools:text="Hi my name is Jacek and I am a Developer of Android Framework"/>
-
-    </LinearLayout>
+        android:layout_width="@dimen/speaker_list_image_size"
+        android:layout_height="@dimen/speaker_list_image_size"
+        android:layout_gravity="right"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:contentDescription="@null"
+        tools:src="@drawable/ic_star"/>
 
 </LinearLayout>

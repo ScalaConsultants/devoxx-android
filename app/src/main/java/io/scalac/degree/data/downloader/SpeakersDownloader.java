@@ -20,6 +20,7 @@ import io.scalac.degree.data.DataInformation_;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.cache.SpeakerCache;
 import io.scalac.degree.data.model.RealmSpeaker;
+import io.scalac.degree.data.model.RealmSpeakerShort;
 import io.scalac.degree.utils.Logger;
 import retrofit.Call;
 
@@ -51,14 +52,35 @@ public class SpeakersDownloader extends AbstractDownloader<SpeakerShortApiModel>
         }
     }
 
+    public List<SpeakerShortApiModel> downloadSpeakersShortInfoList(final String confCode) throws IOException {
+        final DevoxxApi devoxxApi = connection.getDevoxxApi();
+        final Call<List<SpeakerShortApiModel>> call = devoxxApi.speakers(confCode);
+
+        final Realm realm = realmProvider.getRealm();
+        final List<SpeakerShortApiModel> result;
+        try {
+            result = call.execute().body();
+            realm.beginTransaction();
+            for (SpeakerShortApiModel apiModel : result) {
+                final RealmSpeakerShort speakerShort = RealmSpeakerShort.fromApi(apiModel);
+                realm.copyToRealmOrUpdate(speakerShort);
+            }
+            realm.commitTransaction();
+        } catch (IOException e) {
+            Logger.exc(e);
+            realm.cancelTransaction();
+            realm.close();
+            throw e;
+        }
+        return result;
+    }
+
     public void downloadSpeakersSync(final String confCode) throws IOException {
         if (shouldCall()) {
             dataInformation.lastSpeakersCall().put(System.currentTimeMillis());
+            final List<SpeakerShortApiModel> result = downloadSpeakersShortInfoList(confCode);
 
             final DevoxxApi devoxxApi = connection.getDevoxxApi();
-            final Call<List<SpeakerShortApiModel>> call = devoxxApi.speakers(confCode);
-            final List<SpeakerShortApiModel> result = call.execute().body();
-
             final ExecutorService es = Executors.newFixedThreadPool(4);
             final List<Callable<Object>> callables = new ArrayList<>(result.size());
             for (final SpeakerShortApiModel speakerShortApiModel : result) {

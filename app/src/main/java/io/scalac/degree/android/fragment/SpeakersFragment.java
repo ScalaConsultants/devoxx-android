@@ -1,5 +1,17 @@
 package io.scalac.degree.android.fragment;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import android.graphics.Bitmap;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -13,20 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.annimon.stream.function.Function;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.res.StringRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +33,11 @@ import io.realm.RealmResults;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
-import io.scalac.degree.data.model.RealmSpeaker;
+import io.scalac.degree.data.model.RealmSpeakerShort;
 import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -79,16 +76,16 @@ public class SpeakersFragment extends BaseFragment {
             }
         };
 
-        speakersDataManager.fetchSpeakers(settings.activeConferenceCode().get()).
-                subscribeOn(Schedulers.newThread()).
-                observeOn(AndroidSchedulers.mainThread()).
-                doOnError(new Action1<Throwable>() {
+        speakersDataManager.fetchSpeakersShortInfo(settings.activeConferenceCode().get())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         Toast.makeText(getMainActivity(), "Connection error!", Toast.LENGTH_SHORT).show();
                     }
-                }).
-                subscribe(subscriber);
+                })
+                .subscribe(subscriber);
 
         listView = (ListView) getView();
         listView.setOnItemClickListener(new OnItemClickListener() {
@@ -104,15 +101,15 @@ public class SpeakersFragment extends BaseFragment {
 
     private void populateList() {
         final Realm realm = realmProvider.getRealm();
-        final RealmResults<RealmSpeaker> realmList = realm.allObjects(RealmSpeaker.class);
+        final RealmResults<RealmSpeakerShort> realmList = realm.allObjects(RealmSpeakerShort.class);
 
-        final List<RealmSpeaker> finalResult = Stream.of(realmList).
-                sortBy(new Function<RealmSpeaker, Comparable>() {
+        final List<RealmSpeakerShort> finalResult = Stream.of(realmList).
+                sortBy(new Function<RealmSpeakerShort, Comparable>() {
                     @Override
-                    public Comparable apply(RealmSpeaker value) {
+                    public Comparable apply(RealmSpeakerShort value) {
                         return value.getLastName();
                     }
-                }).collect(Collectors.<RealmSpeaker>toList());
+                }).collect(Collectors.<RealmSpeakerShort>toList());
 
         Logger.l("Speakers to show: " + finalResult.size());
 
@@ -122,9 +119,9 @@ public class SpeakersFragment extends BaseFragment {
 
     class ItemAdapter extends BaseAdapter {
 
-        private List<RealmSpeaker> speakers = new ArrayList<>(0);
+        private List<RealmSpeakerShort> speakers = new ArrayList<>(0);
 
-        ItemAdapter(List<RealmSpeaker> speakers) {
+        ItemAdapter(List<RealmSpeakerShort> speakers) {
             this.speakers.addAll(speakers);
         }
 
@@ -134,7 +131,7 @@ public class SpeakersFragment extends BaseFragment {
         }
 
         @Override
-        public RealmSpeaker getItem(int position) {
+        public RealmSpeakerShort getItem(int position) {
             return speakers.get(position);
         }
 
@@ -149,10 +146,10 @@ public class SpeakersFragment extends BaseFragment {
             final ViewHolder holder;
 
             if (convertView == null) {
-                viewItem = getActivity().getLayoutInflater().inflate(R.layout.speakers_all_list_item, parent, false);
+                viewItem = getActivity().getLayoutInflater()
+                        .inflate(R.layout.speakers_all_list_item, parent, false);
                 holder = new ViewHolder();
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeaker);
-                holder.textBio = (TextView) viewItem.findViewById(R.id.textBio);
                 holder.imageSpeaker = (ImageView) viewItem.findViewById(R.id.imageSpeaker);
                 viewItem.setTag(holder);
             } else {
@@ -160,10 +157,9 @@ public class SpeakersFragment extends BaseFragment {
                 holder = (ViewHolder) viewItem.getTag();
             }
 
-            final RealmSpeaker speakerItem = getItem(position);
+            final RealmSpeakerShort speakerItem = getItem(position);
             holder.textSpeaker.setText(String.format("%s %s",
                     speakerItem.getFirstName(), speakerItem.getLastName()));
-            holder.textBio.setText(speakerItem.getCompany());
 
             Glide.with(getMainActivity()).load(speakerItem.getAvatarURL())
                     .asBitmap()
@@ -186,13 +182,12 @@ public class SpeakersFragment extends BaseFragment {
             return viewItem;
         }
 
-        public RealmSpeaker getClickedItem(int position) {
+        public RealmSpeakerShort getClickedItem(int position) {
             return speakers.get(position);
         }
 
         private class ViewHolder {
             public TextView textSpeaker;
-            public TextView textBio;
             public ImageView imageSpeaker;
         }
     }
