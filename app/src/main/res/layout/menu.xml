@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="@dimen/menu_height"
     android:background="?colorPrimary"
     android:baselineAligned="false"
     android:orientation="horizontal"

@@ -49,6 +49,9 @@ public class MainActivity extends BaseActivity {
     @Bean
     SpeakersDataManager speakersDataManager;
 
+    @Bean
+    InfoUtil infoUtil;
+
     @Pref
     Settings_ settings;
 
@@ -150,13 +153,13 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(TalksFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
-                InfoUtil.showToast(this, "TBD");
+                infoUtil.showToast(this, "TBD");
                 break;
             case R.id.menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
                 break;
             case R.id.menu_map:
-                InfoUtil.showToast(this, "TBD");
+                infoUtil.showToast(this, "TBD");
                 break;
         }
     }
