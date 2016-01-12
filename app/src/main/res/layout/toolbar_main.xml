@@ -8,5 +8,13 @@
     android:background="?attr/colorPrimary"
     app:contentInsetStart="50dp"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <!--app:titleTextAppearance="@style/ToolbarTitleStyle"-->
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_devox_logo"/>
+
+</android.support.v7.widget.Toolbar>

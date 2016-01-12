@@ -122,6 +122,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
 
     @AfterViews
     void afterViews() {
+        setHasOptionsMenu(true);
         final ListView listViewTalks = (ListView) getView();
         listViewTalks.setFooterDividersEnabled(false);
         listViewTalks.setAdapter(listAdapter);

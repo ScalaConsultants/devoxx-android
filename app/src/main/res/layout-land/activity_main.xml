@@ -5,7 +5,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_with_spinner"/>
+    <include layout="@layout/toolbar_main"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,35 +13,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_red_dark"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_blue_bright"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_green_dark"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@android:color/holo_purple"/>
-        </LinearLayout>
+        <include layout="@layout/menu"/>
 
         <FrameLayout
             android:id="@+id/content_frame"

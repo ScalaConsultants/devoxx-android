@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/menu_schedule"
+    style="@style/MenuItemContainerStyle"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:showIn="@layout/menu">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_star_grey600_18dp"/>
+
+    <TextView
+        style="@style/MenuItemLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_schedule_label"
+        tools:showIn="@layout/menu"/>
+
+</LinearLayout>

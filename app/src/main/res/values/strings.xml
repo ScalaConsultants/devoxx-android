@@ -17,13 +17,16 @@
     <string name="title_talks_list">Talk(s):</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
-    <string name="drawer_menu_schedule_label">Schedule</string>
-    <string name="drawer_menu_talks_label">Talks</string>
-    <string name="drawer_menu_speakers_label">Speakers</string>
+
+    <string name="menu_schedule_label">Schedule</string>
+    <string name="menu_talks_label">Talks</string>
+    <string name="menu_tracks_label">Tracks</string>
+    <string name="menu_speakers_label">Speakers</string>
+    <string name="menu_map_label">Map</string>
+
     <string name="drawer_menu_other_feedback_label">FEEDBACK</string>
     <string name="drawer_menu_other_register_label">REGISTER</string>
     <string name="vote_not_legged_message">Musisz być zalogowany aby głosować!</string>
-    <string name="drawer_menu_map_label">Map</string>
     <string name="drive_map">DRIVE MAP</string>
     <string name="conf_map">CONF MAP</string>
     <string name="go">GO</string>
