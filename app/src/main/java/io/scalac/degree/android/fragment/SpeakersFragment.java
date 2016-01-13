@@ -2,6 +2,7 @@ package io.scalac.degree.android.fragment;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.Consumer;
 import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -114,7 +115,16 @@ public class SpeakersFragment extends BaseFragment {
                 .map(new Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup>() {
                     @Override
                     public SpeakersGroup apply(Map.Entry<String, List<RealmSpeakerShort>> value) {
-                        return new SpeakersGroup(value.getKey(), value.getValue());
+                        final List<RealmSpeakerShort> list =
+                                Stream.of(value.getValue())
+                                        .sortBy(new Function<RealmSpeakerShort, Comparable>() {
+                                            @Override
+                                            public Comparable apply(RealmSpeakerShort value) {
+                                                return value.getFirstName();
+                                            }
+                                        })
+                                        .collect(Collectors.<RealmSpeakerShort>toList());
+                        return new SpeakersGroup(value.getKey(), list);
                     }
                 })
                 .sortBy(new Function<SpeakersGroup, Comparable>() {
@@ -185,6 +195,7 @@ public class SpeakersFragment extends BaseFragment {
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeaker);
                 holder.textLetter = (TextView) viewItem.findViewById(R.id.textSpeakersGroupFirstLetter);
                 holder.imageSpeaker = (ImageView) viewItem.findViewById(R.id.imageSpeaker);
+                holder.divider = viewItem.findViewById(R.id.speakerItemDivider);
                 viewItem.setTag(holder);
             } else {
                 viewItem = convertView;
@@ -199,6 +210,9 @@ public class SpeakersFragment extends BaseFragment {
             final boolean shouldLetterBeVisible = position == group.getStartIndex();
             holder.textLetter.setVisibility(shouldLetterBeVisible ? View.VISIBLE : View.INVISIBLE);
             holder.textLetter.setText(group.getGroupLetter());
+
+            final boolean shouldDividerBeVisible = group.getStopIndex() == position;
+            holder.divider.setVisibility(shouldDividerBeVisible ? View.VISIBLE : View.GONE);
 
             Glide.with(getMainActivity())
                     .load(speakerItem.getAvatarURL())
@@ -230,6 +244,7 @@ public class SpeakersFragment extends BaseFragment {
             public TextView textSpeaker;
             public TextView textLetter;
             public ImageView imageSpeaker;
+            public View divider;
         }
     }
 

@@ -2,48 +2,62 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
+              android:layout_height="72dp"
               android:descendantFocusability="blocksDescendants"
               android:gravity="center_vertical"
-              android:orientation="horizontal"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:orientation="vertical"
               android:paddingTop="8dp">
 
-    <TextView
-        android:id="@+id/textSpeakersGroupFirstLetter"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="32dp"
-        android:fontFamily="sans-serif-medium"
-        android:lines="1"
-        android:textColor="@color/primary"
-        android:textSize="24dp"
-        tools:text="J"/>
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
 
-    <TextView
-        android:id="@+id/textSpeaker"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="4dp"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:fontFamily="sans-serif-medium"
-        android:lines="1"
-        android:textColor="@color/primary_text_90"
-        android:textSize="@dimen/activity_horizontal_margin"
-        tools:text="Jacek Modrakowski"/>
+        <TextView
+            android:id="@+id/textSpeakersGroupFirstLetter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="32dp"
+            android:fontFamily="sans-serif-medium"
+            android:lines="1"
+            android:textColor="@color/primary"
+            android:textSize="24dp"
+            tools:text="J"/>
 
-    <ImageView
-        android:id="@+id/imageSpeaker"
-        android:layout_width="@dimen/speaker_list_image_size"
-        android:layout_height="@dimen/speaker_list_image_size"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:contentDescription="@null"
-        tools:src="@drawable/ic_star"/>
+        <TextView
+            android:id="@+id/textSpeaker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:lines="1"
+            android:textColor="@color/primary_text_90"
+            android:textSize="@dimen/activity_horizontal_margin"
+            tools:text="Jacek Modrakowski"/>
 
+        <ImageView
+            android:id="@+id/imageSpeaker"
+            android:layout_width="@dimen/speaker_list_image_size"
+            android:layout_height="@dimen/speaker_list_image_size"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:contentDescription="@null"
+            tools:src="@drawable/ic_star"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/speakerItemDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="12dp"
+        android:background="#50212121"/>
 </LinearLayout>
