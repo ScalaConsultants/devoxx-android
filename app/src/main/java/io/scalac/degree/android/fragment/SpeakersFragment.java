@@ -7,9 +7,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.graphics.Bitmap;
@@ -34,14 +37,18 @@ import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeakerShort;
+import io.scalac.degree.utils.InfoUtil;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.items_list_view)
 public class SpeakersFragment extends BaseFragment {
+
+    private static final long SHOW_PROGRESS_DELAY_MS = 150;
 
     @Bean
     SpeakersDataManager speakersDataManager;
@@ -49,18 +56,34 @@ public class SpeakersFragment extends BaseFragment {
     @Bean
     RealmProvider realmProvider;
 
+    @Bean
+    InfoUtil infoUtil;
+
     @Pref
     Settings_ settings;
 
-    private ListView listView;
+    @ViewById(R.id.listProgressBar)
+    View progressBar;
+
+    @ViewById(R.id.listView1)
+    ListView listView;
+
     private ItemAdapter itemAdapter;
+
+    @AfterInject
+    void afterInject() {
+        itemAdapter = new ItemAdapter();
+    }
 
     @AfterViews
     void afterViews() {
+        listView.setAdapter(itemAdapter);
+
         final Subscriber<Void> subscriber = new Subscriber<Void>() {
             @Override
             public void onCompleted() {
                 populateList();
+                hideProgress();
             }
 
             @Override
@@ -77,15 +100,20 @@ public class SpeakersFragment extends BaseFragment {
         speakersDataManager.fetchSpeakersShortInfo(settings.activeConferenceCode().get())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        showProgress();
+                    }
+                })
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Toast.makeText(getMainActivity(), "Connection error!", Toast.LENGTH_SHORT).show();
+                        infoUtil.showToast(R.string.connection_error);
                     }
                 })
                 .subscribe(subscriber);
 
-        listView = (ListView) getView();
         listView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
@@ -131,8 +159,23 @@ public class SpeakersFragment extends BaseFragment {
                 })
                 .collect(Collectors.<SpeakersGroup>toList());
 
-        itemAdapter = new ItemAdapter(list);
-        listView.setAdapter(itemAdapter);
+        itemAdapter.setSpeakers(list);
+        itemAdapter.notifyDataSetChanged();
+    }
+
+    private Runnable showProgressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private void showProgress() {
+        progressBar.postDelayed(showProgressRunnable, SHOW_PROGRESS_DELAY_MS);
+    }
+
+    private void hideProgress() {
+        progressBar.removeCallbacks(showProgressRunnable);
     }
 
     class ItemAdapter extends BaseAdapter {
@@ -140,7 +183,7 @@ public class SpeakersFragment extends BaseFragment {
         private List<SpeakersGroup> speakers = new ArrayList<>(0);
         private int size;
 
-        ItemAdapter(List<SpeakersGroup> speakers) {
+        public void setSpeakers(List<SpeakersGroup> speakers) {
             this.speakers.addAll(speakers);
             for (SpeakersGroup speaker : speakers) {
                 final int groupSize = speaker.speaakersSize();

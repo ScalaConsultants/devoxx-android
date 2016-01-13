@@ -1,6 +1,20 @@
-<ListView
-    android:id="@+id/listView1"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:divider="@android:color/transparent"/>
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"/>
+
+    <ProgressBar
+        android:id="@+id/listProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
+
+</FrameLayout>
