@@ -42,7 +42,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="io.scalac.degree.android.activity.MainActivity_"/>
+        <activity
+            android:name="io.scalac.degree.android.activity.MainActivity_"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_"/>
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_"/>
         <activity android:name="io.scalac.degree.android.activity.MapActivity_"/>

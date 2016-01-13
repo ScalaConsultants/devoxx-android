@@ -77,4 +77,17 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
 
         return result;
     }
+
+    public List<RealmSpeakerShort> getAllShortSpeakersWithFilter(String query) {
+        final Realm realm = realmProvider.getRealm();
+        final List<RealmSpeakerShort> result = realm
+                .where(RealmSpeakerShort.class)
+                .contains("firstName", query, false)
+                .or()
+                .contains("lastName", query, false)
+                .findAll();
+        realm.close();
+
+        return result;
+    }
 }

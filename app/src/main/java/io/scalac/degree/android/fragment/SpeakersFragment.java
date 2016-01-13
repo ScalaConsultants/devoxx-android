@@ -11,23 +11,31 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.InstanceState;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.Touch;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
+import android.app.SearchManager;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +76,15 @@ public class SpeakersFragment extends BaseFragment {
     @ViewById(R.id.listView1)
     ListView listView;
 
+    @ViewById(R.id.listViewContainer)
+    View container;
+
+    @SystemService
+    SearchManager searchManager;
+
+    @SystemService
+    InputMethodManager inputMethodManager;
+
     private ItemAdapter itemAdapter;
 
     @AfterInject
@@ -77,12 +94,16 @@ public class SpeakersFragment extends BaseFragment {
 
     @AfterViews
     void afterViews() {
+        setHasOptionsMenu(true);
+
         listView.setAdapter(itemAdapter);
 
         final Subscriber<Void> subscriber = new Subscriber<Void>() {
             @Override
             public void onCompleted() {
-                populateList();
+                final List<RealmSpeakerShort> speakers =
+                        speakersDataManager.getAllShortSpeakers();
+                populateList(speakers);
                 hideProgress();
             }
 
@@ -123,12 +144,57 @@ public class SpeakersFragment extends BaseFragment {
                         .build(), true);
             }
         });
+
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                    inputMethodManager.hideSoftInputFromWindow(listView.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
-    private void populateList() {
-        final List<RealmSpeakerShort> speakers =
-                speakersDataManager.getAllShortSpeakers();
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.speakers_menu, menu);
 
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager
+                    .getSearchableInfo(getActivity().getComponentName()));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    onSearchQuery(query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    onSearchQuery(s);
+                    return false;
+                }
+            });
+        }
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void onSearchQuery(String query) {
+        final List<RealmSpeakerShort> speakers =
+                speakersDataManager.getAllShortSpeakersWithFilter(query);
+        populateList(speakers);
+    }
+
+    private void populateList(List<RealmSpeakerShort> speakers) {
         final List<SpeakersGroup> list = Stream.of(speakers)
                 .groupBy(new Function<RealmSpeakerShort, String>() {
                     @Override
@@ -180,11 +246,17 @@ public class SpeakersFragment extends BaseFragment {
 
     class ItemAdapter extends BaseAdapter {
 
-        private List<SpeakersGroup> speakers = new ArrayList<>(0);
+        private List<SpeakersGroup> speakers;
         private int size;
 
         public void setSpeakers(List<SpeakersGroup> speakers) {
+            this.speakers = new ArrayList<>(speakers.size());
             this.speakers.addAll(speakers);
+            rebuildIndexes();
+        }
+
+        private void rebuildIndexes() {
+            size = 0;
             for (SpeakersGroup speaker : speakers) {
                 final int groupSize = speaker.speaakersSize();
                 speaker.setStartIndex(size);
