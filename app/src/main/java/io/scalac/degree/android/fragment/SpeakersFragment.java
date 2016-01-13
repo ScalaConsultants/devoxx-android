@@ -13,6 +13,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -34,7 +36,6 @@ import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
 import io.scalac.degree.data.model.RealmSpeakerShort;
-import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -103,36 +104,68 @@ public class SpeakersFragment extends BaseFragment {
         final Realm realm = realmProvider.getRealm();
         final RealmResults<RealmSpeakerShort> realmList = realm.allObjects(RealmSpeakerShort.class);
 
-        final List<RealmSpeakerShort> finalResult = Stream.of(realmList).
-                sortBy(new Function<RealmSpeakerShort, Comparable>() {
+        final List<SpeakersGroup> list = Stream.of(realmList)
+                .groupBy(new Function<RealmSpeakerShort, String>() {
                     @Override
-                    public Comparable apply(RealmSpeakerShort value) {
-                        return value.getLastName();
+                    public String apply(RealmSpeakerShort value) {
+                        return value.getFirstName().substring(0, 1);
                     }
-                }).collect(Collectors.<RealmSpeakerShort>toList());
+                })
+                .map(new Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup>() {
+                    @Override
+                    public SpeakersGroup apply(Map.Entry<String, List<RealmSpeakerShort>> value) {
+                        return new SpeakersGroup(value.getKey(), value.getValue());
+                    }
+                })
+                .sortBy(new Function<SpeakersGroup, Comparable>() {
+                    @Override
+                    public Comparable apply(SpeakersGroup value) {
+                        return value.getGroupLetter();
+                    }
+                })
+                .collect(Collectors.<SpeakersGroup>toList());
 
-        Logger.l("Speakers to show: " + finalResult.size());
-
-        itemAdapter = new ItemAdapter(finalResult);
+        itemAdapter = new ItemAdapter(list);
         listView.setAdapter(itemAdapter);
     }
 
     class ItemAdapter extends BaseAdapter {
 
-        private List<RealmSpeakerShort> speakers = new ArrayList<>(0);
+        private List<SpeakersGroup> speakers = new ArrayList<>(0);
+        private int size;
 
-        ItemAdapter(List<RealmSpeakerShort> speakers) {
+        ItemAdapter(List<SpeakersGroup> speakers) {
             this.speakers.addAll(speakers);
+            for (SpeakersGroup speaker : speakers) {
+                final int groupSize = speaker.speaakersSize();
+                speaker.setStartIndex(size);
+                size += groupSize;
+                speaker.setStopIndex(size - 1);
+            }
         }
 
         @Override
         public int getCount() {
-            return speakers.size();
+            return size;
         }
 
         @Override
-        public RealmSpeakerShort getItem(int position) {
-            return speakers.get(position);
+        public Object getItem(int position) {
+            // Not used at all. See getItemGroup();
+            return null;
+        }
+
+        @NonNull
+        private SpeakersGroup getItemGroup(int position) {
+            for (SpeakersGroup speaker : speakers) {
+                final int startIndex = speaker.getStartIndex();
+                final int stopIndex = speaker.getStopIndex();
+                if (position >= startIndex && position <= stopIndex) {
+                    return speaker;
+                }
+            }
+
+            throw new IllegalStateException("Should not be here!");
         }
 
         @Override
@@ -150,6 +183,7 @@ public class SpeakersFragment extends BaseFragment {
                         .inflate(R.layout.speakers_all_list_item, parent, false);
                 holder = new ViewHolder();
                 holder.textSpeaker = (TextView) viewItem.findViewById(R.id.textSpeaker);
+                holder.textLetter = (TextView) viewItem.findViewById(R.id.textSpeakersGroupFirstLetter);
                 holder.imageSpeaker = (ImageView) viewItem.findViewById(R.id.imageSpeaker);
                 viewItem.setTag(holder);
             } else {
@@ -157,11 +191,17 @@ public class SpeakersFragment extends BaseFragment {
                 holder = (ViewHolder) viewItem.getTag();
             }
 
-            final RealmSpeakerShort speakerItem = getItem(position);
+            final SpeakersGroup group = getItemGroup(position);
+            final RealmSpeakerShort speakerItem = group.getSpeakerByGlobalPosition(position);
             holder.textSpeaker.setText(String.format("%s %s",
                     speakerItem.getFirstName(), speakerItem.getLastName()));
 
-            Glide.with(getMainActivity()).load(speakerItem.getAvatarURL())
+            final boolean shouldLetterBeVisible = position == group.getStartIndex();
+            holder.textLetter.setVisibility(shouldLetterBeVisible ? View.VISIBLE : View.INVISIBLE);
+            holder.textLetter.setText(group.getGroupLetter());
+
+            Glide.with(getMainActivity())
+                    .load(speakerItem.getAvatarURL())
                     .asBitmap()
                     .centerCrop()
                     .placeholder(R.drawable.th_background)
@@ -183,12 +223,54 @@ public class SpeakersFragment extends BaseFragment {
         }
 
         public RealmSpeakerShort getClickedItem(int position) {
-            return speakers.get(position);
+            return getItemGroup(position).getSpeakerByGlobalPosition(position);
         }
 
         private class ViewHolder {
             public TextView textSpeaker;
+            public TextView textLetter;
             public ImageView imageSpeaker;
+        }
+    }
+
+    public static class SpeakersGroup {
+        private String groupLetter;
+        private List<RealmSpeakerShort> speakers;
+
+        private int startIndex, stopIndex;
+
+        public SpeakersGroup(String groupLetter, List<RealmSpeakerShort> speakers) {
+            this.groupLetter = groupLetter;
+            this.speakers = speakers;
+        }
+
+        public String getGroupLetter() {
+            return groupLetter;
+        }
+
+        public int speaakersSize() {
+            return speakers != null ? speakers.size() : 0;
+        }
+
+        public int getStartIndex() {
+            return startIndex;
+        }
+
+        public void setStartIndex(int startIndex) {
+            this.startIndex = startIndex;
+        }
+
+        public int getStopIndex() {
+            return stopIndex;
+        }
+
+        public void setStopIndex(int stopIndex) {
+            this.stopIndex = stopIndex;
+        }
+
+        @NonNull
+        public RealmSpeakerShort getSpeakerByGlobalPosition(int globalPosition) {
+            return speakers.get(globalPosition - startIndex);
         }
     }
 }

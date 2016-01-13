@@ -11,6 +11,17 @@
               android:paddingTop="8dp">
 
     <TextView
+        android:id="@+id/textSpeakersGroupFirstLetter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="32dp"
+        android:fontFamily="sans-serif-medium"
+        android:lines="1"
+        android:textColor="@color/primary"
+        android:textSize="24dp"
+        tools:text="J"/>
+
+    <TextView
         android:id="@+id/textSpeaker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,10 +41,7 @@
         android:id="@+id/imageSpeaker"
         android:layout_width="@dimen/speaker_list_image_size"
         android:layout_height="@dimen/speaker_list_image_size"
-        android:layout_gravity="right"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:contentDescription="@null"
         tools:src="@drawable/ic_star"/>
