@@ -2,7 +2,6 @@ package io.scalac.degree.android.fragment;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Consumer;
 import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -31,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
@@ -57,7 +54,6 @@ public class SpeakersFragment extends BaseFragment {
 
     private ListView listView;
     private ItemAdapter itemAdapter;
-
 
     @AfterViews
     void afterViews() {
@@ -102,10 +98,10 @@ public class SpeakersFragment extends BaseFragment {
     }
 
     private void populateList() {
-        final Realm realm = realmProvider.getRealm();
-        final RealmResults<RealmSpeakerShort> realmList = realm.allObjects(RealmSpeakerShort.class);
+        final List<RealmSpeakerShort> speakers =
+                speakersDataManager.getAllShortSpeakers();
 
-        final List<SpeakersGroup> list = Stream.of(realmList)
+        final List<SpeakersGroup> list = Stream.of(speakers)
                 .groupBy(new Function<RealmSpeakerShort, String>() {
                     @Override
                     public String apply(RealmSpeakerShort value) {

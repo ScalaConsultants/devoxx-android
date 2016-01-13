@@ -2,7 +2,7 @@ package io.scalac.degree.data.cache.model;
 
 import io.realm.RealmObject;
 
-public class CacheSpeakerObject extends RealmObject {
+public class CacheObject extends RealmObject {
 
     private long timestamp;
     private String query;

@@ -1,20 +1,19 @@
 package io.scalac.degree.data.cache;
 
-import android.content.Context;
-
+import com.annimon.stream.Optional;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
 
+import android.text.TextUtils;
+
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 import io.scalac.degree.Configuration;
 import io.scalac.degree.connection.model.SpeakerFullApiModel;
-import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.cache.model.CacheSpeakerObject;
 
 @EBean
 public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
@@ -22,43 +21,33 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     public static final long CACHE_LIFE_TIME_MS =
             TimeUnit.MINUTES.toMillis(Configuration.SPEAKERS_CACHE_LIFE_TIME_MINS);
 
-    @RootContext
-    Context context;
     @Bean
-    RealmProvider realmProvider;
+    BaseCache baseCache;
 
     @Override
-    public void upsert(String rawData, String query) {
-        final Realm realm = realmProvider.getRealm();
-        final CacheSpeakerObject object = realm.where(CacheSpeakerObject.class).
-                equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
-        if (object != null) {
-            realm.beginTransaction();
-            object.setRawData(rawData);
-            object.setTimestamp(System.currentTimeMillis());
-            realm.commitTransaction();
-        } else {
-            realm.beginTransaction();
-            final CacheSpeakerObject cacheObject = realm
-                    .createObject(CacheSpeakerObject.class);
-            cacheObject.setRawData(rawData);
-            cacheObject.setQuery(query);
-            cacheObject.setTimestamp(System.currentTimeMillis());
-            realm.commitTransaction();
-        }
-    }
-
-    @Override
-    public SpeakerFullApiModel getData() {
-        throw new IllegalStateException("Not needed here!");
+    public void upsert(SpeakerFullApiModel model) {
+        baseCache.upsert(serializeData(model), model.uuid);
     }
 
     @Override
     public SpeakerFullApiModel getData(String query) {
-        final Realm realm = realmProvider.getRealm();
-        final String rawData = realm.where(CacheSpeakerObject.class)
-                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst().getRawData();
-        return new Gson().fromJson(rawData, SpeakerFullApiModel.class);
+        final Optional<String> optionalData = baseCache.getData(query);
+        return optionalData.isPresent() ? deserializeData(optionalData.get()) : null;
+    }
+
+    @Override
+    public boolean isValid(String query) {
+        return baseCache.isValid(query, CACHE_LIFE_TIME_MS);
+    }
+
+    @Override
+    public void clearCache(String query) {
+        baseCache.clearCache(query);
+    }
+
+    @Override
+    public void upsert(String rawData, String query) {
+        baseCache.upsert(rawData, query);
     }
 
     @Override
@@ -67,24 +56,24 @@ public class SpeakerCache implements DataCache<SpeakerFullApiModel, String> {
     }
 
     @Override
-    public boolean isValid(String query) {
-        final Realm realm = realmProvider.getRealm();
-        final CacheSpeakerObject cacheObject = realm
-                .where(CacheSpeakerObject.class)
-                .equalTo(CacheSpeakerObject.Contract.QUERY, query).findFirst();
-        final boolean isCacheAvailable = cacheObject != null;
-        return isCacheAvailable && (System.currentTimeMillis() -
-                cacheObject.getTimestamp() < CACHE_LIFE_TIME_MS);
+    public SpeakerFullApiModel getData() {
+        throw new IllegalStateException("Not needed here!");
     }
 
-    @Override
-    public void clearCache() {
-        final Realm realm = realmProvider.getRealm();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.allObjects(CacheSpeakerObject.class).clear();
-            }
-        });
+    private SpeakerFullApiModel deserializeData(String fromCache) {
+        if (!TextUtils.isEmpty(fromCache)) {
+            return new Gson().fromJson(fromCache, getType());
+        } else {
+            return null;
+        }
+    }
+
+    private String serializeData(SpeakerFullApiModel data) {
+        return new Gson().toJson(data);
+    }
+
+    private Type getType() {
+        return new TypeToken<SpeakerFullApiModel>() {
+        }.getType();
     }
 }
