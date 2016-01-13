@@ -27,4 +27,5 @@
 
     <color name="tab_text_selected">#FFFFFF</color>
     <color name="tab_text_unselected">#A0FFFFFF</color>
+    <color name="divider_color">#50212121</color>
 </resources>
