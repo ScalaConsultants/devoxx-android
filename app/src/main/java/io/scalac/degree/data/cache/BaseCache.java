@@ -19,25 +19,19 @@ public class BaseCache implements QueryAwareRawCache {
     @Override
     public void upsert(String rawData, String query) {
         final Realm realm = realmProvider.getRealm();
-        final CacheObject object = realm
+        CacheObject cacheObject = realm
                 .where(CacheObject.class)
                 .equalTo(CacheObject.Contract.QUERY, query)
                 .findFirst();
 
-        if (object != null) {
-            realm.beginTransaction();
-            object.setRawData(rawData);
-            object.setTimestamp(System.currentTimeMillis());
-            realm.commitTransaction();
-        } else {
-            realm.beginTransaction();
-            final CacheObject cacheObject = realm
-                    .createObject(CacheObject.class);
-            cacheObject.setRawData(rawData);
+        realm.beginTransaction();
+        if (cacheObject == null) {
+            cacheObject = realm.createObject(CacheObject.class);
             cacheObject.setQuery(query);
-            cacheObject.setTimestamp(System.currentTimeMillis());
-            realm.commitTransaction();
         }
+        cacheObject.setRawData(rawData);
+        cacheObject.setTimestamp(System.currentTimeMillis());
+        realm.commitTransaction();
 
         realm.close();
     }
@@ -49,7 +43,13 @@ public class BaseCache implements QueryAwareRawCache {
                 .where(CacheObject.class)
                 .equalTo(CacheObject.Contract.QUERY, query)
                 .findFirst();
-        return Optional.ofNullable((object != null) ? object.getRawData() : null);
+
+        final Optional<String> result = Optional.ofNullable((object != null)
+                ? object.getRawData() : null);
+
+        realm.close();
+
+        return result;
     }
 
     @Override
@@ -61,6 +61,7 @@ public class BaseCache implements QueryAwareRawCache {
                 .findFirst();
         final boolean isCacheAvailable = object != null;
         final long cacheTime = isCacheAvailable ? object.getTimestamp() : 0;
+        realm.close();
 
         return isCacheAvailable && (System.currentTimeMillis() -
                 cacheTime < timestanp);

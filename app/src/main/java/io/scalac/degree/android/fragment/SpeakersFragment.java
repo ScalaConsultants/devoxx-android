@@ -12,7 +12,6 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.SystemService;
-import org.androidannotations.annotations.Touch;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
@@ -73,7 +72,7 @@ public class SpeakersFragment extends BaseFragment {
     @ViewById(R.id.listProgressBar)
     View progressBar;
 
-    @ViewById(R.id.listView1)
+    @ViewById(R.id.listView)
     ListView listView;
 
     @ViewById(R.id.listViewContainer)
@@ -86,6 +85,13 @@ public class SpeakersFragment extends BaseFragment {
     InputMethodManager inputMethodManager;
 
     private ItemAdapter itemAdapter;
+
+    private Runnable showProgressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    };
 
     @AfterInject
     void afterInject() {
@@ -109,7 +115,7 @@ public class SpeakersFragment extends BaseFragment {
 
             @Override
             public void onError(Throwable e) {
-                // Nothing.
+                hideProgress();
             }
 
             @Override
@@ -150,7 +156,6 @@ public class SpeakersFragment extends BaseFragment {
             public boolean onTouch(View v, MotionEvent event) {
                 if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
                     inputMethodManager.hideSoftInputFromWindow(listView.getWindowToken(), 0);
-                    return true;
                 }
                 return false;
             }
@@ -189,52 +194,21 @@ public class SpeakersFragment extends BaseFragment {
     }
 
     private void onSearchQuery(String query) {
-        final List<RealmSpeakerShort> speakers =
-                speakersDataManager.getAllShortSpeakersWithFilter(query);
+        final List<RealmSpeakerShort> speakers = speakersDataManager.
+                getAllShortSpeakersWithFilter(query);
         populateList(speakers);
     }
 
     private void populateList(List<RealmSpeakerShort> speakers) {
         final List<SpeakersGroup> list = Stream.of(speakers)
-                .groupBy(new Function<RealmSpeakerShort, String>() {
-                    @Override
-                    public String apply(RealmSpeakerShort value) {
-                        return value.getFirstName().substring(0, 1);
-                    }
-                })
-                .map(new Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup>() {
-                    @Override
-                    public SpeakersGroup apply(Map.Entry<String, List<RealmSpeakerShort>> value) {
-                        final List<RealmSpeakerShort> list =
-                                Stream.of(value.getValue())
-                                        .sortBy(new Function<RealmSpeakerShort, Comparable>() {
-                                            @Override
-                                            public Comparable apply(RealmSpeakerShort value) {
-                                                return value.getFirstName();
-                                            }
-                                        })
-                                        .collect(Collectors.<RealmSpeakerShort>toList());
-                        return new SpeakersGroup(value.getKey(), list);
-                    }
-                })
-                .sortBy(new Function<SpeakersGroup, Comparable>() {
-                    @Override
-                    public Comparable apply(SpeakersGroup value) {
-                        return value.getGroupLetter();
-                    }
-                })
+                .groupBy(speakerFirstLetterGroupping())
+                .map(speakersGroupMapper())
+                .sortBy(speakersGroupSorter())
                 .collect(Collectors.<SpeakersGroup>toList());
 
         itemAdapter.setSpeakers(list);
         itemAdapter.notifyDataSetChanged();
     }
-
-    private Runnable showProgressRunnable = new Runnable() {
-        @Override
-        public void run() {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-    };
 
     private void showProgress() {
         progressBar.postDelayed(showProgressRunnable, SHOW_PROGRESS_DELAY_MS);
@@ -242,6 +216,43 @@ public class SpeakersFragment extends BaseFragment {
 
     private void hideProgress() {
         progressBar.removeCallbacks(showProgressRunnable);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private static Function<SpeakersGroup, Comparable> speakersGroupSorter() {
+        return new Function<SpeakersGroup, Comparable>() {
+            @Override
+            public Comparable apply(SpeakersGroup value) {
+                return value.getGroupLetter();
+            }
+        };
+    }
+
+    private static Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup> speakersGroupMapper() {
+        return new Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup>() {
+            @Override
+            public SpeakersGroup apply(Map.Entry<String, List<RealmSpeakerShort>> value) {
+                final List<RealmSpeakerShort> list =
+                        Stream.of(value.getValue())
+                                .sortBy(new Function<RealmSpeakerShort, Comparable>() {
+                                    @Override
+                                    public Comparable apply(RealmSpeakerShort value) {
+                                        return value.getFirstName();
+                                    }
+                                })
+                                .collect(Collectors.<RealmSpeakerShort>toList());
+                return new SpeakersGroup(value.getKey(), list);
+            }
+        };
+    }
+
+    private static Function<RealmSpeakerShort, String> speakerFirstLetterGroupping() {
+        return new Function<RealmSpeakerShort, String>() {
+            @Override
+            public String apply(RealmSpeakerShort value) {
+                return value.getFirstName().substring(0, 1);
+            }
+        };
     }
 
     class ItemAdapter extends BaseAdapter {
@@ -258,7 +269,7 @@ public class SpeakersFragment extends BaseFragment {
         private void rebuildIndexes() {
             size = 0;
             for (SpeakersGroup speaker : speakers) {
-                final int groupSize = speaker.speaakersSize();
+                final int groupSize = speaker.speakersSize();
                 speaker.setStartIndex(size);
                 size += groupSize;
                 speaker.setStopIndex(size - 1);
@@ -359,7 +370,7 @@ public class SpeakersFragment extends BaseFragment {
         }
     }
 
-    public static class SpeakersGroup {
+    private static class SpeakersGroup {
         private String groupLetter;
         private List<RealmSpeakerShort> speakers;
 
@@ -374,7 +385,7 @@ public class SpeakersFragment extends BaseFragment {
             return groupLetter;
         }
 
-        public int speaakersSize() {
+        public int speakersSize() {
             return speakers != null ? speakers.size() : 0;
         }
 

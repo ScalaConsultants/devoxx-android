@@ -73,7 +73,7 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @ColorRes(R.color.scheduled_not_star_color)
     int notscheduledStarColor;
 
-    @ViewById(R.id.listView1)
+    @ViewById(R.id.listView)
     ListView listView;
 
     @ColorRes(R.color.primary_text_45)

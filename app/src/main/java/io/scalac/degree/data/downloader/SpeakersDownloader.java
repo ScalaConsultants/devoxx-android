@@ -1,8 +1,5 @@
 package io.scalac.degree.data.downloader;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.ResponseBody;
 
 import org.androidannotations.annotations.Bean;
@@ -10,16 +7,10 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.realm.Realm;
 import io.scalac.degree.connection.DevoxxApi;
-import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.SpeakerShortApiModel;
 import io.scalac.degree.data.DataInformation_;
 import io.scalac.degree.data.RealmProvider;
