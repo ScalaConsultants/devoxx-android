@@ -6,8 +6,6 @@ import java.util.Locale;
 public abstract class DateUtils {
 
     public static long calculateDayStartMs(long date) {
-        Logger.logDate("calculateDayStartMs: ", date);
-
         final Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTimeInMillis(date);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -18,8 +16,6 @@ public abstract class DateUtils {
 
         final long result = calendar.getTimeInMillis();
         calendar.clear();
-
-        Logger.logDate("calculateDayStartMs.result: ", result);
         return result;
     }
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.scalac.degree.android.fragment.schedule.ScheduleDayLinupFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.utils.DateUtils;
 import io.scalac.degree.utils.Logger;
@@ -50,7 +51,8 @@ public class SchedulePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return new Fragment();
+        return ScheduleDayLinupFragment_.builder()
+                .lineupDayMs(scheduleDays.get(position)).build();
     }
 
     @Override
