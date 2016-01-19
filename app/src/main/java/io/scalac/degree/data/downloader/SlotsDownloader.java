@@ -29,17 +29,12 @@ public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
     @Bean
     SlotsCache slotsCache;
 
-    /**
-     * Download talks for all days during conference.
-     *
-     * @param confCode of the requested conference's talks.
-     */
     public List<SlotApiModel> downloadTalks(String confCode) throws IOException {
         final List<SlotApiModel> result;
 
-        if (slotsCache.isValid()) {
+        if (slotsCache.isValid(confCode)) {
             updateAllDataAsync(confCode);
-            return slotsCache.getData();
+            return slotsCache.getData(confCode);
         } else {
             result = downloadAllData(confCode);
         }

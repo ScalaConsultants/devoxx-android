@@ -114,11 +114,6 @@ public class SpeakerFragment extends BaseFragment {
                 realmSpeaker != null ? realmSpeaker.getFirstName() : null;
     }
 
-    private String determineImageUrl() {
-        return speakerTalkModel != null ? speakerTalkModel.avatarURL :
-                realmSpeaker != null ? realmSpeaker.getAvatarURL() : null;
-    }
-
     private void setupView() {
         textName.setText(determineName());
 

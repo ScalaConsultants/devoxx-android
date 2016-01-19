@@ -4,6 +4,8 @@ public interface DataCache<DataType, StorageType> {
 
     void upsert(StorageType rawData, String query);
 
+    void upsert(DataType rawData);
+
     DataType getData();
 
     DataType getData(String query);
@@ -12,5 +14,5 @@ public interface DataCache<DataType, StorageType> {
 
     boolean isValid(String query);
 
-    void clearCache();
+    void clearCache(String query);
 }

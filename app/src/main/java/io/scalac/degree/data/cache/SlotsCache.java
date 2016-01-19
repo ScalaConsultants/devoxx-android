@@ -1,83 +1,66 @@
 package io.scalac.degree.data.cache;
 
-import android.content.Context;
-
+import com.annimon.stream.Optional;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 import io.scalac.degree.Configuration;
 import io.scalac.degree.connection.model.SlotApiModel;
-import io.scalac.degree.data.RealmProvider;
-import io.scalac.degree.data.cache.model.CacheSlotsObject;
 
 @EBean
 public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
 
+    private static final String SLOTS_KEY_SUFFIX = "slots_key_suffix";
+
     private static final long CACHE_LIFE_TIME_MS =
             TimeUnit.MINUTES.toMillis(Configuration.SLOTS_CACHE_TIME_MIN);
 
-    @RootContext
-    Context context;
     @Bean
-    RealmProvider realmProvider;
+    BaseCache baseCache;
 
     @Override
     public void upsert(String rawData, String query) {
-        clearCache();
-
-        final Realm realm = realmProvider.getRealm();
-        realm.beginTransaction();
-        final CacheSlotsObject cacheObject = realm
-                .createObject(CacheSlotsObject.class);
-        cacheObject.setRawData(rawData);
-        cacheObject.setTimestamp(System.currentTimeMillis());
-        realm.commitTransaction();
-    }
-
-    @Override
-    public List<SlotApiModel> getData() {
-        final Realm realm = realmProvider.getRealm();
-        final CacheSlotsObject cacheObject = realm
-                .where(CacheSlotsObject.class).findFirst();
-        final String rawData = cacheObject.getRawData();
-        return new Gson().fromJson(rawData, getType());
+        clearCache(query);
+        baseCache.upsert(rawData, getCacheKey(query));
     }
 
     @Override
     public List<SlotApiModel> getData(String query) {
+        final Optional<String> optionalData = baseCache.getData(getCacheKey(query));
+        return deserialize(optionalData.orElse("[]"));
+    }
+
+    @Override
+    public boolean isValid(String query) {
+        return baseCache.isValid(getCacheKey(query), CACHE_LIFE_TIME_MS);
+    }
+
+    @Override
+    public void clearCache(String query) {
+        baseCache.clearCache(getCacheKey(query));
+    }
+
+    @Override
+    public List<SlotApiModel> getData() {
         throw new IllegalStateException("Not needed here!");
     }
 
     @Override
     public boolean isValid() {
-        final Realm realm = realmProvider.getRealm();
-        final CacheSlotsObject cacheObject = realm
-                .where(CacheSlotsObject.class).findFirst();
-        final boolean isObjectAvailable = cacheObject != null;
-        return isObjectAvailable && (System.currentTimeMillis() -
-                cacheObject.getTimestamp() < CACHE_LIFE_TIME_MS);
-    }
-
-    @Override
-    public boolean isValid(String query) {
         throw new IllegalStateException("Not needed here!");
     }
 
+
     @Override
-    public void clearCache() {
-        final Realm realm = realmProvider.getRealm();
-        realm.beginTransaction();
-        realm.where(CacheSlotsObject.class).findAll().clear();
-        realm.commitTransaction();
+    public void upsert(List<SlotApiModel> rawData) {
+        throw new IllegalStateException("Not needed here!");
     }
 
     private Type getType() {
@@ -85,4 +68,11 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
         }.getType();
     }
 
+    private List<SlotApiModel> deserialize(String data) {
+        return new Gson().fromJson(data, getType());
+    }
+
+    private String getCacheKey(String query) {
+        return String.format("%s_%s", query, SLOTS_KEY_SUFFIX);
+    }
 }

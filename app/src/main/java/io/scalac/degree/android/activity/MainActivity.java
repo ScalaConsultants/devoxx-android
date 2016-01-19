@@ -17,18 +17,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.util.List;
 
-import io.scalac.degree.android.fragment.BaseFragment;
 import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment_;
-import io.scalac.degree.android.fragment.TracksFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
@@ -40,9 +36,9 @@ import io.scalac.degree33.R;
 @EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity {
 
-    private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
     public static final String INTENT_FILTER_TALKS_ACTION = "INTENT_FILTER_TALKS_ACTION";
-    private static final int UNKNOWN_MENU_RES = -1;
+
+    private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -59,35 +55,10 @@ public class MainActivity extends BaseActivity {
     @ViewById(R.id.toolbarWithSpinner)
     Toolbar toolbar;
 
-    private int toolbarMenuRes = UNKNOWN_MENU_RES;
-
-    private FragmentManager.OnBackStackChangedListener
-            onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
-        @Override
-        public void onBackStackChanged() {
-            final Fragment currentFragment = getCurrentFragment();
-            setupToolbarMenu(currentFragment);
-        }
-    };
-
-    private void setupToolbarMenu(Fragment currentFragment) {
-        boolean needsFilterIcon = false;
-        if (currentFragment instanceof BaseFragment) {
-            needsFilterIcon = ((BaseFragment) currentFragment).needsFilterToolbarIcon();
-        }
-
-        toolbarMenuRes = needsFilterIcon ? R.menu.menu_main_toolbar : UNKNOWN_MENU_RES;
-
-        supportInvalidateOptionsMenu();
-    }
-
     private String incomingSlotId;
 
     @AfterViews
     protected void afterViews() {
-        getSupportFragmentManager().
-                addOnBackStackChangedListener(onBackStackChangedListener);
-
         setupToolbar();
     }
 
@@ -100,49 +71,9 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        getSupportFragmentManager().removeOnBackStackChangedListener(onBackStackChangedListener);
-        super.onDestroy();
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         loadCoreData();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (toolbarMenuRes != UNKNOWN_MENU_RES) {
-            toolbar.inflateMenu(toolbarMenuRes);
-
-            final MenuItem item = menu.findItem(R.id.action_filter_scheduled);
-            if (settings.filterTalksBySchedule().getOr(false)) {
-                item.setIcon(R.drawable.ic_visibility_white_24dp);
-            } else {
-                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if ((item.getItemId() == R.id.action_filter_scheduled)) {
-            final boolean currentState = settings.filterTalksBySchedule().getOr(false);
-            settings.filterTalksBySchedule().put(!currentState);
-
-            if (!currentState) {
-                item.setIcon(R.drawable.ic_visibility_white_24dp);
-            } else {
-                item.setIcon(R.drawable.ic_visibility_off_white_24dp);
-            }
-
-            sendBroadcast(new Intent(INTENT_FILTER_TALKS_ACTION));
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
@@ -154,7 +85,7 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(TalksFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
-                replaceFragment(TracksFragment_.builder().build(), false);
+                infoUtil.showToast("TBD");
                 break;
             case R.id.menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
@@ -219,8 +150,6 @@ public class MainActivity extends BaseActivity {
     }
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
-        setupToolbarMenu(fragment);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(fragmentTransition);

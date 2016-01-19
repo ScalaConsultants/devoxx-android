@@ -10,6 +10,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.Receiver;
+import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
@@ -72,13 +73,16 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @ColorRes(R.color.scheduled_not_star_color)
     int notscheduledStarColor;
 
+    @ViewById(R.id.listView)
+    ListView listView;
+
+    @ColorRes(R.color.primary_text_45)
+    int unscheduledItemColorForeground;
+
     private ItemAdapter listAdapter;
     private TalksType talksType = TalksType.ALL;
 
     private int itemLayoutID;
-
-    @ColorRes(R.color.primary_text_45)
-    int unscheduledItemColorForeground;
 
     @AfterInject
     void afterInject() {
@@ -123,10 +127,10 @@ public class TalksFragment extends BaseFragment implements OnItemClickListener {
     @AfterViews
     void afterViews() {
         setHasOptionsMenu(true);
-        final ListView listViewTalks = (ListView) getView();
-        listViewTalks.setFooterDividersEnabled(false);
-        listViewTalks.setAdapter(listAdapter);
-        listViewTalks.setOnItemClickListener(this);
+
+        listView.setFooterDividersEnabled(false);
+        listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener(this);
 
         init();
     }
