@@ -59,7 +59,7 @@
 
     <style name="MenuItemLabelStyle">
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">#212121</item>
+        <item name="android:textColor">@drawable/menu_text_label_selector</item>
         <item name="android:textSize">12dp</item>
         <item name="android:gravity">center_horizontal|bottom</item>
         <item name="android:background">@drawable/menu_item_background_selector</item>

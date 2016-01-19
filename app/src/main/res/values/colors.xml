@@ -10,7 +10,7 @@
     <color name="scheduled_not_star_color">#dedede</color>
 
     <color name="degree_link">#A30E0B</color>
-    <color name="tab_strip">#FF0000</color>
+    <color name="tab_strip">@color/primary_text_45</color>
     <color name="drawer_bg">#f7f7f7</color>
     <color name="drawer_item_bg">#ffffff</color>
     <color name="drawer_divider_color">#ffe5e5e5</color>
