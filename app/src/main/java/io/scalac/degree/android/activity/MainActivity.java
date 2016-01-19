@@ -8,6 +8,8 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.ViewsById;
+import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.content.Intent;
@@ -18,6 +20,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.List;
 
@@ -25,6 +29,7 @@ import io.scalac.degree.android.fragment.SpeakersFragment_;
 import io.scalac.degree.android.fragment.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.fragment.TalksFragment_;
+import io.scalac.degree.android.fragment.TracksMainFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;
@@ -55,6 +60,18 @@ public class MainActivity extends BaseActivity {
     @ViewById(R.id.toolbarWithSpinner)
     Toolbar toolbar;
 
+    @ViewById(R.id.menuContainer)
+    ViewGroup menuContainer;
+
+    @ViewById(R.id.menu_schedule)
+    View menuSchedule;
+
+    @ColorRes(R.color.primary_text)
+    int selectedTablColor;
+
+    @ColorRes(R.color.tab_text_unselected)
+    int unselectedTablColor;
+
     private String incomingSlotId;
 
     @AfterViews
@@ -78,6 +95,7 @@ public class MainActivity extends BaseActivity {
 
     @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
     void onMainMenuClick(View view) {
+        setupMenuApperance(view);
         removeFragments();
 
         switch (view.getId()) {
@@ -85,7 +103,7 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(TalksFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
-                infoUtil.showToast("TBD");
+                replaceFragment(TracksMainFragment_.builder().build(), false);
                 break;
             case R.id.menu_speakers:
                 replaceFragment(SpeakersFragment_.builder().build(), false);
@@ -93,6 +111,22 @@ public class MainActivity extends BaseActivity {
             case R.id.menu_map:
                 infoUtil.showToast("TBD");
                 break;
+        }
+    }
+
+    private void setupMenuApperance(View clickedMenuItem) {
+        final int size = menuContainer.getChildCount();
+        for (int i = 0; i < size; i++) {
+            final ViewGroup child = (ViewGroup) menuContainer.getChildAt(i);
+            final boolean shouldBeSelected = clickedMenuItem.getId() == child.getId();
+            child.setSelected(shouldBeSelected);
+
+            final ImageView icon = (ImageView) child.getChildAt(0);
+            if (shouldBeSelected) {
+                icon.setColorFilter(selectedTablColor);
+            } else {
+                icon.clearColorFilter();
+            }
         }
     }
 
@@ -105,7 +139,7 @@ public class MainActivity extends BaseActivity {
         if (fromNotification) {
             loadDataForNotificationOnColdStart();
         } else {
-            replaceFragment(TalksFragment_.builder().build(), false);
+            onMainMenuClick(menuSchedule);
         }
     }
 

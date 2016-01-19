@@ -21,6 +21,7 @@
         style="@style/MenuItemLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:duplicateParentState="true"
         android:text="@string/menu_schedule_label"
         tools:showIn="@layout/menu"/>
 

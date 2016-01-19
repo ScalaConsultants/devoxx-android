@@ -19,6 +19,8 @@ import retrofit.Response;
 @EBean
 public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
+    private static final String UNKNOWN_TRACK_ICON_URL = "";
+
     @Bean
     RealmProvider realmProvider;
 
@@ -37,19 +39,23 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
         } catch (IOException e) {
             Logger.exc(e);
             realm.cancelTransaction();
-            realm.close();
         }
+
+        realm.close();
     }
 
     public String getTrackIconUrl(String trackId) {
         final Realm realm = realmProvider.getRealm();
         final RealmTrack realmTrack = realm.where(RealmTrack.class).
                 equalTo(RealmTrack.Contract.TITLE, trackId.toLowerCase(), false).findFirst();
+
+        String result = UNKNOWN_TRACK_ICON_URL;
         if (realmTrack != null) {
-            return Configuration.API_URL + realmTrack.getImgsrc();
-        } else {
-            Logger.l("Lack track icon for: " + trackId);
-            return "";
+            result = Configuration.API_URL + realmTrack.getImgsrc();
         }
+
+        realm.close();
+
+        return result;
     }
 }
