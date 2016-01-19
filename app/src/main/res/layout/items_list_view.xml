@@ -13,8 +13,8 @@
     <ProgressBar
         android:id="@+id/listProgressBar"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="@dimen/progressbar_size"
+        android:layout_height="@dimen/progressbar_size"
         android:layout_gravity="center"
         android:visibility="invisible"/>
 

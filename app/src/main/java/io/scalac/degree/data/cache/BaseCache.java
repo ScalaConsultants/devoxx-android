@@ -19,10 +19,7 @@ public class BaseCache implements QueryAwareRawCache {
     @Override
     public void upsert(String rawData, String query) {
         final Realm realm = realmProvider.getRealm();
-        CacheObject cacheObject = realm
-                .where(CacheObject.class)
-                .equalTo(CacheObject.Contract.QUERY, query)
-                .findFirst();
+        CacheObject cacheObject = fetchCacheObject(realm, query);
 
         realm.beginTransaction();
         if (cacheObject == null) {
@@ -39,11 +36,7 @@ public class BaseCache implements QueryAwareRawCache {
     @Override
     public Optional<String> getData(String query) {
         final Realm realm = realmProvider.getRealm();
-        final CacheObject object = realm
-                .where(CacheObject.class)
-                .equalTo(CacheObject.Contract.QUERY, query)
-                .findFirst();
-
+        final CacheObject object = fetchCacheObject(realm, query);
         final Optional<String> result = Optional.ofNullable((object != null)
                 ? object.getRawData() : null);
 
@@ -53,18 +46,15 @@ public class BaseCache implements QueryAwareRawCache {
     }
 
     @Override
-    public boolean isValid(String query, long timestanp) {
+    public boolean isValid(String query, long timestamp) {
         final Realm realm = realmProvider.getRealm();
-        final CacheObject object = realm
-                .where(CacheObject.class)
-                .equalTo(CacheObject.Contract.QUERY, query)
-                .findFirst();
+        final CacheObject object = fetchCacheObject(realm, query);
         final boolean isCacheAvailable = object != null;
         final long cacheTime = isCacheAvailable ? object.getTimestamp() : 0;
         realm.close();
 
         return isCacheAvailable && (System.currentTimeMillis() -
-                cacheTime < timestanp);
+                cacheTime < timestamp);
     }
 
     @Override
@@ -78,5 +68,11 @@ public class BaseCache implements QueryAwareRawCache {
         object.clear();
         realm.commitTransaction();
         realm.close();
+    }
+
+    private CacheObject fetchCacheObject(Realm realm, String query) {
+        return realm.where(CacheObject.class)
+                .equalTo(CacheObject.Contract.QUERY, query)
+                .findFirst();
     }
 }

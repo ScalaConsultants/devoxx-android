@@ -324,6 +324,12 @@ public class SpeakersFragment extends BaseFragment {
                 holder = (ViewHolder) viewItem.getTag();
             }
 
+            setupView(position, holder);
+
+            return viewItem;
+        }
+
+        private void setupView(int position, final ViewHolder holder) {
             final SpeakersGroup group = getItemGroup(position);
             final RealmSpeakerShort speakerItem = group.getSpeakerByGlobalPosition(position);
             holder.textSpeaker.setText(String.format("%s %s",
@@ -336,6 +342,10 @@ public class SpeakersFragment extends BaseFragment {
             final boolean shouldDividerBeVisible = group.getStopIndex() == position;
             holder.divider.setVisibility(shouldDividerBeVisible ? View.VISIBLE : View.GONE);
 
+            setupImage(holder, speakerItem);
+        }
+
+        private void setupImage(final ViewHolder holder, RealmSpeakerShort speakerItem) {
             Glide.with(getMainActivity())
                     .load(speakerItem.getAvatarURL())
                     .asBitmap()
@@ -354,8 +364,6 @@ public class SpeakersFragment extends BaseFragment {
                             holder.imageSpeaker.setImageDrawable(circularBitmapDrawable);
                         }
                     });
-
-            return viewItem;
         }
 
         public RealmSpeakerShort getClickedItem(int position) {
