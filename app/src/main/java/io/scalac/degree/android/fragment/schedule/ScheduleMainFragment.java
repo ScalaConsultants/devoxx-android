@@ -1,4 +1,4 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.schedule;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Locale;
 
 import io.scalac.degree.android.activity.MainActivity;
+import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.android.view.ForegroundLinearLayout;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
@@ -44,7 +46,7 @@ import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.items_list_view)
-public class TalksFragment extends BaseFragment implements OnItemClickListener {
+public class ScheduleMainFragment extends BaseFragment implements OnItemClickListener {
 
     @Bean
     SlotsDataManager slotsDataManager;

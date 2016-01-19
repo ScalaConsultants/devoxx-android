@@ -1,8 +1,7 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Function;
 import com.annimon.stream.function.Predicate;
 
 import org.androidannotations.annotations.AfterViews;
@@ -17,9 +16,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.List;
-import java.util.Map;
 
 import io.scalac.degree.android.adapter.TracksAdapter;
+import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.fragment.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;

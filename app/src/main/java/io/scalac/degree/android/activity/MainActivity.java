@@ -8,7 +8,6 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.ViewsById;
 import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
@@ -26,9 +25,9 @@ import android.widget.ImageView;
 import java.util.List;
 
 import io.scalac.degree.android.fragment.SpeakersFragment_;
-import io.scalac.degree.android.fragment.TalkFragment;
+import io.scalac.degree.android.fragment.talk.TalkFragment;
 import io.scalac.degree.android.fragment.TalkFragment_;
-import io.scalac.degree.android.fragment.TalksFragment_;
+import io.scalac.degree.android.fragment.ScheduleMainFragment_;
 import io.scalac.degree.android.fragment.TracksMainFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
@@ -100,7 +99,7 @@ public class MainActivity extends BaseActivity {
 
         switch (view.getId()) {
             case R.id.menu_schedule:
-                replaceFragment(TalksFragment_.builder().build(), false);
+                replaceFragment(ScheduleMainFragment_.builder().build(), false);
                 break;
             case R.id.menu_tracks:
                 replaceFragment(TracksMainFragment_.builder().build(), false);

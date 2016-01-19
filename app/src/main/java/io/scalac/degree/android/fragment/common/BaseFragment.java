@@ -1,4 +1,4 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.common;
 
 import org.androidannotations.annotations.EFragment;
 
@@ -9,11 +9,7 @@ import io.scalac.degree.android.activity.MainActivity;
 @EFragment
 public class BaseFragment extends Fragment {
 
-    MainActivity getMainActivity() {
+    public MainActivity getMainActivity() {
         return (MainActivity) getActivity();
-    }
-
-    public boolean needsFilterToolbarIcon() {
-        return false;
     }
 }

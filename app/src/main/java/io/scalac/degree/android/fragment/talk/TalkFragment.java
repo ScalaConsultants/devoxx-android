@@ -1,10 +1,9 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.talk;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
@@ -28,6 +27,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import java.text.DateFormat;
 import java.util.List;
 
+import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.fragment.SpeakerFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.connection.vote.model.VoteTalkModel;

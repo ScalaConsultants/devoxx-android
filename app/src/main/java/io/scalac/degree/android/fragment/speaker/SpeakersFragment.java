@@ -1,4 +1,4 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.speaker;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.fragment.SpeakerFragment_;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
