@@ -24,11 +24,11 @@ import android.widget.ImageView;
 
 import java.util.List;
 
-import io.scalac.degree.android.fragment.SpeakersFragment_;
+import io.scalac.degree.android.fragment.schedule.ScheduleMainFragment_;
+import io.scalac.degree.android.fragment.speaker.SpeakersFragment_;
 import io.scalac.degree.android.fragment.talk.TalkFragment;
-import io.scalac.degree.android.fragment.TalkFragment_;
-import io.scalac.degree.android.fragment.ScheduleMainFragment_;
-import io.scalac.degree.android.fragment.TracksMainFragment_;
+import io.scalac.degree.android.fragment.talk.TalkFragment_;
+import io.scalac.degree.android.fragment.track.TracksMainFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.NotificationsManager;

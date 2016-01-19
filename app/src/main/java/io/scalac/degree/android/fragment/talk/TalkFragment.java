@@ -28,7 +28,7 @@ import java.text.DateFormat;
 import java.util.List;
 
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.android.fragment.SpeakerFragment_;
+import io.scalac.degree.android.fragment.speaker.SpeakerFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.connection.vote.model.VoteTalkModel;

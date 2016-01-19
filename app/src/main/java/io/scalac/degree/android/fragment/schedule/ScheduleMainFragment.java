@@ -1,155 +1,61 @@
 package io.scalac.degree.android.fragment.schedule;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.bumptech.glide.Glide;
-
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-
-import io.scalac.degree.android.activity.MainActivity;
+import io.scalac.degree.android.adapter.SchedulePagerAdapter;
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.android.fragment.TalkFragment_;
-import io.scalac.degree.android.view.ForegroundLinearLayout;
-import io.scalac.degree.connection.model.SlotApiModel;
-import io.scalac.degree.data.Settings_;
-import io.scalac.degree.data.downloader.TracksDownloader;
-import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;
 
-@EFragment(R.layout.items_list_view)
-public class ScheduleMainFragment extends BaseFragment implements OnItemClickListener {
+@EFragment(R.layout.fragment_schedules)
+public class ScheduleMainFragment extends BaseFragment {
 
     @Bean
     SlotsDataManager slotsDataManager;
 
-    @Bean
-    NotificationsManager notificationsManager;
+    @ViewById(R.id.tab_layout)
+    TabLayout tabLayout;
 
-    @Pref
-    Settings_ settings;
+    @ViewById(R.id.pager)
+    ViewPager viewPager;
 
-    @Bean
-    TracksDownloader tracksDownloader;
+    @ColorRes(R.color.primary_text)
+    int selectedTablColor;
 
-    @FragmentArg
-    String talksTypeEnumName;
+    @ColorRes(R.color.tab_text_unselected)
+    int unselectedTablColor;
 
-    @FragmentArg
-    SlotApiModel slotModel;
+    @ColorRes(R.color.primary_text)
+    int tabStripColor;
 
-    @FragmentArg
-    long dateMs;
-
-    @ColorRes(R.color.scheduled_star_color)
-    int scheduledStarColor;
-
-    @ColorRes(R.color.scheduled_not_star_color)
-    int notscheduledStarColor;
-
-    @ViewById(R.id.listView)
-    ListView listView;
-
-    @ColorRes(R.color.primary_text_45)
-    int unscheduledItemColorForeground;
-
-    private ItemAdapter listAdapter;
-    private TalksType talksType = TalksType.ALL;
-
-    private int itemLayoutID;
 
     @AfterInject
     void afterInject() {
-        talksType = TextUtils.isEmpty(talksTypeEnumName) ? TalksType.ALL
-                : TalksType.valueOf(talksTypeEnumName);
-        listAdapter = new ItemAdapter(shouldFilter());
-    }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getMainActivity().replaceFragment(TalkFragment_.builder()
-                .slotModel(listAdapter.getClickedItem(position)).build(), true);
-    }
-
-    private void init() {
-        List<SlotApiModel> slots;
-
-        switch (talksType) {
-            case TIME:
-                slots = slotsDataManager.getTalksForSpecificTime(slotModel.fromTimeMillis);
-                itemLayoutID = R.layout.talks_time_list_item;
-                break;
-            default:
-                itemLayoutID = R.layout.talks_all_list_item;
-
-                slots = Stream.of(slotsDataManager.getLastTalks())
-                        .sorted(new Comparator<SlotApiModel>() {
-                            final Collator collator = Collator.getInstance(Locale.getDefault());
-
-                            @Override
-                            public int compare(SlotApiModel lhs, SlotApiModel rhs) {
-                                return collator.compare(lhs.talk.title, rhs.talk.title);
-                            }
-                        })
-                        .collect(Collectors.<SlotApiModel>toList());
-                break;
-        }
-        listAdapter.setData(slots);
-        listAdapter.notifyDataSetChanged();
     }
 
     @AfterViews
     void afterViews() {
-        setHasOptionsMenu(true);
+        final SchedulePagerAdapter adapter = new SchedulePagerAdapter(
+                getChildFragmentManager(), slotsDataManager.getLastTalks());
 
-        listView.setFooterDividersEnabled(false);
-        listView.setAdapter(listAdapter);
-        listView.setOnItemClickListener(this);
-
-        init();
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setSelectedTabIndicatorColor(tabStripColor);
     }
 
-    @Receiver(actions = {MainActivity.INTENT_FILTER_TALKS_ACTION})
-    void onFilterEvent() {
-        listAdapter.notifyDataSetChangedCustom(shouldFilter());
-    }
 
-    private boolean shouldFilter() {
-        return settings.filterTalksBySchedule().getOr(false);
-    }
-
-    public enum TalksType {
-        ALL, TIME;
-    }
-
+    /*
     class ItemAdapter extends BaseAdapter {
 
         static final int FORMAT_DATE_FLAGS = DateUtils.FORMAT_SHOW_TIME
@@ -314,5 +220,5 @@ public class ScheduleMainFragment extends BaseFragment implements OnItemClickLis
             public ImageView imageButtonNotify;
             public ImageView trackIcon;
         }
-    }
+    }*/
 }

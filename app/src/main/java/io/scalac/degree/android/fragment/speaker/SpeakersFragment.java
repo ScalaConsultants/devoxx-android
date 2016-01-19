@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.android.fragment.SpeakerFragment_;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
 import io.scalac.degree.data.manager.SpeakersDataManager;
@@ -54,7 +53,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-@EFragment(R.layout.items_list_view)
+@EFragment(R.layout.fragment_speakers)
 public class SpeakersFragment extends BaseFragment {
 
     private static final long SHOW_PROGRESS_DELAY_MS = 150;

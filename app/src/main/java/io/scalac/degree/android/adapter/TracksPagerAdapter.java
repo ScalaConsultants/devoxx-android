@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.List;
 import java.util.Map;
 
-import io.scalac.degree.android.fragment.TracksListFragment_;
+import io.scalac.degree.android.fragment.track.TracksListFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 
 public class TracksPagerAdapter extends FragmentPagerAdapter {
@@ -41,7 +41,6 @@ public class TracksPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-
         return TracksListFragment_.builder().trackName(tracksNames.get(position)).build();
     }
 

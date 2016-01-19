@@ -19,7 +19,7 @@ import java.util.List;
 
 import io.scalac.degree.android.adapter.TracksAdapter;
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.android.fragment.TalkFragment_;
+import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;
