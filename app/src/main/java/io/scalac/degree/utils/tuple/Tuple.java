@@ -1,20 +1,20 @@
-package io.scalac.degree.utils;
+package io.scalac.degree.utils.tuple;
 
-public class SingleTuple<First, Second> {
+public class Tuple<First, Second> {
     public final First first;
-    public final Second object;
+    public final Second second;
 
-    public SingleTuple(First first, Second object) {
+    public Tuple(First first, Second second) {
         this.first = first;
-        this.object = object;
+        this.second = second;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SingleTuple)) return false;
+        if (!(o instanceof Tuple)) return false;
 
-        SingleTuple<?, ?> that = (SingleTuple<?, ?>) o;
+        Tuple<?, ?> that = (Tuple<?, ?>) o;
 
         return !(first != null ? !first.equals(that.first) : that.first != null);
 

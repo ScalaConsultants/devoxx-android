@@ -1,4 +1,4 @@
-package io.scalac.degree.android.view.listholder;
+package io.scalac.degree.android.view.listholder.track;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

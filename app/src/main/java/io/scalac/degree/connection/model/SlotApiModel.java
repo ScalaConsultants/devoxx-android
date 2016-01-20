@@ -26,6 +26,10 @@ public class SlotApiModel implements Serializable {
     public long toTimeMillis;
     public int roomCapacity;
 
+    public boolean isSimpleBreak() {
+        return slotBreak == null && talk == null;
+    }
+
     public boolean isBreak() {
         return slotBreak != null && talk == null;
     }
