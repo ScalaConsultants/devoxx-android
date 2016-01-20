@@ -1,4 +1,4 @@
-package io.scalac.degree.android.adapter;
+package io.scalac.degree.android.adapter.schedule;
 
 
 import com.annimon.stream.Optional;

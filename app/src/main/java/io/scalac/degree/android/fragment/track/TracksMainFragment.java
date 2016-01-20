@@ -10,7 +10,7 @@ import org.androidannotations.annotations.res.ColorRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
-import io.scalac.degree.android.adapter.TracksPagerAdapter;
+import io.scalac.degree.android.adapter.track.TracksPagerAdapter;
 import io.scalac.degree.android.fragment.common.BaseFragment;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;

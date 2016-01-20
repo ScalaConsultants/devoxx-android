@@ -8,14 +8,13 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.List;
 
-import io.scalac.degree.android.adapter.TracksAdapter;
+import io.scalac.degree.android.adapter.track.TracksAdapter;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;

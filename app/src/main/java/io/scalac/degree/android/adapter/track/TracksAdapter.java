@@ -1,4 +1,4 @@
-package io.scalac.degree.android.adapter;
+package io.scalac.degree.android.adapter.track;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;

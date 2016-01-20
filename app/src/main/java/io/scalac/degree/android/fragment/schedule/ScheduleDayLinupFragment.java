@@ -15,10 +15,11 @@ import android.view.View;
 import java.util.Comparator;
 import java.util.List;
 
-import io.scalac.degree.android.adapter.ScheduleDayLineupAdapter;
+import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.utils.NumberUtils;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_list)
@@ -47,8 +48,7 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
                 .sorted(new Comparator<SlotApiModel>() {
                     @Override
                     public int compare(SlotApiModel lhs, SlotApiModel rhs) {
-                        return lhs.fromTimeMillis < rhs.fromTimeMillis ? -1
-                                : (lhs.fromTimeMillis == rhs.fromTimeMillis ? 0 : 1);
+                        return NumberUtils.compareLong(lhs.fromTimeMillis, rhs.fromTimeMillis);
                     }
                 })
                 .map(new Function<SlotApiModel, ScheduleDayLineupAdapter.Item>() {

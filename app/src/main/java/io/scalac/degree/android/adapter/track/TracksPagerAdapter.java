@@ -1,4 +1,4 @@
-package io.scalac.degree.android.adapter;
+package io.scalac.degree.android.adapter.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
