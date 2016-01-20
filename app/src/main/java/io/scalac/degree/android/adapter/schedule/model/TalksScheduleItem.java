@@ -11,6 +11,8 @@ import io.scalac.degree.connection.model.SlotApiModel;
 
 public class TalksScheduleItem extends ScheduleItem {
 
+    private static final int EXTRA_TIMESPAN_ELEMENT_COUNT = 1;
+
     private List<ScheduleSlotWrapper> favouredSlots;
     private List<ScheduleSlotWrapper> otherSlots;
 
@@ -57,7 +59,7 @@ public class TalksScheduleItem extends ScheduleItem {
 
     @Override
     public int getSize() {
-        return favouredSlots.size() + otherSlots.size();
+        return favouredSlots.size() + otherSlots.size() + EXTRA_TIMESPAN_ELEMENT_COUNT;
     }
 
     @Override
@@ -72,6 +74,14 @@ public class TalksScheduleItem extends ScheduleItem {
         } else {
             return ScheduleDayLineupAdapter.TALK_VIEW;
         }
+    }
+
+    @Override
+    public SlotApiModel getItem(int position) {
+        // TODO Handle breaks and favs!
+
+        final int localIndex = position - getStartIndex();
+        return otherSlots.get(localIndex - 1).getSlotApiModel();
     }
 
     public SlotApiModel getSlotModel(int position) {

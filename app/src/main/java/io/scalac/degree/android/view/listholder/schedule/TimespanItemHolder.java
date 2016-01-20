@@ -1,8 +1,6 @@
 package io.scalac.degree.android.view.listholder.schedule;
 
 import io.scalac.degree.android.view.list.schedule.TimespanItemView;
-import io.scalac.degree.connection.model.BreakApiModel;
-import io.scalac.degree.connection.model.SlotApiModel;
 
 public class TimespanItemHolder extends BaseItemHolder {
 
@@ -13,7 +11,7 @@ public class TimespanItemHolder extends BaseItemHolder {
         timespanItemView = aTimespanItemView;
     }
 
-    public void setupBreak(SlotApiModel breakModel) {
-        timespanItemView.setupBreak(breakModel);
+    public void setupTimespan(long timeStart, long timeEnd) {
+        timespanItemView.setupTimespan(timeStart, timeEnd);
     }
 }

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
-import io.scalac.degree.connection.model.BreakApiModel;
 import io.scalac.degree.connection.model.SlotApiModel;
 
 public class BreakScheduleItem extends ScheduleItem {
@@ -47,6 +46,11 @@ public class BreakScheduleItem extends ScheduleItem {
     @Override
     public int getItemType(int position) {
         return ScheduleDayLineupAdapter.BREAK_VIEW;
+    }
+
+    @Override
+    public SlotApiModel getItem(int position) {
+        return scheduleSlotWrappers.get(0).getSlotApiModel();
     }
 
     public SlotApiModel getBreakModel() {

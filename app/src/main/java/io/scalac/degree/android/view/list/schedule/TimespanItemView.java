@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree33.R;
 
 @EViewGroup(R.layout.list_item_timespan)
@@ -44,9 +43,9 @@ public class TimespanItemView extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setupBreak(SlotApiModel breakApiModel) {
-        final String startString = formatTime(breakApiModel.fromTimeMillis);
-        final String endString = formatTime(breakApiModel.toTimeMillis);
+    public void setupTimespan(long timeStart, long timeEnd) {
+        final String startString = formatTime(timeStart);
+        final String endString = formatTime(timeEnd);
         label.setText(String.format(TIMESPAN_PLACEHOLDER, startString, endString));
     }
 

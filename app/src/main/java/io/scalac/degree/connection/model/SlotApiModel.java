@@ -51,4 +51,23 @@ public class SlotApiModel implements Serializable {
             return value.slotId.equals(id);
         }
     }
+
+    @Override
+    public String toString() {
+        return "SlotApiModel{" +
+                "slotBreak=" + slotBreak +
+                ", talk=" + talk +
+                ", roomId='" + roomId + '\'' +
+                ", roomSetup='" + roomSetup + '\'' +
+                ", toTime='" + toTime + '\'' +
+                ", fromTime='" + fromTime + '\'' +
+                ", roomName='" + roomName + '\'' +
+                ", slotId='" + slotId + '\'' +
+                ", day='" + day + '\'' +
+                ", notAllocated=" + notAllocated +
+                ", fromTimeMillis=" + fromTimeMillis +
+                ", toTimeMillis=" + toTimeMillis +
+                ", roomCapacity=" + roomCapacity +
+                '}';
+    }
 }

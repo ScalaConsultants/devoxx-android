@@ -9,10 +9,8 @@ import org.androidannotations.annotations.EBean;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,7 +27,6 @@ import io.scalac.degree.android.view.listholder.schedule.BaseItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.BreakItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.TalkItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.TimespanItemHolder;
-import io.scalac.degree.connection.model.BreakApiModel;
 import io.scalac.degree.connection.model.SlotApiModel;
 
 @EBean
@@ -55,6 +52,10 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public void setData(List<ScheduleItem> aData) {
         data.clear();
         data.addAll(aData);
+    }
+
+    public SlotApiModel getClickedSlot(int position) {
+        return getItem(position).getItem(position);
     }
 
     @Override
@@ -93,42 +94,15 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
             final SlotApiModel breakModel = talksScheduleItem.getSlotModel(position);
             ((TalkItemHolder) holder).setupTalk(breakModel);
         } else if (holder instanceof TimespanItemHolder) {
-            final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) getItem(position);
-            final SlotApiModel breakModel = talksScheduleItem.getSlotModel(position);
-            ((TimespanItemHolder) holder).setupBreak(breakModel);
+            final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+            ((TimespanItemHolder) holder).setupTimespan(item.getStartTime(), item.getEndTime());
         }
-    }
-
-    private ScheduleItem getItem(int position) {
-        ScheduleItem result = null;
-        for (ScheduleItem scheduleItem : data) {
-            final int startIndex = scheduleItem.getStartIndex();
-            final int stopIndex = scheduleItem.getStopIndex();
-            if (position >= startIndex && position <= stopIndex) {
-                result = scheduleItem;
-                break;
-            }
-        }
-        return result;
     }
 
     @Override
     @ScheduleDayLineupAdapter.ViewType
     public int getItemViewType(int position) {
-        @ScheduleDayLineupAdapter.ViewType
-        int result = super.getItemViewType(position);
-
-        for (ScheduleItem scheduleItem : data) {
-            final int startIndex = scheduleItem.getStartIndex();
-            final int stopIndex = scheduleItem.getStopIndex();
-
-            if (position >= startIndex && position <= stopIndex) {
-                result = scheduleItem.getItemType(position);
-                break;
-            }
-        }
-
-        return result;
+        return getItem(position).getItemType(position);
     }
 
     @Override
@@ -146,5 +120,18 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
                         return result + value;
                     }
                 });
+    }
+
+    private ScheduleItem getItem(int position) {
+        ScheduleItem result = null;
+        for (ScheduleItem scheduleItem : data) {
+            final int startIndex = scheduleItem.getStartIndex();
+            final int stopIndex = scheduleItem.getStopIndex();
+            if (position >= startIndex && position <= stopIndex) {
+                result = scheduleItem;
+                break;
+            }
+        }
+        return result;
     }
 }

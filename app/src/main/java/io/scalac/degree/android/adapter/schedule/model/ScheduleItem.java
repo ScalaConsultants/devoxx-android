@@ -1,6 +1,7 @@
 package io.scalac.degree.android.adapter.schedule.model;
 
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
+import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.utils.tuple.Tuple;
 
 public abstract class ScheduleItem {
@@ -36,4 +37,6 @@ public abstract class ScheduleItem {
 
     @ScheduleDayLineupAdapter.ViewType
     public abstract int getItemType(int position);
+
+    public abstract SlotApiModel getItem(int position);
 }

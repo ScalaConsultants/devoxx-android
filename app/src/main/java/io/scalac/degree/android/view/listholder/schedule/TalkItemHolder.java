@@ -1,7 +1,5 @@
 package io.scalac.degree.android.view.listholder.schedule;
 
-import android.view.View;
-
 import io.scalac.degree.android.view.list.schedule.TalkItemView;
 import io.scalac.degree.connection.model.SlotApiModel;
 
@@ -15,6 +13,6 @@ public class TalkItemHolder extends BaseItemHolder {
     }
 
     public void setupTalk(SlotApiModel slotApiModel) {
-        talkItemView.setupTalk(slotApiModel.talk);
+        talkItemView.setupTalk(slotApiModel);
     }
 }
