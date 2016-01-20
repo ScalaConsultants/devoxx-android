@@ -25,9 +25,9 @@ public class Logger {
         }
     }
 
-    public static void logDate(String message, long syncTime) {
+    public static void logDate(String message, long time) {
         if (isEnabled) {
-            Log.d(TAG, message + ", " + new Date(syncTime).toString());
+            Log.d(TAG, message + ", " + new Date(time).toString());
         }
     }
 

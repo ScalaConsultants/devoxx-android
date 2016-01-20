@@ -1,4 +1,4 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.speaker;
 
 import com.annimon.stream.Optional;
 import com.bumptech.glide.Glide;
@@ -13,7 +13,6 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.Html;
@@ -26,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.data.Settings_;

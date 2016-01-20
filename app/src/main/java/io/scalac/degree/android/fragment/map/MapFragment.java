@@ -1,4 +1,4 @@
-package io.scalac.degree.android.fragment;
+package io.scalac.degree.android.fragment.map;
 
 import android.support.v4.app.Fragment;
 
@@ -8,7 +8,7 @@ import org.androidannotations.annotations.EFragment;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_maps)
-public class MapsFragment extends Fragment {
+public class MapFragment extends Fragment {
     // TODO Add view.
 
     @AfterViews

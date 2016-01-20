@@ -213,6 +213,20 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         }).collect(Collectors.<SlotApiModel>toList());
     }
 
+    public List<SlotApiModel> getSlotsForDay(final long timeMs) {
+        final DateTime requestedDate = new DateTime(timeMs);
+        final DateTime tmpDate = new DateTime();
+        final DateTimeComparator dateComparator = DateTimeComparator.getDateOnlyInstance();
+
+        return Stream.of(allSlots).filter(new Predicate<SlotApiModel>() {
+            @Override
+            public boolean test(SlotApiModel value) {
+                return dateComparator.compare(requestedDate,
+                        tmpDate.withMillis(value.fromTimeMillis)) == 0;
+            }
+        }).collect(Collectors.<SlotApiModel>toList());
+    }
+
     public List<SlotApiModel> getTalksForSpecificTime(final long requestedDate) {
         return Stream.of(talks).filter(new Predicate<SlotApiModel>() {
             @Override
