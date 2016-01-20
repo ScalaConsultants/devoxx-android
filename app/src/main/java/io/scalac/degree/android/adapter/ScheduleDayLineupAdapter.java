@@ -24,7 +24,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseScheduleD
     private final List<Item> data = new ArrayList<>();
 
     public void setData(List<Item> aData) {
-        data.clear(); // TODO hmmm??? clear()?
+        data.clear();
         data.addAll(aData);
     }
 
