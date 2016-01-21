@@ -82,7 +82,14 @@ public class ScheduleMainFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.speakers_menu, menu);
 
+        setupSearchView(menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void setupSearchView(Menu menu) {
         // TODO Get conference days from ConferenceManager class to build filter menu.
+
 
         final MenuItem searchItem = menu.findItem(R.id.action_search);
 
@@ -90,6 +97,7 @@ public class ScheduleMainFragment extends BaseFragment {
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
+
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager
                     .getSearchableInfo(getActivity().getComponentName()));
@@ -114,8 +122,6 @@ public class ScheduleMainFragment extends BaseFragment {
 
             searchView.setQueryHint(getString(R.string.search_hint));
         }
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void onSearchQuery(String query) {

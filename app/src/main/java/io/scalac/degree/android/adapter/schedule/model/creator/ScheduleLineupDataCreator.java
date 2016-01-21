@@ -9,6 +9,8 @@ import com.annimon.stream.function.Predicate;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +39,13 @@ public class ScheduleLineupDataCreator {
     private Function<? super TripleTuple<Long, Long, String>, ? extends Comparable>
             sortKeysPredicate = value -> value.first;
 
+    @NonNull
     public List<ScheduleItem> prepareInitialData(long lineupDayMs) {
         final List<SlotApiModel> slotsRaw = slotsDataManager.getSlotsForDay(lineupDayMs);
         return prepareResult(slotsRaw);
     }
 
+    @NonNull
     public List<ScheduleItem> handleSearchQuery(long lineupDayMs, final String query) {
         final String internalQuery = query.toLowerCase();
         searchPredicate.setQuery(internalQuery);
@@ -53,17 +57,7 @@ public class ScheduleLineupDataCreator {
         return prepareResult(queriedRaw);
     }
 
-    private boolean isBreak(List<SlotApiModel> models) {
-        boolean result = false;
-        for (SlotApiModel model : models) {
-            if (model.isBreak()) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
+    @NonNull
     private List<ScheduleItem> prepareResult(List<SlotApiModel> slotApiModels) {
         final Map<TripleTuple<Long, Long, String>, List<SlotApiModel>> map = Stream.of(slotApiModels)
                 .sortBy(sortTriplesPredicate)
@@ -73,6 +67,13 @@ public class ScheduleLineupDataCreator {
                 .sortBy(sortKeysPredicate)
                 .collect(Collectors.<TripleTuple<Long, Long, String>>toList());
 
+        return buildListItems(map, sortedKeys);
+    }
+
+    @NonNull
+    private List<ScheduleItem> buildListItems(
+            Map<TripleTuple<Long, Long, String>, List<SlotApiModel>> map,
+            List<TripleTuple<Long, Long, String>> sortedKeys) {
         final List<ScheduleItem> result = new ArrayList<>(sortedKeys.size());
 
         int index = 0;
@@ -90,7 +91,7 @@ public class ScheduleLineupDataCreator {
                 final TalksScheduleItem talksScheduleItem = new TalksScheduleItem(
                         startTime, endTime, index, index + size);
 
-                index += 1;
+                index++;
 
                 talksScheduleItem.setOtherSlots(models);
                 result.add(talksScheduleItem);
@@ -99,6 +100,17 @@ public class ScheduleLineupDataCreator {
             index += size;
         }
 
+        return result;
+    }
+
+    private boolean isBreak(List<SlotApiModel> models) {
+        boolean result = false;
+        for (SlotApiModel model : models) {
+            if (model.isBreak()) {
+                result = true;
+                break;
+            }
+        }
         return result;
     }
 

@@ -9,6 +9,7 @@ import io.scalac.degree.connection.model.SlotApiModel;
 public class TalksScheduleItem extends ScheduleItem {
 
     private static final int EXTRA_TIMESPAN_ELEMENT_COUNT = 1;
+    private static final int TIMESPAN_INDEX = 0;
 
     private List<SlotApiModel> favouredSlots;
     private List<SlotApiModel> otherSlots;
@@ -40,8 +41,8 @@ public class TalksScheduleItem extends ScheduleItem {
 
         // TODO Handle breaks and favs!
 
-        final int localIndex = position - getStartIndex();
-        if (localIndex == 0) {
+        final int probableTimespanIndex = position - getStartIndex();
+        if (probableTimespanIndex == TIMESPAN_INDEX) {
             return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
         } else {
             return ScheduleDayLineupAdapter.TALK_VIEW;
