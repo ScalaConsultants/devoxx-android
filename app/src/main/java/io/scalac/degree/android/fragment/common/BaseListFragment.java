@@ -29,14 +29,11 @@ public abstract class BaseListFragment extends BaseFragment implements ItemClick
     protected void afterViews() {
         setupList();
 
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-                    inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
-                }
-                return false;
+        recyclerView.setOnTouchListener((v, event) -> {
+            if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
             }
+            return false;
         });
     }
 

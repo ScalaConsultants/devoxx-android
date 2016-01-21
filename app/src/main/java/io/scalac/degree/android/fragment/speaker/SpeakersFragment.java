@@ -29,8 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -49,8 +47,6 @@ import io.scalac.degree.utils.InfoUtil;
 import io.scalac.degree33.R;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_speakers)
@@ -128,38 +124,20 @@ public class SpeakersFragment extends BaseFragment {
         speakersDataManager.fetchSpeakersShortInfo(settings.activeConferenceCode().get())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        showProgress();
-                    }
-                })
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        infoUtil.showToast(R.string.connection_error);
-                    }
-                })
+                .doOnSubscribe(this::showProgress)
+                .doOnError(throwable -> infoUtil.showToast(R.string.connection_error))
                 .subscribe(subscriber);
 
-        listView.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        listView.setOnItemClickListener((parent, view, position, id) ->
                 getMainActivity().replaceFragment(SpeakerFragment_.builder()
                         .speakerDbUuid(itemAdapter.getClickedItem(position).getUuid())
-                        .build(), true);
-            }
-        });
+                        .build(), true));
 
-        listView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-                    inputMethodManager.hideSoftInputFromWindow(listView.getWindowToken(), 0);
-                }
-                return false;
+        listView.setOnTouchListener((v, event) -> {
+            if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                inputMethodManager.hideSoftInputFromWindow(listView.getWindowToken(), 0);
             }
+            return false;
         });
     }
 
@@ -190,12 +168,9 @@ public class SpeakersFragment extends BaseFragment {
                 }
             });
 
-            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-                @Override
-                public boolean onClose() {
-                    onSearchQuery("");
-                    return false;
-                }
+            searchView.setOnCloseListener(() -> {
+                onSearchQuery("");
+                return false;
             });
         }
 
@@ -229,39 +204,22 @@ public class SpeakersFragment extends BaseFragment {
     }
 
     private static Function<SpeakersGroup, Comparable> speakersGroupSorter() {
-        return new Function<SpeakersGroup, Comparable>() {
-            @Override
-            public Comparable apply(SpeakersGroup value) {
-                return value.getGroupLetter();
-            }
-        };
+        return SpeakersGroup::getGroupLetter;
     }
 
-    private static Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup> speakersGroupMapper() {
-        return new Function<Map.Entry<String, List<RealmSpeakerShort>>, SpeakersGroup>() {
-            @Override
-            public SpeakersGroup apply(Map.Entry<String, List<RealmSpeakerShort>> value) {
-                final List<RealmSpeakerShort> list =
-                        Stream.of(value.getValue())
-                                .sortBy(new Function<RealmSpeakerShort, Comparable>() {
-                                    @Override
-                                    public Comparable apply(RealmSpeakerShort value) {
-                                        return value.getFirstName();
-                                    }
-                                })
-                                .collect(Collectors.<RealmSpeakerShort>toList());
-                return new SpeakersGroup(value.getKey(), list);
-            }
+    private static Function<Map.Entry<String,
+            List<RealmSpeakerShort>>, SpeakersGroup> speakersGroupMapper() {
+        return value -> {
+            final List<RealmSpeakerShort> list =
+                    Stream.of(value.getValue())
+                            .sortBy(RealmSpeakerShort::getFirstName)
+                            .collect(Collectors.<RealmSpeakerShort>toList());
+            return new SpeakersGroup(value.getKey(), list);
         };
     }
 
     private static Function<RealmSpeakerShort, String> speakerFirstLetterGroupping() {
-        return new Function<RealmSpeakerShort, String>() {
-            @Override
-            public String apply(RealmSpeakerShort value) {
-                return value.getFirstName().substring(0, 1);
-            }
-        };
+        return value -> value.getFirstName().substring(0, 1);
     }
 
     class ItemAdapter extends BaseAdapter {

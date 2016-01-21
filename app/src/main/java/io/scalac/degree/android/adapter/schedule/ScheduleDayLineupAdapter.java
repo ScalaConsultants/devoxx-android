@@ -1,10 +1,5 @@
 package io.scalac.degree.android.adapter.schedule;
 
-
-import com.annimon.stream.Stream;
-import com.annimon.stream.function.BinaryOperator;
-import com.annimon.stream.function.Function;
-
 import org.androidannotations.annotations.EBean;
 
 import android.content.Context;
@@ -107,19 +102,11 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
 
     @Override
     public int getItemCount() {
-        return Stream.of(data)
-                .map(new Function<ScheduleItem, Integer>() {
-                    @Override
-                    public Integer apply(ScheduleItem value) {
-                        return value.getSize();
-                    }
-                })
-                .reduce(0, new BinaryOperator<Integer>() {
-                    @Override
-                    public Integer apply(Integer result, Integer value) {
-                        return result + value;
-                    }
-                });
+        int result = 0;
+        for (ScheduleItem scheduleItem : data) {
+            result += scheduleItem.getSize();
+        }
+        return result;
     }
 
     private ScheduleItem getItem(int position) {

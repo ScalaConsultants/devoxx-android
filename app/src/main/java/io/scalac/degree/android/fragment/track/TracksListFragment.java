@@ -2,7 +2,6 @@ package io.scalac.degree.android.fragment.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Predicate;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
@@ -37,13 +36,8 @@ public class TracksListFragment extends BaseListFragment {
     void afterInject() {
         final List<SlotApiModel> tracks =
                 Stream.of(slotsDataManager.getLastTalks())
-                        .filter(new Predicate<SlotApiModel>() {
-                            @Override
-                            public boolean test(SlotApiModel slot) {
-                                return slot.talk != null &&
-                                        slot.talk.track.equalsIgnoreCase(trackName);
-                            }
-                        })
+                        .filter(slot -> slot.talk != null &&
+                                slot.talk.track.equalsIgnoreCase(trackName))
                         .collect(Collectors.<SlotApiModel>toList());
         tracksAdapter.setData(tracks);
     }

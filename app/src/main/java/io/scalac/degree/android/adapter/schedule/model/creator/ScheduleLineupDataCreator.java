@@ -6,7 +6,6 @@ import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
 import com.annimon.stream.function.Predicate;
 
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
@@ -27,35 +26,16 @@ public class ScheduleLineupDataCreator {
     @Bean
     SlotsDataManager slotsDataManager;
 
-    private SearchPredicate searchPredicate;
-    private Function<SlotApiModel, Comparable> sortTriplesPredicate =
-            new Function<SlotApiModel, Comparable>() {
-                @Override
-                public Comparable apply(SlotApiModel value) {
-                    return value.fromTimeMillis;
-                }
-            };
+    private SearchPredicate searchPredicate = new SearchPredicate();
 
-    private Collector<SlotApiModel, ?, Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>> triplesCollector
-            = Collectors.groupingBy(new Function<SlotApiModel, TripleTuple<Long, Long, String>>() {
-        @Override
-        public TripleTuple<Long, Long, String> apply(SlotApiModel value) {
-            return new TripleTuple<>(value.fromTimeMillis, value.toTimeMillis, value.slotId);
-        }
-    });
+    private Collector<SlotApiModel, ?, Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>>
+            triplesCollector = createTriplesCollector();
 
-    private Function<? super TripleTuple<Long, Long, String>, ? extends Comparable> sortKeysPredicate
-            = new Function<TripleTuple<Long, Long, String>, Comparable>() {
-        @Override
-        public Comparable apply(TripleTuple<Long, Long, String> value) {
-            return value.first;
-        }
-    };
+    private Function<SlotApiModel, Comparable>
+            sortTriplesPredicate = value -> value.fromTimeMillis;
 
-    @AfterInject
-    void afterInject() {
-        searchPredicate = new SearchPredicate();
-    }
+    private Function<? super TripleTuple<Long, Long, String>, ? extends Comparable>
+            sortKeysPredicate = value -> value.first;
 
     public List<ScheduleItem> prepareInitialData(long lineupDayMs) {
         final List<SlotApiModel> slotsRaw = slotsDataManager.getSlotsForDay(lineupDayMs);
@@ -120,6 +100,16 @@ public class ScheduleLineupDataCreator {
         }
 
         return result;
+    }
+
+    private static Collector<SlotApiModel, ?,
+            Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>> createTriplesCollector() {
+        return Collectors.groupingBy(new Function<SlotApiModel, TripleTuple<Long, Long, String>>() {
+            @Override
+            public TripleTuple<Long, Long, String> apply(SlotApiModel value) {
+                return new TripleTuple<>(value.fromTimeMillis, value.toTimeMillis, value.slotId);
+            }
+        });
     }
 
     private static class SearchPredicate implements Predicate<SlotApiModel> {

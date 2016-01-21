@@ -31,8 +31,6 @@ public abstract class ScheduleItem {
         return startIndex;
     }
 
-    public abstract boolean isVisible();
-
     public abstract int getSize();
 
     @ScheduleDayLineupAdapter.ViewType

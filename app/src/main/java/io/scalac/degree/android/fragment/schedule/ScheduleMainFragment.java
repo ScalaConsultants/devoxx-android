@@ -2,13 +2,11 @@ package io.scalac.degree.android.fragment.schedule;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Function;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
@@ -27,7 +25,6 @@ import java.util.Map;
 
 import io.scalac.degree.android.adapter.schedule.SchedulePagerAdapter;
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.DateUtils;
 import io.scalac.degree33.R;
@@ -61,18 +58,8 @@ public class ScheduleMainFragment extends BaseFragment {
     @AfterInject
     void afterInject() {
         final List<Long> days = Stream.of(slotsDataManager.getLastTalks())
-                .groupBy(new Function<SlotApiModel, Long>() {
-                    @Override
-                    public Long apply(SlotApiModel value) {
-                        return DateUtils.calculateDayStartMs(value.fromTimeMillis);
-                    }
-                })
-                .map(new Function<Map.Entry<Long, List<SlotApiModel>>, Long>() {
-                    @Override
-                    public Long apply(Map.Entry<Long, List<SlotApiModel>> entry) {
-                        return entry.getKey();
-                    }
-                })
+                .groupBy(value -> DateUtils.calculateDayStartMs(value.fromTimeMillis))
+                .map(Map.Entry::getKey)
                 .sorted()
                 .collect(Collectors.<Long>toList());
 
@@ -120,12 +107,9 @@ public class ScheduleMainFragment extends BaseFragment {
                 }
             });
 
-            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-                @Override
-                public boolean onClose() {
-                    onSearchQuery("");
-                    return false;
-                }
+            searchView.setOnCloseListener(() -> {
+                onSearchQuery("");
+                return false;
             });
 
             searchView.setQueryHint(getString(R.string.search_hint));
@@ -138,17 +122,12 @@ public class ScheduleMainFragment extends BaseFragment {
         // TODO Make search query.
     }
 
-    @OptionsItem({
-            R.id.filter_monday,
-            R.id.filter_tuesday,
-            R.id.filter_wednesday,
-            R.id.filter_thursday,
-            R.id.filter_friday})
+    // TODO TBD
     boolean onMondayClick(MenuItem item) {
         item.setChecked(!item.isChecked());
 
         // TODO Will be gethered from ConferenceMangager class.
-        schedulePagerAdapter.refreshDays(new ArrayList<Long>(0));
+        schedulePagerAdapter.refreshDays(new ArrayList<>(0));
         viewPager.setAdapter(schedulePagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
