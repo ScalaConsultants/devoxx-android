@@ -44,9 +44,11 @@
 
     </LinearLayout>
 
+    <!--ATM we don't need schedule icon on talk item.-->
     <ImageView
         android:id="@+id/list_item_talk_track_schedule"
         style="@style/ScheduleImageButtonStyle"
-        android:contentDescription="@null"/>
+        android:contentDescription="@null"
+        android:visibility="gone"/>
 
 </merge>

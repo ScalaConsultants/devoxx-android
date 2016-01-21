@@ -4,7 +4,12 @@
     <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="Search"
+        android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always"/>
+
+    <!--Group that handle filters for days.-->
+    <group
+        android:id="@+id/action_filter_group"
+        android:checkableBehavior="all"/>
 </menu>

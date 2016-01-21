@@ -189,6 +189,14 @@ public class SpeakersFragment extends BaseFragment {
                     return false;
                 }
             });
+
+            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    onSearchQuery("");
+                    return false;
+                }
+            });
         }
 
         super.onCreateOptionsMenu(menu, inflater);

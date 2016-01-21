@@ -31,7 +31,9 @@
     <string name="conf_map">CONF MAP</string>
     <string name="go">GO</string>
     <string name="connection_error">Connection error!</string>
-    <string name="default_break_label">Break...</string>
+    <string name="default_break_label">Break…</string>
+    <string name="search_hint">Search…</string>
+    <string name="search">Search</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
