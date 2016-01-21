@@ -1,9 +1,8 @@
-package io.scalac.degree.android.adapter;
+package io.scalac.degree.android.adapter.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
-import com.annimon.stream.function.Predicate;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,17 +22,13 @@ public class TracksPagerAdapter extends FragmentPagerAdapter {
     public TracksPagerAdapter(FragmentManager fm, List<SlotApiModel> slots) {
         super(fm);
 
-        tracksMap = Stream.of(slots).filter(new Predicate<SlotApiModel>() {
-            @Override
-            public boolean test(SlotApiModel slot) {
-                return slot.talk != null;
-            }
-        }).collect(Collectors.groupingBy(new Function<SlotApiModel, String>() {
-            @Override
-            public String apply(SlotApiModel value) {
-                return value.talk.track;
-            }
-        }));
+        tracksMap = Stream.of(slots).filter(slot -> slot.talk != null)
+                .collect(Collectors.groupingBy(new Function<SlotApiModel, String>() {
+                    @Override
+                    public String apply(SlotApiModel value) {
+                        return value.talk.track;
+                    }
+                }));
 
         tracksNames = Stream.of(tracksMap.keySet()).
                 sorted().collect(Collectors.<String>toList());

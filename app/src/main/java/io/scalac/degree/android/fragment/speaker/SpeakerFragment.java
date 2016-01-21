@@ -125,17 +125,14 @@ public class SpeakerFragment extends BaseFragment {
                 Button buttonItem = (Button) LayoutInflater.from(getActivity())
                         .inflate(R.layout.button_item, linearLayoutTalks, false);
                 buttonItem.setText(talkModel.getTitle());
-                buttonItem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final Optional<SlotApiModel> slotModel = slotsDataManager.
-                                getSlotByTalkId(talkModel.getId());
-                        if (slotModel.isPresent()) {
-                            getMainActivity().replaceFragment(TalkFragment_.builder()
-                                    .slotModel(slotModel.get()).build(), true);
-                        } else {
-                            Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
-                        }
+                buttonItem.setOnClickListener(v -> {
+                    final Optional<SlotApiModel> slotModel = slotsDataManager.
+                            getSlotByTalkId(talkModel.getId());
+                    if (slotModel.isPresent()) {
+                        getMainActivity().replaceFragment(TalkFragment_.builder()
+                                .slotModel(slotModel.get()).build(), true);
+                    } else {
+                        Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
                     }
                 });
                 linearLayoutTalks.addView(buttonItem);

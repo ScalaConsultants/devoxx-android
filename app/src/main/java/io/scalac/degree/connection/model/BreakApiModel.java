@@ -8,4 +8,14 @@ public class BreakApiModel implements Serializable {
     public String nameEN;
     public String nameFR;
     public RoomApiModel room;
+
+    @Override
+    public String toString() {
+        return "BreakApiModel{" +
+                "id='" + id + '\'' +
+                ", nameEN='" + nameEN + '\'' +
+                ", nameFR='" + nameFR + '\'' +
+                ", room=" + room +
+                '}';
+    }
 }

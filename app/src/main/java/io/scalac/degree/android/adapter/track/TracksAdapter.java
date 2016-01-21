@@ -1,4 +1,4 @@
-package io.scalac.degree.android.adapter;
+package io.scalac.degree.android.adapter.track;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.scalac.degree.android.view.TrackTalkItemView_;
-import io.scalac.degree.android.view.listholder.BaseTrackHolder;
-import io.scalac.degree.android.view.listholder.TalkTrackHolder;
+import io.scalac.degree.android.view.listholder.track.BaseTrackHolder;
+import io.scalac.degree.android.view.listholder.track.TalkTrackHolder;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.downloader.TracksDownloader;
 

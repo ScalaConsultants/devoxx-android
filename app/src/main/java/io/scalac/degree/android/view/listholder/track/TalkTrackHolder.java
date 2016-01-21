@@ -1,4 +1,4 @@
-package io.scalac.degree.android.view.listholder;
+package io.scalac.degree.android.view.listholder.track;
 
 import io.scalac.degree.android.view.TrackTalkItemView;
 import io.scalac.degree.connection.model.SlotApiModel;

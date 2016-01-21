@@ -147,18 +147,15 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
 
         setupNotificationView();
 
-        scheduleViewContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
-                    notificationsManager.unscheduleNotification(slotModel.slotId, true);
-                    setupNotActiveScheduleView();
-                } else {
-                    final NotificationsManager.ScheduleNotificationModel model =
-                            NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
-                    notificationsManager.scheduleNotification(model);
-                    setupActiveScheduleView();
-                }
+        scheduleViewContainer.setOnClickListener(v -> {
+            if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
+                notificationsManager.unscheduleNotification(slotModel.slotId, true);
+                setupNotActiveScheduleView();
+            } else {
+                final NotificationsManager.ScheduleNotificationModel model =
+                        NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
+                notificationsManager.scheduleNotification(model);
+                setupActiveScheduleView();
             }
         });
 
@@ -223,12 +220,9 @@ public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListene
                         InputType.TYPE_TEXT_FLAG_MULTI_LINE)
                 .inputRange(QUESTION_MIN_CHARS_LENGTH, QUESTION_MAX_CHARS_LENGTH)
                 .positiveText("Submit")
-                .input("Type question here...", "", false, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        Toast.makeText(getContext(), "Question sent...",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                .input("Type question here...", "", false, (dialog, input) -> {
+                    Toast.makeText(getContext(), "Question sent...",
+                            Toast.LENGTH_SHORT).show();
                 }).show();
     }
 

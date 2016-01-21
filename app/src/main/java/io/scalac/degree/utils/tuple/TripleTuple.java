@@ -1,11 +1,11 @@
-package io.scalac.degree.utils;
+package io.scalac.degree.utils.tuple;
 
-public class Tuple<First, Second, Third> {
+public class TripleTuple<First, Second, Third> {
     public final First first;
     public final Second second;
     public final Third object;
 
-    public Tuple(First first, Second second, Third object) {
+    public TripleTuple(First first, Second second, Third object) {
         this.first = first;
         this.second = second;
         this.object = object;
@@ -14,12 +14,12 @@ public class Tuple<First, Second, Third> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Tuple)) return false;
+        if (!(o instanceof TripleTuple)) return false;
 
-        Tuple<?, ?, ?> tuple = (Tuple<?, ?, ?>) o;
+        TripleTuple<?, ?, ?> tripleTuple = (TripleTuple<?, ?, ?>) o;
 
-        if (first != null ? !first.equals(tuple.first) : tuple.first != null) return false;
-        return !(second != null ? !second.equals(tuple.second) : tuple.second != null);
+        if (first != null ? !first.equals(tripleTuple.first) : tripleTuple.first != null) return false;
+        return !(second != null ? !second.equals(tripleTuple.second) : tripleTuple.second != null);
 
     }
 

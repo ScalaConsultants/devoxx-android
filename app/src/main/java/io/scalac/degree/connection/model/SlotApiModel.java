@@ -26,6 +26,10 @@ public class SlotApiModel implements Serializable {
     public long toTimeMillis;
     public int roomCapacity;
 
+    public boolean isSimpleBreak() {
+        return slotBreak == null && talk == null;
+    }
+
     public boolean isBreak() {
         return slotBreak != null && talk == null;
     }
@@ -46,5 +50,24 @@ public class SlotApiModel implements Serializable {
         public boolean test(SlotApiModel value) {
             return value.slotId.equals(id);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SlotApiModel{" +
+                "slotBreak=" + slotBreak +
+                ", talk=" + talk +
+                ", roomId='" + roomId + '\'' +
+                ", roomSetup='" + roomSetup + '\'' +
+                ", toTime='" + toTime + '\'' +
+                ", fromTime='" + fromTime + '\'' +
+                ", roomName='" + roomName + '\'' +
+                ", slotId='" + slotId + '\'' +
+                ", day='" + day + '\'' +
+                ", notAllocated=" + notAllocated +
+                ", fromTimeMillis=" + fromTimeMillis +
+                ", toTimeMillis=" + toTimeMillis +
+                ", roomCapacity=" + roomCapacity +
+                '}';
     }
 }

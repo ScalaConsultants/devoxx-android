@@ -31,7 +31,7 @@ import io.scalac.degree.data.dao.SlotDao;
 import io.scalac.degree.data.downloader.SlotsDownloader;
 import io.scalac.degree.data.downloader.TracksDownloader;
 import io.scalac.degree.utils.Logger;
-import io.scalac.degree.utils.Tuple;
+import io.scalac.degree.utils.tuple.TripleTuple;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
@@ -182,16 +182,16 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
     public List<SlotApiModel> extractTimeLabelsForDate(final Date requestedDate) {
         return Stream.of(allSlots)
                 .filter(new SameDayPredicate(requestedDate.getTime()))
-                .map(new Function<SlotApiModel, Tuple<String, String, SlotApiModel>>() {
+                .map(new Function<SlotApiModel, TripleTuple<String, String, SlotApiModel>>() {
                     @Override
-                    public Tuple<String, String, SlotApiModel> apply(SlotApiModel value) {
-                        return new Tuple<>(value.fromTime, value.toTime, value);
+                    public TripleTuple<String, String, SlotApiModel> apply(SlotApiModel value) {
+                        return new TripleTuple<>(value.fromTime, value.toTime, value);
                     }
                 })
                 .distinct()
-                .map(new Function<Tuple<String, String, SlotApiModel>, SlotApiModel>() {
+                .map(new Function<TripleTuple<String, String, SlotApiModel>, SlotApiModel>() {
                     @Override
-                    public SlotApiModel apply(Tuple<String, String, SlotApiModel> value) {
+                    public SlotApiModel apply(TripleTuple<String, String, SlotApiModel> value) {
                         return value.object;
                     }
                 })
