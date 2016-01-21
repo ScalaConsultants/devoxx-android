@@ -25,14 +25,14 @@ public class SchedulePagerAdapter extends FragmentPagerAdapter {
 
     public SchedulePagerAdapter(FragmentManager fm, List<Long> slots) {
         super(fm);
-
         scheduleDays = new ArrayList<>(slots);
     }
 
     @Override
     public Fragment getItem(int position) {
         return ScheduleDayLinupFragment_.builder()
-                .lineupDayMs(scheduleDays.get(position)).build();
+                .lineupDayMs(scheduleDays.get(position))
+                .build();
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 
 import android.app.SearchManager;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.scalac.degree.android.adapter.schedule.SchedulePagerAdapter;
+import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupSearchManager;
 import io.scalac.degree.android.fragment.common.BaseFragment;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.DateUtils;
@@ -37,6 +39,9 @@ public class ScheduleMainFragment extends BaseFragment {
 
     @SystemService
     SearchManager searchManager;
+
+    @Bean
+    ScheduleLineupSearchManager scheduleLineupSearchManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -63,8 +68,7 @@ public class ScheduleMainFragment extends BaseFragment {
                 .sorted()
                 .collect(Collectors.<Long>toList());
 
-        schedulePagerAdapter = new SchedulePagerAdapter(
-                getChildFragmentManager(), days);
+        schedulePagerAdapter = new SchedulePagerAdapter(getChildFragmentManager(), days);
     }
 
     @AfterViews
@@ -87,9 +91,14 @@ public class ScheduleMainFragment extends BaseFragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public void onDestroy() {
+        scheduleLineupSearchManager.clearLastQuery();
+        super.onDestroy();
+    }
+
     private void setupSearchView(Menu menu) {
         // TODO Get conference days from ConferenceManager class to build filter menu.
-
 
         final MenuItem searchItem = menu.findItem(R.id.action_search);
 
@@ -125,7 +134,9 @@ public class ScheduleMainFragment extends BaseFragment {
     }
 
     private void onSearchQuery(String query) {
-        // TODO Make search query.
+        scheduleLineupSearchManager.saveLastQuery(query);
+        getMainActivity().sendBroadcast(new Intent(
+                ScheduleLineupSearchManager.SEARCH_INTENT_ACTION));
     }
 
     // TODO TBD

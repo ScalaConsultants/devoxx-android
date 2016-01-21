@@ -4,8 +4,10 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.Receiver;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 
 import java.util.List;
@@ -13,14 +15,15 @@ import java.util.List;
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
+import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupSearchManager;
+import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.utils.InfoUtil;
-import io.scalac.degree.utils.Logger;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_list)
-public class ScheduleDayLinupFragment extends BaseScheduleLineupListFragment {
+public class ScheduleDayLinupFragment extends BaseListFragment {
 
     private static final long UNKNOWN_LINEUP_TIME = -1;
 
@@ -29,6 +32,9 @@ public class ScheduleDayLinupFragment extends BaseScheduleLineupListFragment {
 
     @Bean
     ScheduleDayLineupAdapter scheduleDayLineupAdapter;
+
+    @Bean
+    ScheduleLineupSearchManager scheduleLineupSearchManager;
 
     @Bean
     InfoUtil infoUtil;
@@ -46,9 +52,25 @@ public class ScheduleDayLinupFragment extends BaseScheduleLineupListFragment {
     @Override
     protected void afterViews() {
         super.afterViews();
-        final List<ScheduleItem> items = scheduleLineupDataCreator
-                .prepareInitialData(lineupDayMs);
+
+        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
+
+        final List<ScheduleItem> items;
+        if (!TextUtils.isEmpty(lastQuery)) {
+            items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
+        } else {
+            items = scheduleLineupDataCreator.prepareInitialData(lineupDayMs);
+        }
         scheduleDayLineupAdapter.setData(items);
+    }
+
+    @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION})
+    void onSearchQuery() {
+        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
+        final List<ScheduleItem> items = scheduleLineupSearchManager
+                .handleSearchQuery(lineupDayMs, lastQuery);
+        scheduleDayLineupAdapter.setData(items);
+        scheduleDayLineupAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -59,7 +81,6 @@ public class ScheduleDayLinupFragment extends BaseScheduleLineupListFragment {
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
         final SlotApiModel slotApiModel = scheduleDayLineupAdapter.getClickedSlot(position);
-        Logger.l("Clicked slot: " + slotApiModel);
 
         if (slotApiModel.isTalk()) {
             getMainActivity().replaceFragment(TalkFragment_.builder()
