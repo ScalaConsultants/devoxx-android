@@ -61,60 +61,70 @@ public class TalksScheduleItem extends ScheduleItem {
     @Override
     @ScheduleDayLineupAdapter.ViewType
     public int getItemType(int position) {
-        final int calendarOpenMoreIndexWithNoFavs = TIMESPAN_INDEX + 1;
-        final int calendarOpenMoreIndexWithFavs = TIMESPAN_INDEX + favouredSlots.size() + 1;
+        final int calendarOpenMoreIndexWithNoFavs = TIMESPAN_INDEX
+                + EXTRA_TIMESPAN_ELEMENT_COUNT;
+        final int calendarOpenMoreIndexWithFavs = TIMESPAN_INDEX + favouredSlots.size()
+                + EXTRA_OPEN_MORE_ELEMENT_COUNT;
 
         final int innerIndex = position - getStartIndex();
 
-        if (favouredSlots.isEmpty()) {
-            if (innerIndex == TIMESPAN_INDEX) {
-                return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
-            } else if (innerIndex == calendarOpenMoreIndexWithNoFavs) {
-                return ScheduleDayLineupAdapter.TALK_MORE_VIEW;
-            } else {
-                return ScheduleDayLineupAdapter.TALK_VIEW;
-            }
-        } else {
-            if (innerIndex == TIMESPAN_INDEX) {
-                return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
-            } else if (innerIndex == calendarOpenMoreIndexWithFavs) {
-                return ScheduleDayLineupAdapter.TALK_MORE_VIEW;
-            } else {
-                return ScheduleDayLineupAdapter.TALK_VIEW;
-            }
+        if (innerIndex == TIMESPAN_INDEX) {
+            return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
         }
+
+        final int probableMoreIndex = favouredSlots.isEmpty() ?
+                calendarOpenMoreIndexWithNoFavs : calendarOpenMoreIndexWithFavs;
+
+        return (innerIndex == probableMoreIndex) ?
+                ScheduleDayLineupAdapter.TALK_MORE_VIEW : ScheduleDayLineupAdapter.TALK_VIEW;
     }
 
     @Override
     public SlotApiModel getItem(int globalPosition) {
         final int localIndex = globalPosition - getStartIndex();
-
         if (favouredSlots.isEmpty()) {
-            if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TALK_VIEW) {
-                final int slotIndex = localIndex - EXTRA_TIMESPAN_ELEMENT_COUNT
-                        - EXTRA_OPEN_MORE_ELEMENT_COUNT;
-                return otherSlots.get(slotIndex);
-            } else if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TIMESPAN_VIEW) {
-                return otherSlots.get(0); // We need to get only start-end time from slot.
-            } else {
-                throw new IllegalArgumentException("Bad globalPosition!");
-            }
+            return getSlotWithoutFavs(globalPosition, localIndex);
         } else {
-            final int favsStartIndex = TIMESPAN_INDEX + EXTRA_TIMESPAN_ELEMENT_COUNT;
-            final int favsEndIndex = favsStartIndex + favouredSlots.size() - 1;
-
-            if (localIndex >= favsStartIndex && localIndex <= favsEndIndex) {
-                return favouredSlots.get(localIndex - favsStartIndex);
-            } else {
-                final int slotIndex = localIndex - (favsEndIndex +
-                        EXTRA_OPEN_MORE_ELEMENT_COUNT + EXTRA_TIMESPAN_ELEMENT_COUNT);
-                return otherSlots.get(slotIndex);
-            }
+            return getSlotWithFavs(localIndex);
         }
     }
 
     public void switchTalksVisibility() {
         isOthersVisible ^= true;
+    }
+
+    public int getStartIndexForHide(int globalIndex) {
+        return globalIndex + EXTRA_TIMESPAN_ELEMENT_COUNT +
+                favouredSlots.size() + EXTRA_OPEN_MORE_ELEMENT_COUNT;
+    }
+
+    public int getEndIndexForHide(int globalIndex) {
+        return getStartIndexForHide(globalIndex) + otherSlots.size();
+    }
+
+    private SlotApiModel getSlotWithFavs(int localIndex) {
+        final int favsStartIndex = TIMESPAN_INDEX + EXTRA_TIMESPAN_ELEMENT_COUNT;
+        final int favsEndIndex = favsStartIndex + favouredSlots.size() - 1;
+
+        if (localIndex >= favsStartIndex && localIndex <= favsEndIndex) {
+            return favouredSlots.get(localIndex - favsStartIndex);
+        } else {
+            final int slotIndex = localIndex - (favsEndIndex +
+                    EXTRA_OPEN_MORE_ELEMENT_COUNT + EXTRA_TIMESPAN_ELEMENT_COUNT);
+            return otherSlots.get(slotIndex);
+        }
+    }
+
+    private SlotApiModel getSlotWithoutFavs(int globalPosition, int localIndex) {
+        if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TALK_VIEW) {
+            final int slotIndex = localIndex - EXTRA_TIMESPAN_ELEMENT_COUNT
+                    - EXTRA_OPEN_MORE_ELEMENT_COUNT;
+            return otherSlots.get(slotIndex);
+        } else if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TIMESPAN_VIEW) {
+            return otherSlots.get(0); // We need to get only start-end time from slot.
+        } else {
+            throw new IllegalArgumentException("Bad globalPosition!");
+        }
     }
 
     private int countTalks(List<SlotApiModel> slotApiModels) {
@@ -128,14 +138,5 @@ public class TalksScheduleItem extends ScheduleItem {
                 .filter(SlotApiModel::isTalk)
                 .groupBy(value -> value.talk.track)
                 .collect(Collectors.counting()).intValue();
-    }
-
-    public int getStartIndexForHide(int globalIndex) {
-        return globalIndex + EXTRA_TIMESPAN_ELEMENT_COUNT +
-                favouredSlots.size() + EXTRA_OPEN_MORE_ELEMENT_COUNT;
-    }
-
-    public int getEndIndexForHide(int globalIndex) {
-        return getStartIndexForHide(globalIndex) + otherSlots.size();
     }
 }

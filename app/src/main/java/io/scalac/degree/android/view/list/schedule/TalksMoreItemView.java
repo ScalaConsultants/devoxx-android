@@ -67,6 +67,7 @@ public class TalksMoreItemView extends LinearLayout {
 
     public void setupMore(TalksScheduleItem talksScheduleItem, Runnable onOpenMoreAction) {
         openMore.setOnClickListener(v -> onOpenMoreAction.run());
+        setOnClickListener(v -> onOpenMoreAction.run());
         title.setText(String.format(talksPlaceholder, talksScheduleItem.talksCount()));
         track.setText(String.format(tracksPlaceholder, talksScheduleItem.tracksCount()));
         openMoreIcon.setScaleY(talksScheduleItem.isOthersVisible() ? -1 : 1);
