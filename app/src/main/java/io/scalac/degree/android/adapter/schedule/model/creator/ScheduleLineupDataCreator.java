@@ -4,7 +4,6 @@ import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
-import com.annimon.stream.function.Predicate;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -28,8 +27,6 @@ public class ScheduleLineupDataCreator {
     @Bean
     SlotsDataManager slotsDataManager;
 
-    private SearchPredicate searchPredicate = new SearchPredicate();
-
     private Collector<SlotApiModel, ?, Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>>
             triplesCollector = createTriplesCollector();
 
@@ -46,19 +43,7 @@ public class ScheduleLineupDataCreator {
     }
 
     @NonNull
-    public List<ScheduleItem> handleSearchQuery(long lineupDayMs, final String query) {
-        final String internalQuery = query.toLowerCase();
-        searchPredicate.setQuery(internalQuery);
-
-        final List<SlotApiModel> slotsRaw = slotsDataManager.getSlotsForDay(lineupDayMs);
-        final List<SlotApiModel> queriedRaw = Stream.of(slotsRaw)
-                .filter(searchPredicate)
-                .collect(Collectors.<SlotApiModel>toList());
-        return prepareResult(queriedRaw);
-    }
-
-    @NonNull
-    private List<ScheduleItem> prepareResult(List<SlotApiModel> slotApiModels) {
+    List<ScheduleItem> prepareResult(List<SlotApiModel> slotApiModels) {
         final Map<TripleTuple<Long, Long, String>, List<SlotApiModel>> map = Stream.of(slotApiModels)
                 .sortBy(sortTriplesPredicate)
                 .collect(triplesCollector);
@@ -122,31 +107,5 @@ public class ScheduleLineupDataCreator {
                 return new TripleTuple<>(value.fromTimeMillis, value.toTimeMillis, value.slotId);
             }
         });
-    }
-
-    private static class SearchPredicate implements Predicate<SlotApiModel> {
-
-        private String query;
-
-        @Override
-        public boolean test(SlotApiModel value) {
-            return testQuery(value, query);
-        }
-
-        public void setQuery(String query) {
-            this.query = query;
-        }
-
-        public boolean testQuery(SlotApiModel model, String query) {
-            boolean result = false;
-            if (model.isTalk()) {
-                result = model.talk.title.toLowerCase().contains(query)
-                        || model.talk.track.toLowerCase().contains(query)
-                        || model.talk.summary.toLowerCase().contains(query);
-            } else if (model.isBreak()) {
-                result = model.slotBreak.nameEN.toLowerCase().contains(query);
-            }
-            return result;
-        }
     }
 }

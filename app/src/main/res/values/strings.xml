@@ -34,6 +34,9 @@
     <string name="default_break_label">Break…</string>
     <string name="search_hint">Search…</string>
     <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="deselect_all">Deselect all</string>
+    <string name="select_all">Select all</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
