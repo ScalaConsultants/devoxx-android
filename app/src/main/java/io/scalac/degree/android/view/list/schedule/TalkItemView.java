@@ -6,10 +6,12 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -23,6 +25,7 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkBaseApiModel;
 import io.scalac.degree.connection.model.TalkFullApiModel;
 import io.scalac.degree.data.downloader.TracksDownloader;
+import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree33.R;
 
 @EViewGroup(R.layout.list_item_talk)
@@ -41,13 +44,19 @@ public class TalkItemView extends LinearLayout {
     ImageView trackIcon;
 
     @ViewById(R.id.list_item_talk_track_schedule)
-    View scheduleIcon;
+    ImageView scheduleIcon;
 
     @DimensionPixelOffsetRes(R.dimen.activity_horizontal_margin)
     int paddingLr;
 
+    @ColorRes(R.color.primary)
+    int scheduledIndicatorColor;
+
     @Bean
     TracksDownloader tracksDownloader;
+
+    @Bean
+    NotificationsManager notificationsManager;
 
     @AfterViews
     void afterViews() {
@@ -77,6 +86,13 @@ public class TalkItemView extends LinearLayout {
                     .error(R.drawable.no_photo)
                     .fallback(R.drawable.no_photo)
                     .into(trackIcon);
+        }
+
+        if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
+            scheduleIcon.setVisibility(View.VISIBLE);
+            scheduleIcon.setColorFilter(scheduledIndicatorColor, PorterDuff.Mode.MULTIPLY);
+        } else {
+            scheduleIcon.setVisibility(View.GONE);
         }
     }
 

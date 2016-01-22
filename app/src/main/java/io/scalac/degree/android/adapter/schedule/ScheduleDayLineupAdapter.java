@@ -1,6 +1,7 @@
 package io.scalac.degree.android.adapter.schedule;
 
 import org.androidannotations.annotations.EBean;
+import org.lucasr.twowayview.ItemClickSupport;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -17,10 +18,12 @@ import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
 import io.scalac.degree.android.view.list.schedule.BreakItemView_;
 import io.scalac.degree.android.view.list.schedule.TalkItemView_;
+import io.scalac.degree.android.view.list.schedule.TalksMoreItemView_;
 import io.scalac.degree.android.view.list.schedule.TimespanItemView_;
 import io.scalac.degree.android.view.listholder.schedule.BaseItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.BreakItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.TalkItemHolder;
+import io.scalac.degree.android.view.listholder.schedule.TalksMoreItemHolder;
 import io.scalac.degree.android.view.listholder.schedule.TimespanItemHolder;
 import io.scalac.degree.connection.model.SlotApiModel;
 
@@ -31,6 +34,10 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public static final int BREAK_VIEW = 2;
     public static final int TALK_VIEW = 3;
     public static final int TALK_MORE_VIEW = 4;
+
+    public void setListener(ItemClickSupport.OnItemClickListener listener) {
+        clickListener = listener;
+    }
 
     @IntDef({
             TIMESPAN_VIEW,
@@ -43,6 +50,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     }
 
     private final List<ScheduleItem> data = new ArrayList<>();
+    private ItemClickSupport.OnItemClickListener clickListener;
 
     public void setData(List<ScheduleItem> aData) {
         data.clear();
@@ -70,6 +78,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
                 result = new TalkItemHolder(TalkItemView_.build(context));
                 break;
             case TALK_MORE_VIEW:
+                result = new TalksMoreItemHolder(TalksMoreItemView_.build(context));
                 break;
             default:
                 throw new IllegalStateException("No holder for view type: " + viewType);
@@ -86,12 +95,31 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
             ((BreakItemHolder) holder).setupBreak(breakModel);
         } else if (holder instanceof TalkItemHolder) {
             final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) getItem(position);
-            final SlotApiModel breakModel = talksScheduleItem.getSlotModel(position);
-            ((TalkItemHolder) holder).setupTalk(breakModel);
+            final SlotApiModel slotModel = talksScheduleItem.getItem(position);
+            ((TalkItemHolder) holder).setupTalk(slotModel);
+            setupOnItemClickListener(holder, position);
         } else if (holder instanceof TimespanItemHolder) {
             final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
             ((TimespanItemHolder) holder).setupTimespan(item.getStartTime(), item.getEndTime());
+        } else if (holder instanceof TalksMoreItemHolder) {
+            final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+            ((TalksMoreItemHolder) holder).setupMore(item, () -> {
+                item.switchTalksVisibility();
+                refreshIndexes();
+                notifyDataSetChanged();
+            });
         }
+    }
+
+    private void refreshIndexes() {
+        for (ScheduleItem scheduleItem : data) {
+            // TODO Make it!
+        }
+    }
+
+    private void setupOnItemClickListener(BaseItemHolder holder, int position) {
+        holder.itemView.setOnClickListener(v ->
+                clickListener.onItemClick(null, v, position, getItemId(position)));
     }
 
     @Override
@@ -110,15 +138,13 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     }
 
     private ScheduleItem getItem(int position) {
-        ScheduleItem result = null;
         for (ScheduleItem scheduleItem : data) {
             final int startIndex = scheduleItem.getStartIndex();
             final int stopIndex = scheduleItem.getStopIndex();
             if (position >= startIndex && position <= stopIndex) {
-                result = scheduleItem;
-                break;
+                return scheduleItem;
             }
         }
-        return result;
+        throw new IllegalStateException("No item for position: " + position);
     }
 }

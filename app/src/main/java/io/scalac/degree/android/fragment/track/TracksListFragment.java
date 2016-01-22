@@ -52,4 +52,9 @@ public class TracksListFragment extends BaseListFragment {
     protected RecyclerView.Adapter getAdapter() {
         return tracksAdapter;
     }
+
+    @Override
+    protected boolean wantBaseClickListener() {
+        return true;
+    }
 }

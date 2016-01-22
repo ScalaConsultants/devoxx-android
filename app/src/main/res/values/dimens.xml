@@ -9,4 +9,7 @@
     <dimen name="menu_height">56dp</dimen>
     <dimen name="speaker_list_image_size">48dp</dimen>
     <dimen name="progressbar_size">32dp</dimen>
+
+    <dimen name="item_talks_more_icon_container_size">48dp</dimen>
+    <dimen name="item_talks_more_icon_size">32dp</dimen>
 </resources>

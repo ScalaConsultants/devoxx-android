@@ -21,7 +21,8 @@ public class AppUpdatedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getDataString().contains(context.getPackageName())) {
-            notificationsManager.resetAlarms();
+            // TODO handle it!
+            // notificationsManager.resetAlarms();
         }
     }
 }

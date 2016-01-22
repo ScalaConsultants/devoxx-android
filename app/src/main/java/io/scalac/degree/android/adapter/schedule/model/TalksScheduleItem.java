@@ -1,5 +1,8 @@
 package io.scalac.degree.android.adapter.schedule.model;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +12,13 @@ import io.scalac.degree.connection.model.SlotApiModel;
 public class TalksScheduleItem extends ScheduleItem {
 
     private static final int EXTRA_TIMESPAN_ELEMENT_COUNT = 1;
+    private static final int EXTRA_OPEN_MORE_ELEMENT_COUNT = 1;
+
     private static final int TIMESPAN_INDEX = 0;
 
     private List<SlotApiModel> favouredSlots;
     private List<SlotApiModel> otherSlots;
+    private boolean isOthersVisible = true;
 
     public TalksScheduleItem(long startTime, long endTime, int strIndex, int stpIndex) {
         super(startTime, endTime, strIndex, stpIndex);
@@ -20,54 +26,103 @@ public class TalksScheduleItem extends ScheduleItem {
         otherSlots = new ArrayList<>();
     }
 
-    public void setFavouredSlots(List<SlotApiModel> slots) {
-        favouredSlots = new ArrayList<>(slots.size());
-        favouredSlots.addAll(slots);
+    public void addFavouredSlot(SlotApiModel model) {
+        favouredSlots.add(model);
     }
 
-    public void setOtherSlots(List<SlotApiModel> slots) {
-        otherSlots = new ArrayList<>(slots.size());
-        otherSlots.addAll(slots);
+    public void addOtherSlot(SlotApiModel model) {
+        otherSlots.add(model);
+    }
+
+    public int talksCount() {
+        return countTalks(otherSlots) + countTalks(favouredSlots);
+    }
+
+    public int tracksCount() {
+        return countTracks(otherSlots) + countTracks(favouredSlots);
     }
 
     @Override
     public int getSize() {
-        return favouredSlots.size() + otherSlots.size() + EXTRA_TIMESPAN_ELEMENT_COUNT;
+        final int result;
+        if (isOthersVisible) {
+            result = favouredSlots.size() + otherSlots.size();
+        } else {
+            result = favouredSlots.size();
+        }
+        return result + EXTRA_TIMESPAN_ELEMENT_COUNT
+                + EXTRA_OPEN_MORE_ELEMENT_COUNT;
     }
 
     @Override
     @ScheduleDayLineupAdapter.ViewType
     public int getItemType(int position) {
+        final int calendarOpenMoreIndexWithNoFavs = TIMESPAN_INDEX + 1;
+        final int calendarOpenMoreIndexWithFavs = TIMESPAN_INDEX + favouredSlots.size() + 1;
 
-        // TODO Handle breaks and favs!
+        final int innerIndex = position - getStartIndex();
 
-        final int probableTimespanIndex = position - getStartIndex();
-        if (probableTimespanIndex == TIMESPAN_INDEX) {
-            return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
+        if (favouredSlots.isEmpty()) {
+            if (innerIndex == TIMESPAN_INDEX) {
+                return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
+            } else if (innerIndex == calendarOpenMoreIndexWithNoFavs) {
+                return ScheduleDayLineupAdapter.TALK_MORE_VIEW;
+            } else {
+                return ScheduleDayLineupAdapter.TALK_VIEW;
+            }
         } else {
-            return ScheduleDayLineupAdapter.TALK_VIEW;
+            if (innerIndex == TIMESPAN_INDEX) {
+                return ScheduleDayLineupAdapter.TIMESPAN_VIEW;
+            } else if (innerIndex == calendarOpenMoreIndexWithFavs) {
+                return ScheduleDayLineupAdapter.TALK_MORE_VIEW;
+            } else {
+                return ScheduleDayLineupAdapter.TALK_VIEW;
+            }
         }
     }
 
     @Override
-    public SlotApiModel getItem(int position) {
-        // TODO Handle breaks and favs!
+    public SlotApiModel getItem(int globalPosition) {
+        final int localIndex = globalPosition - getStartIndex();
 
-        final int localIndex = position - getStartIndex();
-        return otherSlots.get(localIndex - 1);
+        if (favouredSlots.isEmpty()) {
+            if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TALK_VIEW) {
+                final int slotIndex = localIndex - EXTRA_TIMESPAN_ELEMENT_COUNT
+                        - EXTRA_OPEN_MORE_ELEMENT_COUNT;
+                return otherSlots.get(slotIndex);
+            } else if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TIMESPAN_VIEW) {
+                return otherSlots.get(0); // We need to get only start-end time from slot.
+            } else {
+                throw new IllegalArgumentException("Bad globalPosition!");
+            }
+        } else {
+            final int favsStartIndex = TIMESPAN_INDEX + EXTRA_TIMESPAN_ELEMENT_COUNT;
+            final int favsEndIndex = favsStartIndex + favouredSlots.size() - 1;
+
+            if (localIndex >= favsStartIndex && localIndex <= favsEndIndex) {
+                return favouredSlots.get(localIndex - favsStartIndex);
+            } else {
+                final int slotIndex = localIndex - (favsEndIndex +
+                        EXTRA_OPEN_MORE_ELEMENT_COUNT + EXTRA_TIMESPAN_ELEMENT_COUNT);
+                return otherSlots.get(slotIndex);
+            }
+        }
     }
 
-    public SlotApiModel getSlotModel(int position) {
-        // TODO Handle breaks and favs!
+    public void switchTalksVisibility() {
+        isOthersVisible ^= true;
+    }
 
-        if (getItemType(position) == ScheduleDayLineupAdapter.TALK_VIEW) {
-            final int localIndex = position - getStartIndex();
-            final int slotIndex = localIndex - EXTRA_TIMESPAN_ELEMENT_COUNT;
-            return otherSlots.get(slotIndex);
-        } else if (getItemType(position) == ScheduleDayLineupAdapter.TIMESPAN_VIEW) {
-            return otherSlots.get(0);
-        } else {
-            throw new IllegalArgumentException("Bad position!");
-        }
+    private int countTalks(List<SlotApiModel> slotApiModels) {
+        return Stream.of(slotApiModels)
+                .filter(SlotApiModel::isTalk)
+                .collect(Collectors.counting()).intValue();
+    }
+
+    private int countTracks(List<SlotApiModel> slotApiModels) {
+        return Stream.of(slotApiModels)
+                .filter(SlotApiModel::isTalk)
+                .groupBy(value -> value.talk.track)
+                .collect(Collectors.counting()).intValue();
     }
 }
