@@ -42,6 +42,10 @@ public class TalksScheduleItem extends ScheduleItem {
         return countTracks(otherSlots) + countTracks(favouredSlots);
     }
 
+    public boolean isOthersVisible() {
+        return isOthersVisible;
+    }
+
     @Override
     public int getSize() {
         final int result;
@@ -124,5 +128,14 @@ public class TalksScheduleItem extends ScheduleItem {
                 .filter(SlotApiModel::isTalk)
                 .groupBy(value -> value.talk.track)
                 .collect(Collectors.counting()).intValue();
+    }
+
+    public int getStartIndexForHide(int globalIndex) {
+        return globalIndex + EXTRA_TIMESPAN_ELEMENT_COUNT +
+                favouredSlots.size() + EXTRA_OPEN_MORE_ELEMENT_COUNT;
+    }
+
+    public int getEndIndexForHide(int globalIndex) {
+        return getStartIndexForHide(globalIndex) + otherSlots.size();
     }
 }

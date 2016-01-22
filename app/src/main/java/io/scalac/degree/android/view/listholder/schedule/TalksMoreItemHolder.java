@@ -15,4 +15,8 @@ public class TalksMoreItemHolder extends BaseItemHolder {
     public void setupMore(TalksScheduleItem talksScheduleItem, Runnable onOpenMoreAction) {
         talkItemView.setupMore(talksScheduleItem, onOpenMoreAction);
     }
+
+    public void toggleIndicator() {
+        talkItemView.toggleIndicator();
+    }
 }

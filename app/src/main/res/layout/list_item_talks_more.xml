@@ -44,12 +44,11 @@
         android:id="@+id/list_item_talks_more"
         android:layout_width="@dimen/item_talks_more_icon_container_size"
         android:layout_height="@dimen/item_talks_more_icon_container_size"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
+        android:background="?selectableItemBackground"
         android:gravity="center">
 
         <ImageView
+            android:id="@+id/list_item_talks_more_indicator_icon"
             style="@style/ScheduleImageButtonStyle"
             android:layout_width="@dimen/item_talks_more_icon_size"
             android:layout_height="@dimen/item_talks_more_icon_size"

@@ -120,4 +120,20 @@ public class ScheduleLineupDataCreator {
             }
         });
     }
+
+    public void refreshIndexes(List<ScheduleItem> data) {
+        int index = 0;
+        for (ScheduleItem scheduleItem : data) {
+            if (scheduleItem instanceof BreakScheduleItem) {
+                scheduleItem.setStartIndex(index);
+                scheduleItem.setStopIndex(index);
+                index++;
+            } else {
+                final int talkItemSize = scheduleItem.getSize();
+                scheduleItem.setStartIndex(index);
+                scheduleItem.setStopIndex(index + talkItemSize - 1);
+                index += talkItemSize;
+            }
+        }
+    }
 }

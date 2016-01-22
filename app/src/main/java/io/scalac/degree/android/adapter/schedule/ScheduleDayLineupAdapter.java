@@ -1,11 +1,13 @@
 package io.scalac.degree.android.adapter.schedule;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.lucasr.twowayview.ItemClickSupport;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.annotation.Retention;
@@ -16,6 +18,7 @@ import java.util.List;
 import io.scalac.degree.android.adapter.schedule.model.BreakScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
+import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
 import io.scalac.degree.android.view.list.schedule.BreakItemView_;
 import io.scalac.degree.android.view.list.schedule.TalkItemView_;
 import io.scalac.degree.android.view.list.schedule.TalksMoreItemView_;
@@ -35,10 +38,6 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public static final int TALK_VIEW = 3;
     public static final int TALK_MORE_VIEW = 4;
 
-    public void setListener(ItemClickSupport.OnItemClickListener listener) {
-        clickListener = listener;
-    }
-
     @IntDef({
             TIMESPAN_VIEW,
             BREAK_VIEW,
@@ -49,12 +48,19 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public @interface ViewType {
     }
 
+    @Bean
+    ScheduleLineupDataCreator scheduleLineupDataCreator;
+
     private final List<ScheduleItem> data = new ArrayList<>();
     private ItemClickSupport.OnItemClickListener clickListener;
 
     public void setData(List<ScheduleItem> aData) {
         data.clear();
         data.addAll(aData);
+    }
+
+    public void setListener(ItemClickSupport.OnItemClickListener listener) {
+        clickListener = listener;
     }
 
     public SlotApiModel getClickedSlot(int position) {
@@ -65,7 +71,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public BaseItemHolder onCreateViewHolder(
             ViewGroup parent, @ScheduleDayLineupAdapter.ViewType int viewType) {
         final Context context = parent.getContext();
-        BaseItemHolder result = null;
+        final BaseItemHolder result;
 
         switch (viewType) {
             case TIMESPAN_VIEW:
@@ -90,31 +96,43 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     @Override
     public void onBindViewHolder(BaseItemHolder holder, int position) {
         if (holder instanceof BreakItemHolder) {
-            final BreakScheduleItem breakScheduleItem = (BreakScheduleItem) getItem(position);
-            final SlotApiModel breakModel = breakScheduleItem.getBreakModel();
-            ((BreakItemHolder) holder).setupBreak(breakModel);
+            setupBreakItemHolder((BreakItemHolder) holder, position);
         } else if (holder instanceof TalkItemHolder) {
-            final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) getItem(position);
-            final SlotApiModel slotModel = talksScheduleItem.getItem(position);
-            ((TalkItemHolder) holder).setupTalk(slotModel);
-            setupOnItemClickListener(holder, position);
+            setupTalkItemHolder(holder, position);
         } else if (holder instanceof TimespanItemHolder) {
-            final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
-            ((TimespanItemHolder) holder).setupTimespan(item.getStartTime(), item.getEndTime());
+            setupTimespanItemHolder((TimespanItemHolder) holder, position);
         } else if (holder instanceof TalksMoreItemHolder) {
-            final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
-            ((TalksMoreItemHolder) holder).setupMore(item, () -> {
-                item.switchTalksVisibility();
-                refreshIndexes();
-                notifyDataSetChanged();
-            });
+            setupMoreItemHolder((TalksMoreItemHolder) holder, position);
         }
     }
 
-    private void refreshIndexes() {
-        for (ScheduleItem scheduleItem : data) {
-            // TODO Make it!
-        }
+    private void setupMoreItemHolder(TalksMoreItemHolder holder, int position) {
+        final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+        holder.setupMore(item, () -> {
+            item.switchTalksVisibility();
+            holder.toggleIndicator();
+            scheduleLineupDataCreator.refreshIndexes(data);
+            notifyItemRangeRemoved(item.getStartIndexForHide(position),
+                    item.getEndIndexForHide(position));
+        });
+    }
+
+    private void setupTimespanItemHolder(TimespanItemHolder holder, int position) {
+        final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+        holder.setupTimespan(item.getStartTime(), item.getEndTime());
+    }
+
+    private void setupBreakItemHolder(BreakItemHolder holder, int position) {
+        final BreakScheduleItem breakScheduleItem = (BreakScheduleItem) getItem(position);
+        final SlotApiModel breakModel = breakScheduleItem.getBreakModel();
+        holder.setupBreak(breakModel);
+    }
+
+    private void setupTalkItemHolder(BaseItemHolder holder, int position) {
+        final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) getItem(position);
+        final SlotApiModel slotModel = talksScheduleItem.getItem(position);
+        ((TalkItemHolder) holder).setupTalk(slotModel);
+        setupOnItemClickListener(holder, position);
     }
 
     private void setupOnItemClickListener(BaseItemHolder holder, int position) {
