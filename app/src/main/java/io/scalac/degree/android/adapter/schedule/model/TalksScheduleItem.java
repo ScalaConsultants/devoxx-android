@@ -89,6 +89,13 @@ public class TalksScheduleItem extends ScheduleItem {
         }
     }
 
+    @Override
+    public List<SlotApiModel> getAllItems() {
+        final List<SlotApiModel> result = new ArrayList<>(otherSlots);
+        result.addAll(favouredSlots);
+        return result;
+    }
+
     public void switchTalksVisibility() {
         isOthersVisible ^= true;
     }

@@ -15,10 +15,11 @@ import java.util.List;
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
-import io.scalac.degree.data.schedule.search.ScheduleLineupSearchManager;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
+import io.scalac.degree.data.schedule.search.ScheduleLineupSearchManager;
 import io.scalac.degree.utils.InfoUtil;
 import io.scalac.degree33.R;
 
@@ -32,6 +33,9 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
 
     @Bean
     ScheduleDayLineupAdapter scheduleDayLineupAdapter;
+
+    @Bean
+    ScheduleFilterManager scheduleFilterManager;
 
     @Bean
     ScheduleLineupSearchManager scheduleLineupSearchManager;
@@ -57,20 +61,25 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
 
         final String lastQuery = scheduleLineupSearchManager.getLastQuery();
 
-        final List<ScheduleItem> items;
+        List<ScheduleItem> items;
         if (!TextUtils.isEmpty(lastQuery)) {
             items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
         } else {
             items = scheduleLineupDataCreator.prepareInitialData(lineupDayMs);
         }
+
+        items = scheduleFilterManager.applyTracksFilter(items);
+
         scheduleDayLineupAdapter.setData(items);
     }
 
-    @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION})
+    @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION,
+            ScheduleFilterManager.FILTERS_CHANGED_ACTION})
     void onSearchQuery() {
         final String lastQuery = scheduleLineupSearchManager.getLastQuery();
-        final List<ScheduleItem> items = scheduleLineupSearchManager
+        List<ScheduleItem> items = scheduleLineupSearchManager
                 .handleSearchQuery(lineupDayMs, lastQuery);
+        items = scheduleFilterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
         scheduleDayLineupAdapter.notifyDataSetChanged();
     }

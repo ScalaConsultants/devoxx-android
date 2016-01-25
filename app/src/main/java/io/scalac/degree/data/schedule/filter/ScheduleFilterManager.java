@@ -1,11 +1,20 @@
 package io.scalac.degree.data.schedule.filter;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
+import com.annimon.stream.function.Predicate;
+
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
 import java.util.List;
 
 import io.realm.Realm;
+import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
+import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
+import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
+import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.conference.model.ConferenceDay;
 import io.scalac.degree.data.model.RealmTrack;
@@ -14,6 +23,11 @@ import io.scalac.degree.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 
 @EBean
 public class ScheduleFilterManager {
+
+    public static final String FILTERS_CHANGED_ACTION = "filters_changed_action";
+
+    @Bean
+    ScheduleLineupDataCreator scheduleLineupDataCreator;
 
     @Bean
     RealmProvider realmProvider;
@@ -123,5 +137,31 @@ public class ScheduleFilterManager {
         }
         realm.commitTransaction();
         realm.close();
+    }
+
+    public List<ScheduleItem> applyTracksFilter(List<ScheduleItem> items) {
+        final List<RealmScheduleTrackItemFilter> activeFilters = getActiveTrackFilters();
+        final List<RealmScheduleTrackItemFilter> allTrackFilters = getTrackFilters();
+
+        List<ScheduleItem> result = items;
+        if (activeFilters.size() != allTrackFilters.size()) {
+            final List<SlotApiModel> filteredModels = Stream.of(items)
+                    .filter(value -> value instanceof TalksScheduleItem)
+                    .flatMap(value -> Stream.of(value.getAllItems()))
+                    .filter(value -> {
+                        if (value.isTalk()) {
+                            for (RealmScheduleTrackItemFilter filter : activeFilters) {
+                                if (value.talk.track.toLowerCase()
+                                        .contains(filter.getTrackName().toLowerCase())) {
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+            result = scheduleLineupDataCreator.prepareResult(filteredModels);
+        }
+        return result;
     }
 }
