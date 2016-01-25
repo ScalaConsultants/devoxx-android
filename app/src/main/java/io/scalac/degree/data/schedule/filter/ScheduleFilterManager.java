@@ -11,6 +11,7 @@ import org.androidannotations.annotations.EBean;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
@@ -26,6 +27,12 @@ public class ScheduleFilterManager {
 
     public static final String FILTERS_CHANGED_ACTION = "filters_changed_action";
 
+    /**
+     * Column isActive in {@link RealmScheduleDayItemFilter} and
+     * {@link RealmScheduleTrackItemFilter}
+     */
+    private static final String IS_ACTIVE_COLUMN_NAME = "isActive";
+
     @Bean
     ScheduleLineupDataCreator scheduleLineupDataCreator;
 
@@ -33,19 +40,16 @@ public class ScheduleFilterManager {
     RealmProvider realmProvider;
 
     public List<RealmScheduleDayItemFilter> getActiveDayFilters() {
-        final Realm realm = realmProvider.getRealm();
-        final List<RealmScheduleDayItemFilter> result = realm
-                .where(RealmScheduleDayItemFilter.class)
-                .equalTo("isActive", true).findAll();
-        realm.close();
-        return result;
+        return getActiveFilters(RealmScheduleDayItemFilter.class);
     }
 
     public List<RealmScheduleTrackItemFilter> getActiveTrackFilters() {
+        return getActiveFilters(RealmScheduleTrackItemFilter.class);
+    }
+
+    private List getActiveFilters(Class<? extends RealmObject> clazz) {
         final Realm realm = realmProvider.getRealm();
-        final List<RealmScheduleTrackItemFilter> result = realm
-                .where(RealmScheduleTrackItemFilter.class)
-                .equalTo("isActive", true).findAll();
+        final List result = realm.where(clazz).equalTo(IS_ACTIVE_COLUMN_NAME, true).findAll();
         realm.close();
         return result;
     }

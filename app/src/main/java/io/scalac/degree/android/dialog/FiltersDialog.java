@@ -15,7 +15,9 @@ import io.scalac.degree.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import io.scalac.degree.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 import io.scalac.degree33.R;
 
-public class FiltersDialog extends MaterialDialog {
+public class FiltersDialog {
+
+    private static final long INDICATOR_ANIM_TIME_MS = 200;
 
     public interface IFiltersChangedListener {
         void onDayFiltersChanged(RealmScheduleDayItemFilter itemFilter, boolean isActive);
@@ -33,7 +35,7 @@ public class FiltersDialog extends MaterialDialog {
             final List<RealmScheduleTrackItemFilter> tracksFilters,
             final IFiltersChangedListener globalListener) {
 
-        final MaterialDialog md = new Builder(context)
+        final MaterialDialog md = new MaterialDialog.Builder(context)
                 .customView(R.layout.dialog_filters, true)
                 .title(R.string.filters)
                 .positiveText(R.string.apply)
@@ -44,13 +46,20 @@ public class FiltersDialog extends MaterialDialog {
 
         final View customView = md.getCustomView();
         final ViewGroup daysContainer = (ViewGroup) customView.findViewById(R.id.dialogFitlersDays);
-        customView.findViewById(R.id.dialogFiltersDaysMore)
-                .setOnClickListener(createOpenCloseAction(daysContainer));
-
         final ViewGroup tracksContainer = (ViewGroup) customView.findViewById(R.id.dialogFitlersTracks);
-        customView.findViewById(R.id.dialogFiltersTracksMore)
-                .setOnClickListener(createOpenCloseAction(tracksContainer));
 
+        setupListeners(customView, daysContainer, tracksContainer);
+        setupCheckBoxes(context, daysFilters, tracksFilters, globalListener, daysContainer, tracksContainer);
+
+        md.show();
+    }
+
+    private static void setupCheckBoxes(
+            Context context,
+            List<RealmScheduleDayItemFilter> daysFilters,
+            List<RealmScheduleTrackItemFilter> tracksFilters,
+            IFiltersChangedListener globalListener,
+            ViewGroup daysContainer, ViewGroup tracksContainer) {
         final LayoutInflater li = LayoutInflater.from(context);
         for (RealmScheduleDayItemFilter dayFilter : daysFilters) {
             daysContainer.addView(createFilterItemView(li, daysContainer, (buttonView, isChecked) ->
@@ -63,8 +72,13 @@ public class FiltersDialog extends MaterialDialog {
                             globalListener.onTrackFiltersChanged(trackFilter, isChecked),
                     trackFilter.isActive(), trackFilter.getLabel()));
         }
+    }
 
-        md.show();
+    private static void setupListeners(View customView, ViewGroup daysContainer, ViewGroup tracksContainer) {
+        customView.findViewById(R.id.dialogFiltersDaysMore)
+                .setOnClickListener(createOpenCloseAction(daysContainer));
+        customView.findViewById(R.id.dialogFiltersTracksMore)
+                .setOnClickListener(createOpenCloseAction(tracksContainer));
     }
 
     private static View createFilterItemView(
@@ -90,13 +104,8 @@ public class FiltersDialog extends MaterialDialog {
 
             final View indicatorIcon = v.findViewById(R.id.dialogFiltersMoreIcon);
             indicatorIcon.clearAnimation();
-            indicatorIcon.clearAnimation();
             indicatorIcon.animate().scaleY(indicatorIcon.getScaleY() * -1)
-                    .setDuration(200).start();
+                    .setDuration(INDICATOR_ANIM_TIME_MS).start();
         };
-    }
-
-    protected FiltersDialog(Builder builder) {
-        super(builder);
     }
 }
