@@ -1,4 +1,4 @@
-package io.scalac.degree.data.schedule;
+package io.scalac.degree.data.schedule.search;
 
 import org.androidannotations.annotations.sharedpreferences.DefaultBoolean;
 import org.androidannotations.annotations.sharedpreferences.DefaultString;

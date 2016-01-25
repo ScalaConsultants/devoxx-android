@@ -5,6 +5,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.realm.Realm;
 import io.scalac.degree.Configuration;
@@ -12,6 +13,7 @@ import io.scalac.degree.connection.model.TrackApiModel;
 import io.scalac.degree.connection.model.TracksApiModel;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.model.RealmTrack;
+import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
 import io.scalac.degree.utils.Logger;
 import retrofit.Call;
 import retrofit.Response;
@@ -23,6 +25,9 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
     @Bean
     RealmProvider realmProvider;
+
+    @Bean
+    ScheduleFilterManager scheduleFilterManager;
 
     @Background
     public void downloadTracksDescriptions(String confCode) {
@@ -36,6 +41,9 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
                 realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
             }
             realm.commitTransaction();
+
+            final List<RealmTrack> tracks = realm.allObjects(RealmTrack.class);
+            scheduleFilterManager.createTrackFiltersDefinition(tracks);
         } catch (IOException e) {
             Logger.exc(e);
             realm.cancelTransaction();

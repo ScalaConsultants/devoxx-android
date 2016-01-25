@@ -1,9 +1,9 @@
 package io.scalac.degree.android.fragment.schedule;
 
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
@@ -16,20 +16,25 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.scalac.degree.android.adapter.schedule.SchedulePagerAdapter;
-import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupSearchManager;
+import io.scalac.degree.android.dialog.FiltersDialog;
 import io.scalac.degree.android.fragment.common.BaseFragment;
 import io.scalac.degree.data.conference.ConferenceManager;
 import io.scalac.degree.data.conference.model.ConferenceDay;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
+import io.scalac.degree.data.schedule.filter.model.RealmScheduleDayItemFilter;
+import io.scalac.degree.data.schedule.filter.model.RealmScheduleTrackItemFilter;
+import io.scalac.degree.data.schedule.search.ScheduleLineupSearchManager;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_schedules)
-public class ScheduleMainFragment extends BaseFragment {
+public class ScheduleMainFragment extends BaseFragment
+        implements FiltersDialog.IFiltersChangedListener {
 
     @SystemService
     SearchManager searchManager;
@@ -42,6 +47,9 @@ public class ScheduleMainFragment extends BaseFragment {
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @Bean
+    ScheduleFilterManager scheduleFilterManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -58,17 +66,10 @@ public class ScheduleMainFragment extends BaseFragment {
     @ColorRes(R.color.primary_text)
     int tabStripColor;
 
-    private SchedulePagerAdapter schedulePagerAdapter;
-
-    @AfterInject
-    void afterInject() {
-        final List<ConferenceDay> days = conferenceManager.getConferenceDays();
-        schedulePagerAdapter = new SchedulePagerAdapter(getChildFragmentManager(), days);
-    }
-
     @AfterViews
     void afterViews() {
         invalidateViewPager();
+
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorColor(tabStripColor);
@@ -80,47 +81,16 @@ public class ScheduleMainFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.speakers_menu, menu);
 
-        setupFilters(menu);
         setupSearchView(menu);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (!item.isCheckable()) {
-            return false;
-        }
-
-        // The id of the menu item is just hashCode() on the conference day name.
-        final int itemID = item.getItemId();
-        final boolean isChecked = item.isChecked();
-        if (isChecked) {
-            schedulePagerAdapter.removePage(itemID);
-        } else {
-            schedulePagerAdapter.addPage(itemID);
-        }
-        item.setChecked(!isChecked);
-
-        invalidateViewPager();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setupFilters(Menu menu) {
-        final List<ConferenceDay> conferenceDays = conferenceManager.getConferenceDays();
-        final MenuItem menuItem = menu.findItem(R.id.action_filter);
-        final SubMenu subMenu = menuItem.getSubMenu();
-
-        int index = 0;
-        for (ConferenceDay confDay : conferenceDays) {
-            final String name = SchedulePagerAdapter.formatDate(confDay.getDayMs());
-            final int id = confDay.getName().hashCode();
-            // The id of the menu item is just hashCode() on the conference day name.
-            final MenuItem added = subMenu.add(id, id, index, name);
-            added.setVisible(true).setCheckable(true).setChecked(true);
-            index++;
-        }
+    @OptionsItem(R.id.action_filter)
+    void onFilterClicked() {
+        final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
+        final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
+        FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
     }
 
     private void setupSearchView(Menu menu) {
@@ -165,17 +135,61 @@ public class ScheduleMainFragment extends BaseFragment {
         super.onDestroy();
     }
 
+    @Override
+    public void onDayFiltersChanged(RealmScheduleDayItemFilter itemFilter, boolean isActive) {
+        // TODO update UI
+        scheduleFilterManager.updateFilter(itemFilter, isActive);
+    }
+
+    @Override
+    public void onTrackFiltersChanged(RealmScheduleTrackItemFilter itemFilter, boolean isActive) {
+        // TODO update UI
+        scheduleFilterManager.updateFilter(itemFilter, isActive);
+    }
+
+    @Override
+    public void onFiltersCleared() {
+        scheduleFilterManager.clearFilters();
+        invalidateViewPager();
+    }
+
+    @Override
+    public void onFiltersDismissed() {
+        invalidateViewPager();
+
+        getMainActivity().sendBroadcast(new Intent(
+                ScheduleFilterManager.FILTERS_CHANGED_ACTION));
+    }
+
     private void invalidateViewPager() {
+        final List<ConferenceDay> days = combineDaysWithFilters();
+        final SchedulePagerAdapter schedulePagerAdapter
+                = new SchedulePagerAdapter(getChildFragmentManager(), days);
+
         viewPager.setAdapter(schedulePagerAdapter);
         schedulePagerAdapter.notifyDataSetChanged();
+
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private void onSearchQuery(String query) {
         // TODO Adds labels with filters! x_label
-        // TODO Save filters somewhere!
         scheduleLineupSearchManager.saveLastQuery(query);
         getMainActivity().sendBroadcast(new Intent(
                 ScheduleLineupSearchManager.SEARCH_INTENT_ACTION));
+    }
+
+    private List<ConferenceDay> combineDaysWithFilters() {
+        final List<RealmScheduleDayItemFilter> filters = scheduleFilterManager.getActiveDayFilters();
+        final List<ConferenceDay> days = conferenceManager.getConferenceDays();
+        final List<ConferenceDay> result = new ArrayList<>();
+        for (ConferenceDay day : days) {
+            for (RealmScheduleDayItemFilter filter : filters) {
+                if (filter.getLabel().equalsIgnoreCase(day.getName())) {
+                    result.add(day);
+                }
+            }
+        }
+        return result;
     }
 }

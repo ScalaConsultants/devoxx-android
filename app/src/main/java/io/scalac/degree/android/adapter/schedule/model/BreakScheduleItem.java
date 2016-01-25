@@ -8,7 +8,7 @@ import io.scalac.degree.connection.model.SlotApiModel;
 
 public class BreakScheduleItem extends ScheduleItem {
 
-    private List<SlotApiModel> scheduleSlotWrappers;
+    private List<SlotApiModel> slotApiModels;
 
     public BreakScheduleItem(
             long startTime,
@@ -18,15 +18,15 @@ public class BreakScheduleItem extends ScheduleItem {
             List<SlotApiModel> models) {
         super(startTime, endTime, strIndex, stpIndex);
 
-        scheduleSlotWrappers = new ArrayList<>(models.size());
+        slotApiModels = new ArrayList<>(models.size());
         for (SlotApiModel aBreakModel : models) {
-            scheduleSlotWrappers.add(aBreakModel);
+            slotApiModels.add(aBreakModel);
         }
     }
 
     @Override
     public int getSize() {
-        return scheduleSlotWrappers.size();
+        return slotApiModels.size();
     }
 
     @Override
@@ -36,10 +36,15 @@ public class BreakScheduleItem extends ScheduleItem {
 
     @Override
     public SlotApiModel getItem(int position) {
-        return scheduleSlotWrappers.get(0);
+        return slotApiModels.get(0);
+    }
+
+    @Override
+    public List<SlotApiModel> getAllItems() {
+        return slotApiModels;
     }
 
     public SlotApiModel getBreakModel() {
-        return scheduleSlotWrappers.get(0);
+        return slotApiModels.get(0);
     }
 }
