@@ -1,5 +1,6 @@
 package io.scalac.degree.android.view.listholder.schedule;
 
+import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
 import io.scalac.degree.android.view.list.schedule.TalkItemView;
 import io.scalac.degree.connection.model.SlotApiModel;
 

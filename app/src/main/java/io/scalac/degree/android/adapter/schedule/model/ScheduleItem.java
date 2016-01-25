@@ -7,7 +7,7 @@ import io.scalac.degree.utils.tuple.Tuple;
 public abstract class ScheduleItem {
 
     private final Tuple<Long, Long> slotTimespan;
-    private final int startIndex, stopIndex;
+    private int startIndex, stopIndex;
 
     public ScheduleItem(long startTime, long endTime, int aStartIndex, int aStopIndex) {
         startIndex = aStartIndex;
@@ -29,6 +29,14 @@ public abstract class ScheduleItem {
 
     public int getStartIndex() {
         return startIndex;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public void setStopIndex(int stopIndex) {
+        this.stopIndex = stopIndex;
     }
 
     public abstract int getSize();

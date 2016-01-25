@@ -1,6 +1,5 @@
 package io.scalac.degree.android.fragment.common;
 
-
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.SystemService;
@@ -45,7 +44,14 @@ public abstract class BaseListFragment extends BaseFragment implements ItemClick
         recyclerView.setLongClickable(false);
         ItemClickSupport clickSupport = ItemClickSupport.addTo(recyclerView);
         recyclerView.setAdapter(getAdapter());
-        clickSupport.setOnItemClickListener(this);
+
+        if (wantBaseClickListener()) {
+            clickSupport.setOnItemClickListener(this);
+        }
+    }
+
+    protected boolean wantBaseClickListener() {
+        return false;
     }
 
     public abstract void onItemClick(RecyclerView parent, View view, int position, long id);

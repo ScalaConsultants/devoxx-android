@@ -40,7 +40,9 @@ public class NotificationsManager {
     public static final String EXTRA_NOTIFICATION_TYPE = "io.scalac.degree.android.intent.extra.EXTRA_NOTIFICATION_TYPE";
 
     private static final long POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.MINUTES.toMillis(1);
-    private static final long DEBUG_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.SECONDS.toMillis(10);
+
+    // TODO Change 10 minutes to proper one!
+    private static final long DEBUG_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.MINUTES.toMillis(10);
     private static final long PROD_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.HOURS.toMillis(1);
 
     @RootContext

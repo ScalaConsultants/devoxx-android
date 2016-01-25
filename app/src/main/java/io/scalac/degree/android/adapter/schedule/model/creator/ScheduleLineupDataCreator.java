@@ -18,6 +18,7 @@ import io.scalac.degree.android.adapter.schedule.model.BreakScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.TalksScheduleItem;
 import io.scalac.degree.connection.model.SlotApiModel;
+import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.utils.tuple.TripleTuple;
 
@@ -26,6 +27,9 @@ public class ScheduleLineupDataCreator {
 
     @Bean
     SlotsDataManager slotsDataManager;
+
+    @Bean
+    NotificationsManager notificationsManager;
 
     private Collector<SlotApiModel, ?, Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>>
             triplesCollector = createTriplesCollector();
@@ -73,12 +77,20 @@ public class ScheduleLineupDataCreator {
                 result.add(new BreakScheduleItem(
                         startTime, endTime, index, index, models));
             } else {
+                final int endIndex = index + size + 1; // 1 - for more view.
                 final TalksScheduleItem talksScheduleItem = new TalksScheduleItem(
-                        startTime, endTime, index, index + size);
+                        startTime, endTime, index, endIndex);
 
-                index++;
+                index += 2; // +2 for timespan and more view.
 
-                talksScheduleItem.setOtherSlots(models);
+                for (SlotApiModel model : models) {
+                    if (notificationsManager.isNotificationScheduled(model.slotId)) {
+                        talksScheduleItem.addFavouredSlot(model);
+                    } else {
+                        talksScheduleItem.addOtherSlot(model);
+                    }
+                }
+
                 result.add(talksScheduleItem);
             }
 
@@ -107,5 +119,21 @@ public class ScheduleLineupDataCreator {
                 return new TripleTuple<>(value.fromTimeMillis, value.toTimeMillis, value.slotId);
             }
         });
+    }
+
+    public void refreshIndexes(List<ScheduleItem> data) {
+        int index = 0;
+        for (ScheduleItem scheduleItem : data) {
+            if (scheduleItem instanceof BreakScheduleItem) {
+                scheduleItem.setStartIndex(index);
+                scheduleItem.setStopIndex(index);
+                index++;
+            } else {
+                final int talkItemSize = scheduleItem.getSize();
+                scheduleItem.setStartIndex(index);
+                scheduleItem.setStopIndex(index + talkItemSize - 1);
+                index += talkItemSize;
+            }
+        }
     }
 }

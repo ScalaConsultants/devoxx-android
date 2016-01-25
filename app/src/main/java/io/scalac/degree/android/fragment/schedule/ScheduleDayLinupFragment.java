@@ -53,6 +53,8 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
     protected void afterViews() {
         super.afterViews();
 
+        scheduleDayLineupAdapter.setListener(this);
+
         final String lastQuery = scheduleLineupSearchManager.getLastQuery();
 
         final List<ScheduleItem> items;
@@ -85,8 +87,6 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         if (slotApiModel.isTalk()) {
             getMainActivity().replaceFragment(TalkFragment_.builder()
                     .slotModel(slotApiModel).build(), true);
-        } else {
-            infoUtil.showToast("Nothing here...");
         }
     }
 }

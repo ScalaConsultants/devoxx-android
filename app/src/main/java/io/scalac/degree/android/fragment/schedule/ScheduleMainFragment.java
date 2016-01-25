@@ -172,6 +172,8 @@ public class ScheduleMainFragment extends BaseFragment {
     }
 
     private void onSearchQuery(String query) {
+        // TODO Adds labels with filters! x_label
+        // TODO Save filters somewhere!
         scheduleLineupSearchManager.saveLastQuery(query);
         getMainActivity().sendBroadcast(new Intent(
                 ScheduleLineupSearchManager.SEARCH_INTENT_ACTION));

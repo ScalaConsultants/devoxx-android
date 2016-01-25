@@ -37,6 +37,8 @@
     <string name="filter">Filter</string>
     <string name="deselect_all">Deselect all</string>
     <string name="select_all">Select all</string>
+    <string name="item_talk_more_talks_placeholder">%d TALKS</string>
+    <string name="item_talk_more_tracks_placeholder">int %d tracks</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
