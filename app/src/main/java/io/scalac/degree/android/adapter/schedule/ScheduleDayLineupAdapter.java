@@ -7,7 +7,6 @@ import org.lucasr.twowayview.ItemClickSupport;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.annotation.Retention;
@@ -96,11 +95,11 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     @Override
     public void onBindViewHolder(BaseItemHolder holder, int position) {
         if (holder instanceof BreakItemHolder) {
-            setupBreakItemHolder((BreakItemHolder) holder, position);
+            setupBreakItemHolder((BreakItemHolder) holder, getItem(position));
         } else if (holder instanceof TalkItemHolder) {
-            setupTalkItemHolder(holder, position);
+            setupTalkItemHolder(holder, getItem(position), position);
         } else if (holder instanceof TimespanItemHolder) {
-            setupTimespanItemHolder((TimespanItemHolder) holder, position);
+            setupTimespanItemHolder((TimespanItemHolder) holder, getItem(position));
         } else if (holder instanceof TalksMoreItemHolder) {
             setupMoreItemHolder((TalksMoreItemHolder) holder, position);
         }
@@ -117,19 +116,19 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
         });
     }
 
-    private void setupTimespanItemHolder(TimespanItemHolder holder, int position) {
-        final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+    private void setupTimespanItemHolder(TimespanItemHolder holder, ScheduleItem scheduleItem) {
+        final TalksScheduleItem item = (TalksScheduleItem) scheduleItem;
         holder.setupTimespan(item.getStartTime(), item.getEndTime());
     }
 
-    private void setupBreakItemHolder(BreakItemHolder holder, int position) {
-        final BreakScheduleItem breakScheduleItem = (BreakScheduleItem) getItem(position);
+    private void setupBreakItemHolder(BreakItemHolder holder, ScheduleItem scheduleItem) {
+        final BreakScheduleItem breakScheduleItem = (BreakScheduleItem) scheduleItem;
         final SlotApiModel breakModel = breakScheduleItem.getBreakModel();
         holder.setupBreak(breakModel);
     }
 
-    private void setupTalkItemHolder(BaseItemHolder holder, int position) {
-        final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) getItem(position);
+    private void setupTalkItemHolder(BaseItemHolder holder, ScheduleItem scheduleItem, int position) {
+        final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) scheduleItem;
         final SlotApiModel slotModel = talksScheduleItem.getItem(position);
         ((TalkItemHolder) holder).setupTalk(slotModel);
         setupOnItemClickListener(holder, position);
