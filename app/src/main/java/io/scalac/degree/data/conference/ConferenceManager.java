@@ -1,5 +1,6 @@
 package io.scalac.degree.data.conference;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -11,18 +12,24 @@ import java.util.List;
 import java.util.Locale;
 
 import io.scalac.degree.data.conference.model.ConferenceDay;
+import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
 
 @EBean
 public class ConferenceManager {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
+    @Bean
+    ScheduleFilterManager scheduleFilterManager;
+
     public void fetchAvailableConferences() {
-        // TODO TBD
+        // TODO TBD, download cfp.json from the server!
     }
 
     public void fetchConferenceData(String confCode) {
         // TODO TBD
+        final List<ConferenceDay> conferenceDays = getConferenceDays();
+        scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
     }
 
     public List<ConferenceDay> getConferenceDays() {

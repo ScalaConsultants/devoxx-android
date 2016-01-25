@@ -15,7 +15,7 @@ import java.util.List;
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
-import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupSearchManager;
+import io.scalac.degree.data.schedule.search.ScheduleLineupSearchManager;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;

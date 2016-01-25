@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
+import io.scalac.degree.data.conference.ConferenceManager;
 import io.scalac.degree.data.manager.AbstractDataManager;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree33.R;
@@ -26,6 +27,9 @@ public class SelectorActivity extends BaseActivity implements
     @Bean
     SlotsDataManager slotsDataManager;
 
+    @Bean
+    ConferenceManager conferenceManager;
+
     @Pref
     Settings_ settings;
 
@@ -35,6 +39,9 @@ public class SelectorActivity extends BaseActivity implements
     @Click(R.id.selectorGo)
     void onGoClick() {
         settings.activeConferenceCode().put(TEST_CONF_CODE);
+
+        // TODO Make conference manager as downloader data for conference!
+        conferenceManager.fetchConferenceData(TEST_CONF_CODE);
 
         slotsDataManager.fetchTalks(settings.activeConferenceCode().get(), this);
     }

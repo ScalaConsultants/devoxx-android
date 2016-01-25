@@ -1,4 +1,4 @@
-package io.scalac.degree.android.adapter.schedule.model.creator;
+package io.scalac.degree.data.schedule.search;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -13,10 +13,9 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
+import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
-import io.scalac.degree.data.schedule.ScheduleSearchStore_;
-import io.scalac.degree.utils.Logger;
 
 @EBean
 public class ScheduleLineupSearchManager {

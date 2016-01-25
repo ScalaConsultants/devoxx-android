@@ -39,6 +39,11 @@
     <string name="select_all">Select all</string>
     <string name="item_talk_more_talks_placeholder">%d TALKS</string>
     <string name="item_talk_more_tracks_placeholder">int %d tracks</string>
+    <string name="days">Days</string>
+    <string name="tracks">Tracks</string>
+    <string name="filters">Filters</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>

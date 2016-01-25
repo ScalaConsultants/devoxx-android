@@ -47,7 +47,7 @@ public class ScheduleLineupDataCreator {
     }
 
     @NonNull
-    List<ScheduleItem> prepareResult(List<SlotApiModel> slotApiModels) {
+    public List<ScheduleItem> prepareResult(List<SlotApiModel> slotApiModels) {
         final Map<TripleTuple<Long, Long, String>, List<SlotApiModel>> map = Stream.of(slotApiModels)
                 .sortBy(sortTriplesPredicate)
                 .collect(triplesCollector);
