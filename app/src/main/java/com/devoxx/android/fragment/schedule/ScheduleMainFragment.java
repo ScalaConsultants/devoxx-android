@@ -1,5 +1,7 @@
 package com.devoxx.android.fragment.schedule;
 
+import com.devoxx.android.activity.AboutActivity;
+import com.devoxx.android.activity.AboutActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
@@ -82,7 +84,7 @@ public class ScheduleMainFragment extends BaseFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.tracks_menu, menu);
+        inflater.inflate(R.menu.schedule_menu, menu);
 
         setupSearchView(menu);
 
@@ -111,6 +113,11 @@ public class ScheduleMainFragment extends BaseFragment
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
         }
+    }
+
+    @OptionsItem(R.id.action_about)
+    void onAboutClick() {
+        AboutActivity_.intent(this).start();
     }
 
     private void setupSearchView(Menu menu) {

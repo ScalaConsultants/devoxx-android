@@ -50,6 +50,7 @@
     <string name="talk_details_section_presentor">Presentor</string>
     <string name="talk_details_section_date_time">Date and time</string>
     <string name="talks">Talks</string>
+    <string name="about">About</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
