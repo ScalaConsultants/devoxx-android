@@ -127,20 +127,11 @@ public class ScheduleFilterManager {
     }
 
     public void clearFilters() {
-        final Realm realm = realmProvider.getRealm();
-        final List<RealmScheduleDayItemFilter> days =
-                realm.allObjects(RealmScheduleDayItemFilter.class);
-        final List<RealmScheduleTrackItemFilter> tracks =
-                realm.allObjects(RealmScheduleTrackItemFilter.class);
-        realm.beginTransaction();
-        for (int i = 0; i < days.size(); i++) {
-            days.get(i).setActive(false);
-        }
-        for (int i = 0; i < tracks.size(); i++) {
-            tracks.get(i).setActive(false);
-        }
-        realm.commitTransaction();
-        realm.close();
+        setAllFiltersEnabled(false);
+    }
+
+    public void defaultFilters() {
+        setAllFiltersEnabled(true);
     }
 
     public List<ScheduleItem> applyTracksFilter(List<ScheduleItem> items) {
@@ -156,7 +147,9 @@ public class ScheduleFilterManager {
                         if (value.isTalk()) {
                             for (RealmScheduleTrackItemFilter filter : activeFilters) {
                                 if (value.talk.track.toLowerCase()
-                                        .contains(filter.getTrackName().toLowerCase())) {
+                                        .equalsIgnoreCase(filter.getTrackName().toLowerCase())
+                                        || value.talk.track.toLowerCase()
+                                        .equalsIgnoreCase(filter.getLabel().toLowerCase())) {
                                     return true;
                                 }
                             }
@@ -167,5 +160,22 @@ public class ScheduleFilterManager {
             result = scheduleLineupDataCreator.prepareResult(filteredModels);
         }
         return result;
+    }
+
+    private void setAllFiltersEnabled(boolean enabled) {
+        final Realm realm = realmProvider.getRealm();
+        final List<RealmScheduleDayItemFilter> days =
+                realm.allObjects(RealmScheduleDayItemFilter.class);
+        final List<RealmScheduleTrackItemFilter> tracks =
+                realm.allObjects(RealmScheduleTrackItemFilter.class);
+        realm.beginTransaction();
+        for (int i = 0; i < days.size(); i++) {
+            days.get(i).setActive(enabled);
+        }
+        for (int i = 0; i < tracks.size(); i++) {
+            tracks.get(i).setActive(enabled);
+        }
+        realm.commitTransaction();
+        realm.close();
     }
 }

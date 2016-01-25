@@ -1,8 +1,10 @@
 package io.scalac.degree.android.dialog;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,8 @@ public class FiltersDialog {
         void onFiltersCleared();
 
         void onFiltersDismissed();
+
+        void onFiltersDefault();
     }
 
     public static void showFiltersDialog(
@@ -40,7 +44,9 @@ public class FiltersDialog {
                 .title(R.string.filters)
                 .positiveText(R.string.apply)
                 .negativeText(R.string.clear)
+                .neutralText(R.string.default_filters)
                 .onNegative((dialog, which) -> globalListener.onFiltersCleared())
+                .onNeutral((dialog, which) -> globalListener.onFiltersDefault())
                 .dismissListener(dialog -> globalListener.onFiltersDismissed())
                 .build();
 
