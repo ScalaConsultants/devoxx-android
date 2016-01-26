@@ -77,4 +77,10 @@
         <item name="colorPrimary">#C1221C</item>
         <item name="colorPrimaryDark">#b71c1c</item>
     </style>
+
+    <style name="SpeakerDetailsTheme" parent="AppBaseTheme">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+    </style>
 </resources>

@@ -1,33 +1,33 @@
 package io.scalac.degree.android.fragment.speaker;
 
 import com.annimon.stream.Optional;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import android.graphics.Bitmap;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.scalac.degree.android.activity.BaseActivity;
 import io.scalac.degree.android.activity.TalkDetailsHostActivity;
 import io.scalac.degree.android.activity.TalkDetailsHostActivity_;
 import io.scalac.degree.android.fragment.common.BaseFragment;
+import io.scalac.degree.android.view.speaker.SpeakerDetailsHeader;
+import io.scalac.degree.android.view.speaker.SpeakerDetailsTalkItem;
+import io.scalac.degree.android.view.speaker.SpeakerDetailsTalkItem_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.connection.model.TalkSpeakerApiModel;
 import io.scalac.degree.data.Settings_;
@@ -41,28 +41,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_speaker)
-public class SpeakerFragment extends BaseFragment {
+public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
-    @FragmentArg
-    TalkSpeakerApiModel speakerTalkModel;
-
-    @FragmentArg
-    String speakerDbUuid;
-
-    @ViewById(R.id.imageSpeaker)
-    ImageView imageView;
-
-    @ViewById(R.id.textName)
-    TextView textName;
-
-    @ViewById(R.id.textBio)
-    TextView textBio;
-
-    @ViewById(R.id.linearLayoutTalks)
-    LinearLayout linearLayoutTalks;
-
-    @ViewById(R.id.textViewTalks)
-    View textViewTalks;
+    private static final float FULL_FACTOR = 1f;
 
     @Bean
     SpeakersDataManager speakersDataManager;
@@ -73,15 +54,62 @@ public class SpeakerFragment extends BaseFragment {
     @Pref
     Settings_ settings;
 
+    @ViewById(R.id.imageSpeaker)
+    ImageView imageView;
+
+    @ViewById(R.id.textBio)
+    TextView textBio;
+
+    @ViewById(R.id.speakerDetailsFirstButton)
+    FloatingActionButton firstButton;
+
+    @ViewById(R.id.speakerDetailsSecondButton)
+    FloatingActionButton secondButton;
+
+    @ViewById(R.id.main_toolbar)
+    Toolbar toolbar;
+
+    @ViewById(R.id.main_appbar)
+    AppBarLayout appBarLayout;
+
+    @ViewById(R.id.main_collapsing)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+
+    @ViewById(R.id.toolbar_header_view)
+    SpeakerDetailsHeader toolbarHeaderView;
+
+    @ViewById(R.id.float_header_view)
+    SpeakerDetailsHeader floatHeaderView;
+
+    @ViewById(R.id.speakerDetailsTalkSection)
+    LinearLayout talkSection;
+
     private RealmSpeaker realmSpeaker;
+    private TalkSpeakerApiModel speakerTalkModel;
+    private boolean shouldHideToolbarHeader = false;
 
     @AfterViews
     void afterViews() {
+        setupMainLayout();
+    }
+
+    @Click(R.id.speakerDetailsFirstButton)
+    void onFirstButtonClick() {
+        // TODO
+    }
+
+    @Click(R.id.speakerDetailsSecondButton)
+    void onSecondButtonClick() {
+        // TODO
+    }
+
+    public void setupFragment(String speakerUuid, TalkSpeakerApiModel speakerModel) {
         final String uuid;
-        if (speakerTalkModel != null) {
-            uuid = TalkSpeakerApiModel.getUuidFromLink(speakerTalkModel.link);
+        if (speakerModel != null) {
+            speakerTalkModel = speakerModel;
+            uuid = TalkSpeakerApiModel.getUuidFromLink(speakerModel.link);
         } else {
-            uuid = speakerDbUuid;
+            uuid = speakerUuid;
         }
 
         final Subscriber<RealmSpeaker> s = new Subscriber<RealmSpeaker>() {
@@ -111,22 +139,20 @@ public class SpeakerFragment extends BaseFragment {
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(s);
     }
 
-    private String determineName() {
-        return speakerTalkModel != null ? speakerTalkModel.name :
-                realmSpeaker != null ? realmSpeaker.getFirstName() : null;
-    }
-
     private void setupView() {
-        textName.setText(determineName());
+        final String name = determineName();
+        final String company = "Company Name"; // TODO Waiting for api company info.
+        toolbarHeaderView.setupHeader(name, company);
+        floatHeaderView.setupHeader(realmSpeaker.getAvatarURL(), name, company);
 
-        textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml()));
+        textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml().trim()));
         textBio.setMovementMethod(LinkMovementMethod.getInstance());
-        if (realmSpeaker.getAcceptedTalks().size() > 0) {
+
+        if (!realmSpeaker.getAcceptedTalks().isEmpty()) {
             for (final RealmTalk talkModel : realmSpeaker.getAcceptedTalks()) {
-                Button buttonItem = (Button) LayoutInflater.from(getActivity())
-                        .inflate(R.layout.button_item, linearLayoutTalks, false);
-                buttonItem.setText(talkModel.getTitle());
-                buttonItem.setOnClickListener(v -> {
+                final SpeakerDetailsTalkItem item = SpeakerDetailsTalkItem_.build(getContext());
+                item.setupView(talkModel.getTrack(), talkModel.getTitle());
+                item.setOnClickListener(v -> {
                     final Optional<SlotApiModel> slotModel = slotsDataManager.
                             getSlotByTalkId(talkModel.getId());
                     if (slotModel.isPresent()) {
@@ -137,28 +163,38 @@ public class SpeakerFragment extends BaseFragment {
                         Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
                     }
                 });
-                linearLayoutTalks.addView(buttonItem);
+                talkSection.addView(item);
             }
         } else {
-            textViewTalks.setVisibility(View.GONE);
-            linearLayoutTalks.setVisibility(View.GONE);
+            talkSection.setVisibility(View.GONE);
         }
+    }
 
-        Glide.with(this).load(realmSpeaker.getAvatarURL())
-                .asBitmap()
-                .placeholder(R.drawable.th_background)
-                .error(R.drawable.no_photo)
-                .fallback(R.drawable.no_photo)
-                .centerCrop()
-                .into(new BitmapImageViewTarget(imageView) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        final RoundedBitmapDrawable circularBitmapDrawable =
-                                RoundedBitmapDrawableFactory.create(
-                                        imageView.getResources(), resource);
-                        circularBitmapDrawable.setCircular(true);
-                        imageView.setImageDrawable(circularBitmapDrawable);
-                    }
-                });
+    private String determineName() {
+        return speakerTalkModel != null ? (speakerTalkModel.firstName + " " + speakerTalkModel.lastName) :
+                realmSpeaker != null ? (realmSpeaker.getFirstName() + " " + realmSpeaker.getLastName()) : null;
+    }
+
+    private void setupMainLayout() {
+        collapsingToolbarLayout.setTitle(" ");
+        final BaseActivity baseActivity = ((BaseActivity) getActivity());
+        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+        baseActivity.setSupportActionBar(toolbar);
+        baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        appBarLayout.addOnOffsetChangedListener(this);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+        int maxScroll = appBarLayout.getTotalScrollRange();
+        float factor = (float) Math.abs(offset) / (float) maxScroll;
+
+        if (factor == FULL_FACTOR && shouldHideToolbarHeader) {
+            toolbarHeaderView.setVisibility(View.VISIBLE);
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
+        } else if (factor < FULL_FACTOR && !shouldHideToolbarHeader) {
+            toolbarHeaderView.setVisibility(View.GONE);
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
+        }
     }
 }
