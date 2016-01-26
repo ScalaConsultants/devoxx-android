@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /** We need to call super to get onActivityResult on calling fragment. */
         super.onActivityResult(requestCode, resultCode, data);
     }
 
