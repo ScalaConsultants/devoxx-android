@@ -161,6 +161,12 @@ public class ScheduleMainFragment extends BaseFragment
                 ScheduleFilterManager.FILTERS_CHANGED_ACTION));
     }
 
+    @Override
+    public void onFiltersDefault() {
+        scheduleFilterManager.defaultFilters();
+        invalidateViewPager();
+    }
+
     private void invalidateViewPager() {
         final List<ConferenceDay> days = combineDaysWithFilters();
         final SchedulePagerAdapter schedulePagerAdapter

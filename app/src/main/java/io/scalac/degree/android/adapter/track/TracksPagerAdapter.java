@@ -7,6 +7,7 @@ import com.annimon.stream.function.Function;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 import java.util.Map;
@@ -14,24 +15,14 @@ import java.util.Map;
 import io.scalac.degree.android.fragment.track.TracksListFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 
-public class TracksPagerAdapter extends FragmentPagerAdapter {
+public class TracksPagerAdapter extends FragmentStatePagerAdapter {
 
-    private final Map<String, List<SlotApiModel>> tracksMap;
-    private final List<String> tracksNames;
+    private Map<String, List<SlotApiModel>> tracksMap;
+    private List<String> tracksNames;
 
     public TracksPagerAdapter(FragmentManager fm, List<SlotApiModel> slots) {
         super(fm);
-
-        tracksMap = Stream.of(slots).filter(slot -> slot.talk != null)
-                .collect(Collectors.groupingBy(new Function<SlotApiModel, String>() {
-                    @Override
-                    public String apply(SlotApiModel value) {
-                        return value.talk.track;
-                    }
-                }));
-
-        tracksNames = Stream.of(tracksMap.keySet()).
-                sorted().collect(Collectors.<String>toList());
+        setData(slots);
     }
 
     @Override
@@ -47,5 +38,18 @@ public class TracksPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return tracksNames.get(position);
+    }
+
+    public void setData(List<SlotApiModel> slotApiModels) {
+        tracksMap = Stream.of(slotApiModels).filter(slot -> slot.talk != null)
+                .collect(Collectors.groupingBy(new Function<SlotApiModel, String>() {
+                    @Override
+                    public String apply(SlotApiModel value) {
+                        return value.talk.track;
+                    }
+                }));
+
+        tracksNames = Stream.of(tracksMap.keySet()).
+                sorted().collect(Collectors.<String>toList());
     }
 }

@@ -2,11 +2,14 @@ package io.scalac.degree.android.fragment.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
+import com.bumptech.glide.load.model.stream.StreamModelLoader;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.joda.time.DateTime;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,6 +21,10 @@ import io.scalac.degree.android.fragment.common.BaseListFragment;
 import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
+import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
+import io.scalac.degree.data.schedule.filter.model.RealmScheduleDayItemFilter;
+import io.scalac.degree.data.schedule.filter.model.RealmScheduleTrackItemFilter;
+import io.scalac.degree.utils.DateUtils;
 import io.scalac.degree33.R;
 
 @EFragment(R.layout.fragment_list)
@@ -27,6 +34,9 @@ public class TracksListFragment extends BaseListFragment {
     SlotsDataManager slotsDataManager;
 
     @Bean
+    ScheduleFilterManager scheduleFilterManager;
+
+    @Bean
     TracksAdapter tracksAdapter;
 
     @FragmentArg
@@ -34,11 +44,7 @@ public class TracksListFragment extends BaseListFragment {
 
     @AfterInject
     void afterInject() {
-        final List<SlotApiModel> tracks =
-                Stream.of(slotsDataManager.getLastTalks())
-                        .filter(slot -> slot.talk != null &&
-                                slot.talk.track.equalsIgnoreCase(trackName))
-                        .collect(Collectors.<SlotApiModel>toList());
+        final List<SlotApiModel> tracks = filterSlotsByDay();
         tracksAdapter.setData(tracks);
     }
 
@@ -56,5 +62,31 @@ public class TracksListFragment extends BaseListFragment {
     @Override
     protected boolean wantBaseClickListener() {
         return true;
+    }
+
+    private List<SlotApiModel> filterSlotsByDay() {
+        final List<SlotApiModel> slots =
+                Stream.of(slotsDataManager.getLastTalks())
+                        .filter(slot -> slot.talk != null &&
+                                slot.talk.track.equalsIgnoreCase(trackName))
+                        .collect(Collectors.<SlotApiModel>toList());
+
+        final List<RealmScheduleDayItemFilter> dayFilters
+                = scheduleFilterManager.getActiveDayFilters();
+        final DateTime filterTime = new DateTime();
+        final DateTime slotDate = new DateTime();
+
+        return Stream.of(slots)
+                .filter(value -> {
+                    final DateTime rhs = slotDate.withMillis(value.fromTimeMillis);
+                    for (RealmScheduleDayItemFilter dayFilter : dayFilters) {
+                        final DateTime lhs = filterTime.withMillis(dayFilter.getDayMs());
+                        if (DateUtils.isSameDay(lhs, rhs)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 }

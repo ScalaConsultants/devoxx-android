@@ -1,5 +1,7 @@
 package io.scalac.degree.utils;
 
+import org.joda.time.DateTime;
+
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -17,6 +19,10 @@ public abstract class DateUtils {
         final long result = calendar.getTimeInMillis();
         calendar.clear();
         return result;
+    }
+
+    public static boolean isSameDay(DateTime lhs, DateTime rhs) {
+        return lhs.getDayOfYear() == rhs.getDayOfYear();
     }
 
     private DateUtils() {
