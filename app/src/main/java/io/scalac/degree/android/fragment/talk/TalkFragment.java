@@ -1,254 +1,136 @@
 package io.scalac.degree.android.fragment.talk;
 
-import android.content.Context;
-import android.graphics.PorterDuff;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.text.Html;
-import android.text.InputType;
-import android.text.method.LinkMovementMethod;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
-import java.text.DateFormat;
-import java.util.List;
+import android.support.annotation.StringRes;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import io.scalac.degree.android.activity.BaseActivity;
 import io.scalac.degree.android.fragment.common.BaseFragment;
-import io.scalac.degree.android.fragment.speaker.SpeakerFragment_;
+import io.scalac.degree.android.view.talk.TalkDetailsHeader;
+import io.scalac.degree.android.view.talk.TalkDetailsSectionItem;
+import io.scalac.degree.android.view.talk.TalkDetailsSectionItem_;
 import io.scalac.degree.connection.model.SlotApiModel;
-import io.scalac.degree.connection.model.TalkSpeakerApiModel;
-import io.scalac.degree.connection.vote.model.VoteTalkModel;
-import io.scalac.degree.data.Settings_;
-import io.scalac.degree.data.manager.NotificationsManager;
-import io.scalac.degree.data.vote.interfaces.IOnGetTalkVotesListener;
-import io.scalac.degree.data.vote.interfaces.IOnVoteForTalkListener;
-import io.scalac.degree.data.vote.interfaces.ITalkVoter;
-import io.scalac.degree.data.vote.voters.FakeVoter;
 import io.scalac.degree33.R;
 
-@EFragment(R.layout.fragment_talk)
-public class TalkFragment extends BaseFragment implements IOnGetTalkVotesListener, IOnVoteForTalkListener {
+@EFragment(R.layout.fragment_talk_new)
+public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
-    private static final int QUESTION_MIN_CHARS_LENGTH = 3;
-    private static final int QUESTION_MAX_CHARS_LENGTH = 140;
+    private static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014
+    private static final String TIME_TEXT_FORMAT = "HH:MM"; // 9:30
+    private static final float FULL_FACTOR = 1f;
 
-    @FragmentArg
-    SlotApiModel slotModel;
+    @ViewById(R.id.talkDetailsScheduleBtn)
+    View scheduleButton;
 
-    @Bean
-    NotificationsManager notificationsManager;
+    @ViewById(R.id.main_toolbar)
+    Toolbar toolbar;
 
-    @Bean(FakeVoter.class)
-    ITalkVoter talkVoter;
+    @ViewById(R.id.main_appbar)
+    AppBarLayout appBarLayout;
 
-    @ViewById(R.id.textTopic)
-    TextView topic;
+    @ViewById(R.id.main_collapsing)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
-    @ViewById(R.id.textDesc)
-    TextView desc;
+    @ViewById(R.id.toolbar_header_view)
+    TalkDetailsHeader toolbarHeaderView;
 
-    @ViewById(R.id.textDate)
-    TextView date;
+    @ViewById(R.id.float_header_view)
+    TalkDetailsHeader floatHeaderView;
 
-    @ViewById(R.id.textTimeStart)
-    TextView start;
+    @ViewById(R.id.talkDetailsContainer)
+    LinearLayout sectionContainer;
 
-    @ViewById(R.id.textTimeEnd)
-    TextView end;
+    @ViewById(R.id.talkDetailsDescription)
+    TextView description;
 
-    @ViewById(R.id.textRoom)
-    TextView room;
-
-    @ViewById(R.id.buttonSpeaker)
-    Button speaker;
-
-    @ViewById(R.id.buttonSpeaker2)
-    Button speaker2;
-
-    @ViewById(R.id.switchNotify)
-    View scheduleViewContainer;
-
-    @ViewById(R.id.scheduleIcon)
-    ImageView scheduleIcon;
-
-    @ViewById(R.id.scheduleText)
-    TextView scheduleText;
-
-    @ViewById(R.id.talkFragmentVoteLabel)
-    TextView voteLabel;
-
-    @ColorRes(R.color.scheduled_star_color)
-    int scheduledIconColor;
-
-    @ColorRes(R.color.scheduled_not_star_color)
-    int notscheduledStarColor;
-
-    @Pref
-    Settings_ settings;
-
-    private String talkId;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    private boolean shouldHideToolbarHeader = false;
 
     @AfterViews
     void afterViews() {
-        setHasOptionsMenu(true);
-        setupViews(slotModel);
+        setupMainLayout();
     }
 
-    public void setupViews(final SlotApiModel slotModel) {
-        talkId = slotModel.talk.id;
-
-        topic.setText(Html.fromHtml(slotModel.talk.title));
-
-        desc.setText(Html.fromHtml(slotModel.talk.summaryAsHtml));
-        desc.setMovementMethod(LinkMovementMethod.getInstance());
-
-        final Context appContext = getActivity().getApplicationContext();
-        final DateFormat dateFormat = android.text.format.DateFormat
-                .getLongDateFormat(appContext);
-        final DateFormat timeFormat = android.text.format.DateFormat
-                .getTimeFormat(appContext);
-
-        date.setText(dateFormat.format(slotModel.fromTimeMillis));
-        start.setText(timeFormat.format(slotModel.fromTimeMillis));
-        end.setText(timeFormat.format(slotModel.toTimeMillis));
-
-        room.setText(slotModel.roomName);
-
-        final List<TalkSpeakerApiModel> speakers = slotModel.talk.speakers;
-        final TalkSpeakerApiModel firstSpeaker = speakers.get(0);
-        speaker.setText(firstSpeaker.name);
-
-        final TalkSpeakerApiModel secondSpeaker = speakers.size() > 1 ? speakers.get(1) : null;
-
-        if (secondSpeaker != null) {
-            speaker2.setText(secondSpeaker.name);
-        } else {
-            speaker2.setVisibility(View.GONE);
-        }
-
-        setupNotificationView();
-
-        scheduleViewContainer.setOnClickListener(v -> {
-            if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
-                notificationsManager.unscheduleNotification(slotModel.slotId, true);
-                setupNotActiveScheduleView();
-            } else {
-                final NotificationsManager.ScheduleNotificationModel model =
-                        NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
-                notificationsManager.scheduleNotification(model);
-                setupActiveScheduleView();
-            }
-        });
-
-        talkVoter.getVotesCountForTalk(settings.activeConferenceCode().get(), talkId, this);
-    }
-
-    private void setupNotificationView() {
-        if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
-            setupActiveScheduleView();
-        } else {
-            setupNotActiveScheduleView();
-        }
-    }
-
-    private void setupNotActiveScheduleView() {
-        scheduleIcon.setColorFilter(notscheduledStarColor);
-        scheduleText.setText(R.string.add_to_my_schedule);
-    }
-
-    private void setupActiveScheduleView() {
-        scheduleIcon.setColorFilter(scheduledIconColor, PorterDuff.Mode.MULTIPLY);
-        scheduleText.setText(R.string.remove_to_my_schedule);
-    }
-
-    @Click({R.id.buttonSpeaker, R.id.buttonSpeaker2, R.id.voteButton, R.id.questionButton})
-    void onSpeakersClick(View view) {
-        switch (view.getId()) {
-            case R.id.buttonSpeaker:
-                getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speakerTalkModel(slotModel.talk.speakers.get(0)).build(), true);
-                break;
-            case R.id.buttonSpeaker2:
-                getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speakerTalkModel(slotModel.talk.speakers.get(1)).build(), true);
-                break;
-            case R.id.voteButton:
-                onVoteButtonClick();
-                break;
-            case R.id.questionButton:
-                onQuestionButtonClick();
-                break;
-        }
-    }
-
-    private void onVoteButtonClick() {
-        if (talkVoter.isVotingEnabled()) {
-            talkVoter.voteForTalk(settings.activeConferenceCode().get(), talkId, this);
-        } else {
-            // TODO Should I open RegisterActivity?
-            Toast.makeText(getContext(), R.string.vote_not_legged_message,
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void onQuestionButtonClick() {
-        // TODO Labels will be changed!
-        new MaterialDialog.Builder(getContext())
-                .title("Ask about talk")
-                .inputType(InputType.TYPE_CLASS_TEXT |
-                        InputType.TYPE_TEXT_VARIATION_PERSON_NAME |
-                        InputType.TYPE_TEXT_FLAG_CAP_WORDS |
-                        InputType.TYPE_TEXT_FLAG_MULTI_LINE)
-                .inputRange(QUESTION_MIN_CHARS_LENGTH, QUESTION_MAX_CHARS_LENGTH)
-                .positiveText("Submit")
-                .input("Type question here...", "", false, (dialog, input) -> {
-                    Toast.makeText(getContext(), "Question sent...",
-                            Toast.LENGTH_SHORT).show();
-                }).show();
+    @Click(R.id.talkDetailsScheduleBtn)
+    void onScheduleButtonClick() {
+        // TODO Schedule unschedule talk!
     }
 
     @Override
-    public void onTalkVotesAvailable(VoteTalkModel voteTalkModel) {
-        // TODO Dev code, do not comment.
-        final int count = Integer.parseInt(voteTalkModel.count);
-        final String template = count == 0 ? "VOTES" : "%s VOTES";
-        voteLabel.setText(String.format(template, voteTalkModel.count));
+    public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+        int maxScroll = appBarLayout.getTotalScrollRange();
+        float factor = (float) Math.abs(offset) / (float) maxScroll;
+
+        if (factor == FULL_FACTOR && shouldHideToolbarHeader) {
+            toolbarHeaderView.setVisibility(View.VISIBLE);
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
+        } else if (factor < FULL_FACTOR && !shouldHideToolbarHeader) {
+            toolbarHeaderView.setVisibility(View.GONE);
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
+        }
     }
 
-    @Override
-    public void onTalkVotesError() {
-        // TODO Handle it.
+    public void setupFragment(SlotApiModel slotModel) {
+        toolbarHeaderView.setupHeader(slotModel.talk.title, slotModel.talk.track);
+        floatHeaderView.setupHeader(slotModel.talk.title, slotModel.talk.track);
+        description.setText(Html.fromHtml(slotModel.talk.summaryAsHtml));
+
+        fillSectionsContainer(slotModel);
     }
 
-    @Override
-    public void onVoteForTalkSucceed() {
-        // TODO Dev code, do not comment.
-        Toast.makeText(getContext(), "Zagłosowałeś!", Toast.LENGTH_SHORT).show();
-        talkVoter.getVotesCountForTalk(settings.activeConferenceCode().get(), talkId, this);
+    private void fillSectionsContainer(SlotApiModel slotModel) {
+        sectionContainer.addView(createDateTimeSection(slotModel));
+        sectionContainer.addView(createPresenterSection(slotModel));
+        sectionContainer.addView(createRoomSection(slotModel));
+        sectionContainer.addView(createFormatSection(slotModel));
     }
 
-    @Override
-    public void onVoteForTalkFailed() {
-        // TODO Dev code, do not comment.
-        Toast.makeText(getContext(), "Voted error", Toast.LENGTH_SHORT).show();
+    private View createFormatSection(SlotApiModel slotModel) {
+        return createSection("icon_TBD", R.string.talk_details_section_format, slotModel.talk.talkType);
+    }
+
+    private View createRoomSection(SlotApiModel slotModel) {
+        return createSection("icon_TBD", R.string.talk_details_section_room, slotModel.roomName);
+    }
+
+    private View createPresenterSection(SlotApiModel slotModel) {
+        return createSection("icon_TBD", R.string.talk_details_section_presentor,
+                slotModel.talk.getReadableSpeakers());
+    }
+
+    private View createDateTimeSection(SlotApiModel slotModel) {
+        final DateTime startDate = new DateTime(slotModel.fromTimeMillis);
+        final DateTime endDate = new DateTime(slotModel.toTimeMillis);
+        final String startDateString = startDate.toString(DateTimeFormat.forPattern(DATE_TEXT_FORMAT));
+        final String startTimeString = startDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
+        final String endTimeString = endDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
+        return createSection("icon_TBD", R.string.talk_details_section_date_time,
+                String.format("%s, %s to %s", startDateString, startTimeString, endTimeString));
+    }
+
+    private TalkDetailsSectionItem createSection(String iconUrl, @StringRes int title, String subtitle) {
+        final TalkDetailsSectionItem result = TalkDetailsSectionItem_.build(getContext());
+        result.setupView(iconUrl, title, subtitle);
+        return result;
+    }
+
+    private void setupMainLayout() {
+        collapsingToolbarLayout.setTitle(" ");
+        final BaseActivity baseActivity = ((BaseActivity) getActivity());
+        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+        baseActivity.setSupportActionBar(toolbar);
+        baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 }

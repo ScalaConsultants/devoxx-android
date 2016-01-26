@@ -12,11 +12,11 @@ import android.view.View;
 
 import java.util.List;
 
+import io.scalac.degree.android.activity.TalkDetailsHostActivity_;
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
 import io.scalac.degree.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
-import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
 import io.scalac.degree.data.schedule.search.ScheduleLineupSearchManager;
@@ -94,8 +94,7 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         final SlotApiModel slotApiModel = scheduleDayLineupAdapter.getClickedSlot(position);
 
         if (slotApiModel.isTalk()) {
-            getMainActivity().replaceFragment(TalkFragment_.builder()
-                    .slotModel(slotApiModel).build(), true);
+            TalkDetailsHostActivity_.intent(this).slotApiModel(slotApiModel).start();
         }
     }
 }

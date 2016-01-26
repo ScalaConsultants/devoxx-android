@@ -12,10 +12,10 @@ import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,8 +26,6 @@ import java.util.List;
 
 import io.scalac.degree.android.fragment.schedule.ScheduleMainFragment_;
 import io.scalac.degree.android.fragment.speaker.SpeakersFragment_;
-import io.scalac.degree.android.fragment.talk.TalkFragment;
-import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.android.fragment.track.TracksMainFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.Settings_;
@@ -39,8 +37,6 @@ import io.scalac.degree33.R;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity {
-
-    public static final String INTENT_FILTER_TALKS_ACTION = "INTENT_FILTER_TALKS_ACTION";
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
 
@@ -63,7 +59,7 @@ public class MainActivity extends BaseActivity {
     ViewGroup menuContainer;
 
     @ViewById(R.id.menu_schedule)
-    View menuSchedule;
+    View menuScheduleView;
 
     @ColorRes(R.color.primary_text)
     int selectedTablColor;
@@ -72,10 +68,12 @@ public class MainActivity extends BaseActivity {
     int unselectedTablColor;
 
     private String incomingSlotId;
+    private boolean isSavedInstanceState;
 
-    @AfterViews
-    protected void afterViews() {
-        setupToolbar();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        isSavedInstanceState = savedInstanceState != null;
     }
 
     @Override
@@ -86,10 +84,13 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        loadCoreData();
+    @AfterViews
+    void afterViews() {
+        setupToolbar();
+
+        if (!isSavedInstanceState) {
+            loadCoreData();
+        }
     }
 
     @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
@@ -138,7 +139,7 @@ public class MainActivity extends BaseActivity {
         if (fromNotification) {
             loadDataForNotificationOnColdStart();
         } else {
-            onMainMenuClick(menuSchedule);
+            onMainMenuClick(menuScheduleView);
         }
     }
 
@@ -164,14 +165,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupTalkFragment(SlotApiModel slotApiModel) {
-        final FragmentManager fm = getSupportFragmentManager();
-        final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
-        if (talkFragment instanceof TalkFragment) {
-            ((TalkFragment) talkFragment).setupViews(slotApiModel);
-        } else {
-            removeFragments();
-            replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
-        }
+        // TODO
+//        final FragmentManager fm = getSupportFragmentManager();
+//        final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
+//        if (talkFragment instanceof TalkFragment) {
+//            ((TalkFragment) talkFragment).setupViews(slotApiModel);
+//        } else {
+//            removeFragments();
+//            replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
+//        }
     }
 
     public void replaceFragment(Fragment fragment) {
@@ -201,8 +203,7 @@ public class MainActivity extends BaseActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("");
+        getSupportActionBar().setTitle("");
     }
 
     private void removeFragments() {

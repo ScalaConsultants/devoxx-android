@@ -46,6 +46,9 @@
             android:name="io.scalac.degree.android.activity.MainActivity_"
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_"/>
+        <activity
+            android:name="io.scalac.degree.android.activity.TalkDetailsHostActivity_"
+            android:theme="@style/TalkDetailsTheme"/>
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_"/>
         <activity android:name="io.scalac.degree.android.activity.MapActivity_"/>
         <activity android:name="io.scalac.scanner.BarcodeCaptureActivity"/>
