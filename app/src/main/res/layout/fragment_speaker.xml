@@ -49,7 +49,7 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                <io.scalac.degree.android.view.speaker.SpeakerDetailsHeader_
+                <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
                     android:id="@+id/toolbar_header_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -145,10 +145,10 @@
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|right|end"/>
 
-    <io.scalac.degree.android.view.speaker.SpeakerDetailsHeader_
+    <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
         android:id="@+id/float_header_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="io.scalac.degree.android.view.behaviour.SpeakerDetailsHeaderViewBehavior"/>
+        app:layout_behavior="com.devoxx.android.view.behaviour.SpeakerDetailsHeaderViewBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>
