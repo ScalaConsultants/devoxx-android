@@ -29,6 +29,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     private static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014
     private static final String TIME_TEXT_FORMAT = "HH:MM"; // 9:30
+    private static final float FULL_FACTOR = 1f;
 
     @ViewById(R.id.talkDetailsScheduleBtn)
     View scheduleButton;
@@ -54,7 +55,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     @ViewById(R.id.talkDetailsDescription)
     TextView description;
 
-    private boolean isHideToolbarView = false;
+    private boolean shouldHideToolbarHeader = false;
 
     @AfterViews
     void afterViews() {
@@ -69,15 +70,14 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
         int maxScroll = appBarLayout.getTotalScrollRange();
-        float percentage = (float) Math.abs(offset) / (float) maxScroll;
+        float factor = (float) Math.abs(offset) / (float) maxScroll;
 
-        if (percentage == 1f && isHideToolbarView) {
+        if (factor == FULL_FACTOR && shouldHideToolbarHeader) {
             toolbarHeaderView.setVisibility(View.VISIBLE);
-            isHideToolbarView = !isHideToolbarView;
-
-        } else if (percentage < 1f && !isHideToolbarView) {
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
+        } else if (factor < FULL_FACTOR && !shouldHideToolbarHeader) {
             toolbarHeaderView.setVisibility(View.GONE);
-            isHideToolbarView = !isHideToolbarView;
+            shouldHideToolbarHeader = !shouldHideToolbarHeader;
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.test.suitebuilder.annotation.Suppress;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -11,7 +12,10 @@ import android.view.View;
 import io.scalac.degree.android.view.talk.TalkDetailsHeader;
 import io.scalac.degree33.R;
 
+@SuppressWarnings("unused")
 public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<TalkDetailsHeader> {
+
+    private static final float FULL_FACTOR = 1f;
 
     private Context mContext;
 
@@ -35,28 +39,28 @@ public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<Ta
         shouldInitProperties(child, dependency);
 
         int maxScroll = ((AppBarLayout) dependency).getTotalScrollRange();
-        float percentage = Math.abs(dependency.getY()) / (float) maxScroll;
+        float factor = Math.abs(dependency.getY()) / (float) maxScroll;
 
-        float childPosition = dependency.getHeight()
+        float calculatedChildPosition = dependency.getHeight()
                 + dependency.getY()
                 - child.getHeight()
-                - (getToolbarHeight() - child.getHeight()) * percentage / 2;
+                - (getToolbarHeight() - child.getHeight()) * factor / 2;
 
 
-        childPosition = childPosition - mStartMarginBottom * (1f - percentage);
+        calculatedChildPosition = calculatedChildPosition - mStartMarginBottom * (FULL_FACTOR - factor);
 
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        lp.leftMargin = (int) (percentage * mEndMargintLeft) + mStartMarginLeft;
+        lp.leftMargin = (int) (factor * mEndMargintLeft) + mStartMarginLeft;
         lp.rightMargin = mMarginRight;
         child.setLayoutParams(lp);
 
-        child.setY(childPosition);
+        child.setY(calculatedChildPosition);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            if (isHide && percentage < 1) {
+            if (isHide && factor < FULL_FACTOR) {
                 child.setVisibility(View.VISIBLE);
                 isHide = false;
-            } else if (!isHide && percentage == 1) {
+            } else if (!isHide && factor == FULL_FACTOR) {
                 child.setVisibility(View.GONE);
                 isHide = true;
             }
@@ -65,21 +69,20 @@ public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<Ta
     }
 
     private void shouldInitProperties(TalkDetailsHeader child, View dependency) {
-
-        if (mStartMarginLeft == 0)
+        if (mStartMarginLeft == 0) {
             mStartMarginLeft = mContext.getResources().getDimensionPixelOffset(R.dimen.header_view_start_margin_left);
+        }
 
-        if (mEndMargintLeft == 0)
+        if (mEndMargintLeft == 0) {
             mEndMargintLeft = mContext.getResources().getDimensionPixelOffset(R.dimen.header_view_end_margin_left);
-
-        if (mStartMarginBottom == 0)
+        }
+        if (mStartMarginBottom == 0) {
             mStartMarginBottom = mContext.getResources().getDimensionPixelOffset(R.dimen.header_view_start_margin_bottom);
-
-        if (mMarginRight == 0)
+        }
+        if (mMarginRight == 0) {
             mMarginRight = mContext.getResources().getDimensionPixelOffset(R.dimen.header_view_end_margin_right);
-
+        }
     }
-
 
     public int getToolbarHeight() {
         int result = 0;
