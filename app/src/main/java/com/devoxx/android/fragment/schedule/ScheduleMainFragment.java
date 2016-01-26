@@ -82,7 +82,7 @@ public class ScheduleMainFragment extends BaseFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.speakers_menu, menu);
+        inflater.inflate(R.menu.tracks_menu, menu);
 
         setupSearchView(menu);
 
