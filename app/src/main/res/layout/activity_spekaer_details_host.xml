@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/speakerDetailsFragment"
-        android:name="io.scalac.degree.android.fragment.speaker.SpeakerFragment_"
+        android:name="com.devoxx.android.fragment.speaker.SpeakerFragment_"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </FrameLayout>

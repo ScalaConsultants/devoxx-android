@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.scalac.degree.android.view.ForegroundLinearLayout
+<com.devoxx.android.view.ForegroundLinearLayout
     android:id="@+id/talkListItemContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -61,4 +61,4 @@
         style="@style/ScheduleImageButtonStyle"
         android:contentDescription="@null"/>
 
-</io.scalac.degree.android.view.ForegroundLinearLayout>
+</com.devoxx.android.view.ForegroundLinearLayout>

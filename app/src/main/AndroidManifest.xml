@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.scalac.degree33"
+<manifest package="com.devoxx"
           xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
 
@@ -21,7 +21,7 @@
         android:required="true"/>
 
     <application
-        android:name="io.scalac.degree.MainApplication_"
+        android:name="com.devoxx.MainApplication_"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="${applicationLabel}"
@@ -30,7 +30,7 @@
         tools:replace="android:label">
 
         <activity
-            android:name="io.scalac.degree.android.activity.SelectorActivity_"
+            android:name="com.devoxx.android.activity.SelectorActivity_"
             android:label="${applicationLabel}"
             android:launchMode="singleTop"
             tools:node="replace"
@@ -43,38 +43,38 @@
         </activity>
 
         <activity
-            android:name="io.scalac.degree.android.activity.MainActivity_"
+            android:name="com.devoxx.android.activity.MainActivity_"
             android:windowSoftInputMode="adjustPan"/>
-        <activity android:name="io.scalac.degree.android.activity.RegisterUserActivity_"/>
+        <activity android:name="com.devoxx.android.activity.RegisterUserActivity_"/>
         <activity
-            android:name="io.scalac.degree.android.activity.TalkDetailsHostActivity_"
+            android:name="com.devoxx.android.activity.TalkDetailsHostActivity_"
             android:theme="@style/TalkDetailsTheme"/>
         <activity
-            android:name="io.scalac.degree.android.activity.SpeakerDetailsHostActivity_"
+            android:name="com.devoxx.android.activity.SpeakerDetailsHostActivity_"
             android:theme="@style/SpeakerDetailsTheme"/>
-        <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_"/>
-        <activity android:name="io.scalac.degree.android.activity.MapActivity_"/>
+        <activity android:name="com.devoxx.android.activity.NfcScanningActivity_"/>
+        <activity android:name="com.devoxx.android.activity.MapActivity_"/>
         <activity android:name="io.scalac.scanner.BarcodeCaptureActivity"/>
 
         <receiver
-            android:name="io.scalac.degree.android.receiver.AlarmReceiver_"
+            android:name="com.devoxx.android.receiver.AlarmReceiver_"
             android:enabled="true"
             android:exported="false"/>
 
         <receiver
-            android:name="io.scalac.degree.android.receiver.AppUpdatedReceiver_"
+            android:name="com.devoxx.android.receiver.AppUpdatedReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED"/>
 
                 <data
-                    android:path="io.scalac.degree"
+                    android:path="com.devoxx"
                     android:scheme="package"/>
             </intent-filter>
         </receiver>
         <receiver
-            android:name="io.scalac.degree.android.receiver.BootReceiver_"
+            android:name="com.devoxx.android.receiver.BootReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -82,7 +82,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="io.scalac.degree.android.receiver.TimezoneReceiver_"
+            android:name="com.devoxx.android.receiver.TimezoneReceiver_"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
