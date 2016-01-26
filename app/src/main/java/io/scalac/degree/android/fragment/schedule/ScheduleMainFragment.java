@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.scalac.degree.android.activity.TalkDetailsHostActivity;
 import io.scalac.degree.android.adapter.schedule.SchedulePagerAdapter;
 import io.scalac.degree.android.dialog.FiltersDialog;
 import io.scalac.degree.android.fragment.common.BaseFragment;
@@ -91,6 +92,14 @@ public class ScheduleMainFragment extends BaseFragment
         final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
         final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
         FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
+                && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
+            invalidateViewPager();
+        }
     }
 
     private void setupSearchView(Menu menu) {

@@ -4,14 +4,17 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.Receiver;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
 import java.util.List;
 
+import io.scalac.degree.android.activity.TalkDetailsHostActivity;
 import io.scalac.degree.android.activity.TalkDetailsHostActivity_;
 import io.scalac.degree.android.adapter.schedule.ScheduleDayLineupAdapter;
 import io.scalac.degree.android.adapter.schedule.model.ScheduleItem;
@@ -56,21 +59,8 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
     @Override
     protected void afterViews() {
         super.afterViews();
-
         scheduleDayLineupAdapter.setListener(this);
-
-        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
-
-        List<ScheduleItem> items;
-        if (!TextUtils.isEmpty(lastQuery)) {
-            items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
-        } else {
-            items = scheduleLineupDataCreator.prepareInitialData(lineupDayMs);
-        }
-
-        items = scheduleFilterManager.applyTracksFilter(items);
-
-        scheduleDayLineupAdapter.setData(items);
+        initAdapterWithLastQuery();
     }
 
     @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION,
@@ -94,7 +84,20 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         final SlotApiModel slotApiModel = scheduleDayLineupAdapter.getClickedSlot(position);
 
         if (slotApiModel.isTalk()) {
-            TalkDetailsHostActivity_.intent(this).slotApiModel(slotApiModel).start();
+            TalkDetailsHostActivity_.intent(this).slotApiModel(slotApiModel)
+                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
         }
+    }
+
+    private void initAdapterWithLastQuery() {
+        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
+        List<ScheduleItem> items;
+        if (!TextUtils.isEmpty(lastQuery)) {
+            items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
+        } else {
+            items = scheduleLineupDataCreator.prepareInitialData(lineupDayMs);
+        }
+        items = scheduleFilterManager.applyTracksFilter(items);
+        scheduleDayLineupAdapter.setData(items);
     }
 }

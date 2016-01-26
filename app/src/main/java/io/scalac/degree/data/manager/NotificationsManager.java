@@ -159,7 +159,10 @@ public class NotificationsManager {
         final Realm realm = realmProvider.getRealm();
         final RealmNotification notification = realm.where(RealmNotification.class)
                 .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
-        return notification != null && !notification.isFiredForTalk();
+        final boolean isNotificationLive = notification != null;
+        final boolean result = isNotificationLive && !notification.isFiredForTalk();
+        realm.close();
+        return result;
     }
 
     public void showPostNotification(String slotId, String title, String desc) {
