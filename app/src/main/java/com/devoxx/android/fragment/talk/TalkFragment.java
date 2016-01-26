@@ -108,6 +108,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         toolbarHeaderView.setupHeader(slot.talk.title, slot.talk.track);
         floatHeaderView.setupHeader(slot.talk.title, slot.talk.track);
         description.setText(Html.fromHtml(slot.talk.summaryAsHtml));
+        setupScheduleButton();
 
         fillSectionsContainer(slot);
     }

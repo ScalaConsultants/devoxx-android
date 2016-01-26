@@ -5,9 +5,7 @@
         android:id="@+id/list_item_talk_track_icon"
         android:layout_width="@dimen/track_icon_size"
         android:layout_height="@dimen/track_icon_size"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_local_cafe_white_24dp"
-        android:tint="@color/dark_gray"/>
+        android:contentDescription="@null" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -24,7 +22,7 @@
             android:gravity="center_vertical"
             android:textColor="#f1464c"
             android:textSize="10dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/list_item_talk_title"
@@ -32,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:textColor="@color/primary_text_90"
-            android:textSize="14dp"/>
+            android:textSize="14dp" />
 
         <TextView
             android:id="@+id/list_item_talk_place"
@@ -40,7 +38,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:textColor="@color/primary_text_45"
-            android:textSize="12dp"/>
+            android:textSize="12dp" />
 
     </LinearLayout>
 
@@ -49,6 +47,6 @@
         android:id="@+id/list_item_talk_track_schedule"
         style="@style/ScheduleImageButtonStyle"
         android:contentDescription="@null"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </merge>

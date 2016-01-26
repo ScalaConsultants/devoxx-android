@@ -68,7 +68,7 @@ public class TalkItemView extends LinearLayout {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
-    public void setupTalk(SlotApiModel slotModel) {
+    public TalkItemView setupTalk(SlotApiModel slotModel) {
         if (slotModel.notAllocated) {
             // TODO Handle somehow free slots.
             title.setText("Free slot...");
@@ -84,8 +84,6 @@ public class TalkItemView extends LinearLayout {
             Glide.with(getContext())
                     .load(obtainTrackIconUrl(talkModel))
                     .placeholder(R.drawable.th_background)
-                    .error(R.drawable.no_photo)
-                    .fallback(R.drawable.no_photo)
                     .into(trackIcon);
         }
 
@@ -95,6 +93,8 @@ public class TalkItemView extends LinearLayout {
         } else {
             scheduleIcon.setVisibility(View.GONE);
         }
+
+        return this;
     }
 
     private String obtainTrackIconUrl(TalkBaseApiModel slotModel) {
@@ -116,5 +116,9 @@ public class TalkItemView extends LinearLayout {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TalkItemView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public void withoutTrackName() {
+        track.setVisibility(View.INVISIBLE);
     }
 }

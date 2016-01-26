@@ -6,6 +6,7 @@ import com.annimon.stream.function.Function;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.devoxx.android.activity.AboutActivity_;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.model.RealmSpeakerShort;
 
@@ -13,6 +14,7 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -47,6 +49,7 @@ import com.devoxx.data.Settings_;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.utils.InfoUtil;
 import com.devoxx.R;
+
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -177,6 +180,11 @@ public class SpeakersFragment extends BaseFragment {
         }
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @OptionsItem(R.id.action_about)
+    void onAboutClick() {
+        AboutActivity_.intent(this).start();
     }
 
     private void onSearchQuery(String query) {

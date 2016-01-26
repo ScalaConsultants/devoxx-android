@@ -184,11 +184,11 @@ public class MainActivity extends BaseActivity {
     }
 
     public void replaceFragment(Fragment fragment) {
-        replaceFragment(fragment, false, FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        replaceFragment(fragment, false, FragmentTransaction.TRANSIT_NONE);
     }
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-        replaceFragment(fragment, addToBackStack, FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        replaceFragment(fragment, addToBackStack, FragmentTransaction.TRANSIT_NONE);
     }
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
@@ -201,11 +201,6 @@ public class MainActivity extends BaseActivity {
             ft.addToBackStack(null);
         }
         ft.commit();
-    }
-
-    private Fragment getCurrentFragment() {
-        return getSupportFragmentManager().
-                findFragmentByTag(TAG_CONTENT_FRAGMENT);
     }
 
     private void setupToolbar() {

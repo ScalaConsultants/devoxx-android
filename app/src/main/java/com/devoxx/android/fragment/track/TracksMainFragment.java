@@ -3,8 +3,11 @@ package com.devoxx.android.fragment.track;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
+import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.track.TracksPagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
+import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 
 import org.androidannotations.annotations.AfterInject;
@@ -17,7 +20,9 @@ import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 
 import android.app.SearchManager;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -92,6 +97,28 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
         final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
         final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
         FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
+    }
+
+    @OptionsItem(R.id.action_about)
+    void onAboutClick() {
+        AboutActivity_.intent(this).start();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
+                && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
+            notifyRestScheduleLineupFragments(requestCode, resultCode, data);
+        }
+    }
+
+    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
+        final List<Fragment> fragments = getChildFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof TracksListFragment) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     private void setupSearchView(Menu menu) {

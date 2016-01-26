@@ -17,6 +17,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.joda.time.DateTime;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -48,7 +49,7 @@ public class TracksListFragment extends BaseListFragment {
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
-        TalkDetailsHostActivity_.intent(this)
+        TalkDetailsHostActivity_.intent(getParentFragment())
                 .slotApiModel(tracksAdapter.getClickedItem(position))
                 .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
     }
@@ -61,6 +62,23 @@ public class TracksListFragment extends BaseListFragment {
     @Override
     protected boolean wantBaseClickListener() {
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /** Called from TracksMainFragment.onActivityResult() */
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE &&
+                resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
+            onRefreshData();
+        }
+    }
+
+    private void onRefreshData() {
+        final List<SlotApiModel> tracks = filterSlotsByDay();
+        tracksAdapter.setData(tracks);
+        tracksAdapter.notifyDataSetChanged();
     }
 
     private List<SlotApiModel> filterSlotsByDay() {
