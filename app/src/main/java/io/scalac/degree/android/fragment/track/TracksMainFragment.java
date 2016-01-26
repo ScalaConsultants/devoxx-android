@@ -129,21 +129,22 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     }
 
     private void onSearchQuery(String query) {
-        final List<SlotApiModel> slotApiModelList = slotsDataManager.getLastTalks();
-        List<SlotApiModel> resultList = Stream.of(slotApiModelList)
-                .filter(value -> value.isTalk() && (value.talk.track.toLowerCase().contains(query)
-                        || value.talk.title.toLowerCase().contains(query)
-                        || value.talk.getReadableSpeakers().contains(query)
-                        || value.talk.summary.contains(query)))
-                .collect(Collectors.toList());
-
-        resultList = filterByTrack(resultList);
-
+        final List<SlotApiModel> resultList = filterByTrack(doQuery(query));
         tracksPagerAdapter.setData(resultList);
         viewPager.setAdapter(tracksPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tracksPagerAdapter.notifyDataSetChanged();
 
+    }
+
+    private List<SlotApiModel> doQuery(String query) {
+        final List<SlotApiModel> slotApiModelList = slotsDataManager.getLastTalks();
+        return Stream.of(slotApiModelList)
+                .filter(value -> value.isTalk() && (value.talk.track.toLowerCase().contains(query)
+                        || value.talk.title.toLowerCase().contains(query)
+                        || value.talk.getReadableSpeakers().contains(query)
+                        || value.talk.summary.contains(query)))
+                .collect(Collectors.toList());
     }
 
     private void invalidateAdapterOnFiltersChange() {
