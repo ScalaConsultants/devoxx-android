@@ -1,231 +1,120 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="UseCompoundDrawables">
+    android:background="@android:color/background_light"
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/main.appbar"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/main.collapsing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax">
+
+                <ImageView
+                    android:id="@+id/main.backdrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/talk_background_image"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/talk_foreground_gradient"/>
+            </FrameLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main.toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <io.scalac.degree.android.view.talk.TalkDetailsHeader_
+                    android:id="@+id/toolbar_header_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="io.scalac.degree.android.activity.MainActivity">
-
-        <TextView
-            android:id="@+id/textNotifyOn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textTimeStart"
-            android:layout_alignBottom="@+id/textTimeStart"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            android:layout_toRightOf="@+id/textTimeStart"
-            android:text="–" />
-
-        <TextView
-            android:id="@+id/textTimeEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textNotifyOn"
-            android:layout_alignBottom="@+id/textNotifyOn"
-            android:layout_toRightOf="@+id/textNotifyOn"
-            android:fontFamily="sans-serif-condensed"
-            android:textAppearance="?android:attr/textAppearance"
-            tools:text="11:00" />
-
-        <TextView
-            android:id="@+id/textRoom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textTimeStart"
-            android:layout_marginTop="4dp"
-            android:text="Room"
-            android:textStyle="italic" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:id="@+id/voteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textRoom"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/clickable_background"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="6dp">
-
-            <TextView
-                android:id="@+id/talkFragmentVoteLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
-                android:gravity="right"
-                android:textAllCaps="true"
-                android:textColor="@color/primary_text_90"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                tools:text="Vote" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_thumb"
-                android:tint="#9e9e9e" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/questionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textRoom"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
-            android:layout_toEndOf="@+id/voteButton"
-            android:layout_toRightOf="@+id/voteButton"
-            android:background="@drawable/clickable_background"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="6dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ask question"
-                android:textAllCaps="true"
-                android:textColor="@color/primary_text_90"
-                android:textSize="14dp"
-                android:textStyle="bold"
-                tools:text="Ask question!" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textTopic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/voteButton"
-            android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/primary_text_90"
-            android:textIsSelectable="true"
-            android:textStyle="bold"
-            tools:text="Topic" />
-
-        <TextView
-            android:id="@+id/textDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:fontFamily="sans-serif-condensed"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="10 June 2014" />
-
-        <TextView
-            android:id="@+id/textTimeStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textDate"
-            android:layout_marginTop="4dp"
-            android:text="10:00"
-            android:textAppearance="?android:attr/textAppearance" />
-
-        <Button
-            android:id="@+id/buttonSpeaker2"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/buttonSpeaker"
-            android:minHeight="32dp"
-            android:minWidth="32dp"
-            android:paddingEnd="0dp"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingStart="0dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/degree_link"
-            android:textStyle="bold"
-            tools:text="Speaker2" />
-
-        <Button
-            android:id="@+id/buttonSpeaker"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/textTopic"
-            android:layout_marginTop="2dp"
-            android:minHeight="32dp"
-            android:minWidth="32dp"
-            android:paddingLeft="0dp"
-            android:paddingStart="0dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/degree_link"
-            android:textStyle="bold"
-            tools:text="Speaker" />
-
-        <TextView
-            android:id="@+id/textDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/buttonSpeaker2"
-            android:layout_marginTop="28dp"
-            android:fontFamily="sans-serif-light"
-            android:lineSpacingMultiplier="1.4"
-            android:linksClickable="true"
-            android:textColor="@color/primary_text_90"
-            android:textColorLink="@color/degree_link"
-            android:textIsSelectable="true"
-            android:textSize="16dp"
-            tools:text="Description" />
-
-        <LinearLayout
-            android:id="@+id/talkNotidyVoteContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/switchNotify"
-                android:layout_width="wrap_content"
+                android:id="@+id/talkDetailsContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:divider="@drawable/horizontal_divider"
+                android:orientation="vertical"
+                android:paddingTop="32dp"
+                android:showDividers="middle"/>
 
-                <ImageView
-                    android:id="@+id/scheduleIcon"
-                    style="@style/ScheduleImageButtonStyle"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="78dp"
+                android:layout_marginTop="6dp"
+                android:background="@color/primary_text_45"/>
 
-                <TextView
-                    android:id="@+id/scheduleText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:textAppearance="?android:attr/textAppearance"
-                    tools:text="@string/add_to_my_schedule" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/talkDetailsDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="1.2dp"
+                android:lineSpacingMultiplier="1.2"
+                android:paddingBottom="4dp"
+                android:paddingLeft="78dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/primary_text_70"
+                android:textSize="14dp"/>
         </LinearLayout>
 
+    </android.support.v4.widget.NestedScrollView>
 
-    </RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/talkDetailsScheduleBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_star"
+        app:backgroundTint="@color/primary"
+        app:layout_anchor="@id/main.appbar"
+        app:layout_anchorGravity="bottom|right|end"/>
 
-</ScrollView>
+    <io.scalac.degree.android.view.talk.TalkDetailsHeader_
+        android:id="@+id/float_header_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="io.scalac.degree.android.view.behaviour.TalkDetailsHeaderViewBehavior"/>
+
+</android.support.design.widget.CoordinatorLayout>

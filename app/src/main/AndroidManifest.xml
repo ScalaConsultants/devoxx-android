@@ -49,6 +49,9 @@
         <activity
             android:name="io.scalac.degree.android.activity.TalkDetailsHostActivity_"
             android:theme="@style/TalkDetailsTheme"/>
+        <activity
+            android:name="io.scalac.degree.android.activity.SpeakerDetailsHostActivity_"
+            android:theme="@style/SpeakerDetailsTheme"/>
         <activity android:name="io.scalac.degree.android.activity.NfcScanningActivity_"/>
         <activity android:name="io.scalac.degree.android.activity.MapActivity_"/>
         <activity android:name="io.scalac.scanner.BarcodeCaptureActivity"/>

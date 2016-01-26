@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.scalac.degree.android.activity.SpeakerDetailsHostActivity_;
 import io.scalac.degree.android.fragment.common.BaseFragment;
 import io.scalac.degree.data.RealmProvider;
 import io.scalac.degree.data.Settings_;
@@ -129,9 +130,9 @@ public class SpeakersFragment extends BaseFragment {
                 .subscribe(subscriber);
 
         listView.setOnItemClickListener((parent, view, position, id) ->
-                getMainActivity().replaceFragment(SpeakerFragment_.builder()
-                        .speakerDbUuid(itemAdapter.getClickedItem(position).getUuid())
-                        .build(), true));
+                SpeakerDetailsHostActivity_.intent(getContext())
+                        .speakerUuid(itemAdapter.getClickedItem(position).getUuid())
+                        .start());
 
         listView.setOnTouchListener((v, event) -> {
             if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {

@@ -29,7 +29,7 @@ import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.NotificationsManager;
 import io.scalac.degree33.R;
 
-@EFragment(R.layout.fragment_talk_new)
+@EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
     private static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014

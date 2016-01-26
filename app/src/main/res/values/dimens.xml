@@ -3,7 +3,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="width_24h">44sp</dimen>
     <dimen name="width_12h">72sp</dimen>
-    <dimen name="width_speaker_photo">112dp</dimen>
+    <dimen name="width_speaker_photo">64dp</dimen>
     <dimen name="rounded_image_border">2dp</dimen>
     <dimen name="track_icon_size">42dp</dimen>
     <dimen name="menu_height">56dp</dimen>
