@@ -86,9 +86,18 @@ public class ScheduleMainFragment extends BaseFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.schedule_menu, menu);
 
+        setupFilterMenu(menu);
         setupSearchView(menu);
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void setupFilterMenu(Menu menu) {
+        if (scheduleFilterManager.isSomeFiltersActive()) {
+            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_white_24px);
+        } else {
+            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
+        }
     }
 
     @OptionsItem(R.id.action_filter)
@@ -183,6 +192,7 @@ public class ScheduleMainFragment extends BaseFragment
     @Override
     public void onFiltersDismissed() {
         invalidateViewPager();
+        getActivity().supportInvalidateOptionsMenu();
 
         getMainActivity().sendBroadcast(new Intent(
                 ScheduleFilterManager.FILTERS_CHANGED_ACTION));

@@ -88,6 +88,7 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.tracks_menu, menu);
+        setupFilterMenu(menu);
         setupSearchView(menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -118,6 +119,14 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
             if (fragment instanceof TracksListFragment) {
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
+        }
+    }
+
+    private void setupFilterMenu(Menu menu) {
+        if (scheduleFilterManager.isSomeFiltersActive()) {
+            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_white_24px);
+        } else {
+            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
         }
     }
 
@@ -224,6 +233,7 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     @Override
     public void onFiltersDismissed() {
         invalidateAdapterOnFiltersChange();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     @Override

@@ -39,16 +39,16 @@ public class ScheduleFilterManager {
     RealmProvider realmProvider;
 
     public List<RealmScheduleDayItemFilter> getActiveDayFilters() {
-        return getActiveFilters(RealmScheduleDayItemFilter.class);
+        return getFilters(RealmScheduleDayItemFilter.class, true);
     }
 
     public List<RealmScheduleTrackItemFilter> getActiveTrackFilters() {
-        return getActiveFilters(RealmScheduleTrackItemFilter.class);
+        return getFilters(RealmScheduleTrackItemFilter.class, true);
     }
 
-    private List getActiveFilters(Class<? extends RealmObject> clazz) {
+    private List getFilters(Class<? extends RealmObject> clazz, boolean isActive) {
         final Realm realm = realmProvider.getRealm();
-        final List result = realm.where(clazz).equalTo(IS_ACTIVE_COLUMN_NAME, true).findAll();
+        final List result = realm.where(clazz).equalTo(IS_ACTIVE_COLUMN_NAME, isActive).findAll();
         realm.close();
         return result;
     }
@@ -176,5 +176,10 @@ public class ScheduleFilterManager {
         }
         realm.commitTransaction();
         realm.close();
+    }
+
+    public boolean isSomeFiltersActive() {
+        return !getFilters(RealmScheduleDayItemFilter.class, false).isEmpty()
+                || !getFilters(RealmScheduleTrackItemFilter.class, false).isEmpty();
     }
 }
