@@ -140,11 +140,15 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     private List<SlotApiModel> doQuery(String query) {
         final List<SlotApiModel> slotApiModelList = slotsDataManager.getLastTalks();
         return Stream.of(slotApiModelList)
-                .filter(value -> value.isTalk() && (value.talk.track.toLowerCase().contains(query)
-                        || value.talk.title.toLowerCase().contains(query)
-                        || value.talk.getReadableSpeakers().contains(query)
-                        || value.talk.summary.contains(query)))
+                .filter(createFilter(query))
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<? super SlotApiModel> createFilter(String query) {
+        return value -> value.isTalk() && (value.talk.track.toLowerCase().contains(query)
+                || value.talk.title.toLowerCase().contains(query)
+                || value.talk.getReadableSpeakers().contains(query)
+                || value.talk.summary.contains(query));
     }
 
     private void invalidateAdapterOnFiltersChange() {
