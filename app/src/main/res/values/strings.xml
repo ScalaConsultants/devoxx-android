@@ -45,6 +45,10 @@
     <string name="apply">Apply</string>
     <string name="clear">Clear</string>
     <string name="default_filters">Default</string>
+    <string name="talk_details_section_format">Format</string>
+    <string name="talk_details_section_room">Room</string>
+    <string name="talk_details_section_presentor">Presentor</string>
+    <string name="talk_details_section_date_time">Date and time</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>

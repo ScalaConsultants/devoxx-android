@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
-import io.scalac.degree.android.view.TalkDetailsHeader;
+import io.scalac.degree.android.view.talk.TalkDetailsHeader;
 import io.scalac.degree33.R;
 
 public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<TalkDetailsHeader> {

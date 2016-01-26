@@ -16,9 +16,9 @@ import android.view.View;
 
 import java.util.List;
 
+import io.scalac.degree.android.activity.TalkDetailsHostActivity_;
 import io.scalac.degree.android.adapter.track.TracksAdapter;
 import io.scalac.degree.android.fragment.common.BaseListFragment;
-import io.scalac.degree.android.fragment.talk.TalkFragment_;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree.data.manager.SlotsDataManager;
 import io.scalac.degree.data.schedule.filter.ScheduleFilterManager;
@@ -50,8 +50,8 @@ public class TracksListFragment extends BaseListFragment {
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
-        getMainActivity().replaceFragment(TalkFragment_.builder()
-                .slotModel(tracksAdapter.getClickedItem(position)).build(), true);
+        TalkDetailsHostActivity_.intent(getContext())
+                .slotApiModel(tracksAdapter.getClickedItem(position)).start();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.scalac.degree.android.view;
+package io.scalac.degree.android.view.talk;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EViewGroup;

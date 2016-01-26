@@ -71,4 +71,10 @@
         <item name="android:paddingBottom">4dp</item>
         <item name="android:background">@drawable/menu_item_background_selector</item>
     </style>
+
+    <style name="TalkDetailsTheme" parent="AppBaseTheme">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="colorPrimary">#C1221C</item>
+        <item name="colorPrimaryDark">#b71c1c</item>
+    </style>
 </resources>

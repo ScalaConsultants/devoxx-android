@@ -5,7 +5,9 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.FragmentById;
 
-import io.scalac.degree.android.fragment.talk.NEW_TalkFragment;
+import android.view.MenuItem;
+
+import io.scalac.degree.android.fragment.talk.TalkFragment;
 import io.scalac.degree.connection.model.SlotApiModel;
 import io.scalac.degree33.R;
 
@@ -16,9 +18,18 @@ public class TalkDetailsHostActivity extends BaseActivity {
     SlotApiModel slotApiModel;
 
     @FragmentById(R.id.talkDetailsFragment)
-    NEW_TalkFragment new_talkFragment;
+    TalkFragment _talkFragment;
 
-    @AfterViews void afterViews() {
-        new_talkFragment.setupFragment(slotApiModel);
+    @AfterViews
+    void afterViews() {
+        _talkFragment.setupFragment(slotApiModel);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 }

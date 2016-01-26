@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/talkDetailsSectionIcon"
+        android:layout_width="@dimen/track_icon_size"
+        android:layout_height="@dimen/track_icon_size"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="20dp"
+        android:contentDescription="@null"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.8"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/talkDetailsSectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/primary_text_70"
+            android:textSize="16dp"/>
+
+        <TextView
+            android:id="@+id/talkDetailsSectionSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/primary_text_45"
+            android:textSize="14dp"/>
+    </LinearLayout>
+</merge>

@@ -18,10 +18,11 @@
 
     <color name="primary_text">#212121</color>
     <color name="primary_text_90">#E6212121</color>
-    <color name="primary_text_05">#0D212121</color>
-    <color name="primary_text_15">#26212121</color>
-    <color name="primary_text_30">#4D212121</color>
+    <color name="primary_text_70">#B3212121</color>
     <color name="primary_text_45">#73212121</color>
+    <color name="primary_text_30">#4D212121</color>
+    <color name="primary_text_15">#26212121</color>
+    <color name="primary_text_05">#0D212121</color>
 
     <color name="rounded_image_border">#A0ffffff</color>
 
