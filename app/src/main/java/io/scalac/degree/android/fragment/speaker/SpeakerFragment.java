@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.scalac.degree.android.activity.TalkDetailsHostActivity;
 import io.scalac.degree.android.activity.TalkDetailsHostActivity_;
 import io.scalac.degree.android.fragment.common.BaseFragment;
 import io.scalac.degree.connection.model.SlotApiModel;
@@ -130,7 +131,8 @@ public class SpeakerFragment extends BaseFragment {
                             getSlotByTalkId(talkModel.getId());
                     if (slotModel.isPresent()) {
                         TalkDetailsHostActivity_.intent(getContext())
-                                .slotApiModel(slotModel.get()).start();
+                                .slotApiModel(slotModel.get())
+                                .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
                     } else {
                         Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
                     }

@@ -13,6 +13,9 @@ import io.scalac.degree33.R;
 @EActivity(R.layout.activity_talk_details_host)
 public class TalkDetailsHostActivity extends BaseActivity {
 
+    public static final int REQUEST_CODE = 1;
+    public static final int RESULT_CODE_SUCCESS = 2;
+
     @Extra
     SlotApiModel slotApiModel;
 

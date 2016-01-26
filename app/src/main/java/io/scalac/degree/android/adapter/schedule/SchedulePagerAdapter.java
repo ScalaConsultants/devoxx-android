@@ -45,4 +45,9 @@ public class SchedulePagerAdapter extends FragmentStatePagerAdapter {
         TMP_DATE.setTime(conferenceDays.get(position).getDayMs());
         return TAB_LAYOUT_FORMAT.format(TMP_DATE);
     }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
 }
