@@ -48,7 +48,7 @@ public class TracksListFragment extends BaseListFragment {
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
-        TalkDetailsHostActivity_.intent(getContext())
+        TalkDetailsHostActivity_.intent(this)
                 .slotApiModel(tracksAdapter.getClickedItem(position))
                 .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
     }

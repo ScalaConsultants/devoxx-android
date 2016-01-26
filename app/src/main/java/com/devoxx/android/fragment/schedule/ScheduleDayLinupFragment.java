@@ -11,6 +11,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.Receiver;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -64,7 +65,7 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
 
     @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION,
             ScheduleFilterManager.FILTERS_CHANGED_ACTION})
-    void onSearchQuery() {
+    void onRefreshData() {
         final String lastQuery = scheduleLineupSearchManager.getLastQuery();
         List<ScheduleItem> items = scheduleLineupSearchManager
                 .handleSearchQuery(lineupDayMs, lastQuery);
@@ -83,8 +84,20 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         final SlotApiModel slotApiModel = scheduleDayLineupAdapter.getClickedSlot(position);
 
         if (slotApiModel.isTalk()) {
-            TalkDetailsHostActivity_.intent(this).slotApiModel(slotApiModel)
+            TalkDetailsHostActivity_.intent(getParentFragment()).
+                    slotApiModel(slotApiModel)
                     .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /** Called from ScheduleMainFragment.onActivityResult() */
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE &&
+                resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
+            onRefreshData();
         }
     }
 

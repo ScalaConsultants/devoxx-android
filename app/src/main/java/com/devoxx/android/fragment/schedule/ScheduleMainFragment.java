@@ -19,6 +19,7 @@ import org.androidannotations.annotations.res.ColorRes;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -99,7 +100,16 @@ public class ScheduleMainFragment extends BaseFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
                 && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
-            invalidateViewPager();
+            notifyRestScheduleLineupFragments(requestCode, resultCode, data);
+        }
+    }
+
+    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
+        final List<Fragment> fragments = getChildFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof ScheduleDayLinupFragment) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 

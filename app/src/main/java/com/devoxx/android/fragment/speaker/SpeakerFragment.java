@@ -39,6 +39,7 @@ import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
 import com.devoxx.R;
+
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -159,7 +160,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                     final Optional<SlotApiModel> slotModel = slotsDataManager.
                             getSlotByTalkId(talkModel.getId());
                     if (slotModel.isPresent()) {
-                        TalkDetailsHostActivity_.intent(getContext())
+                        TalkDetailsHostActivity_.intent(this)
                                 .slotApiModel(slotModel.get())
                                 .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
                     } else {
