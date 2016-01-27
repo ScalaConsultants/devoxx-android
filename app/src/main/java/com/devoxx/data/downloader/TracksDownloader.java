@@ -1,5 +1,6 @@
 package com.devoxx.data.downloader;
 
+import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.TracksApiModel;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.utils.Logger;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.realm.Realm;
+
 import com.devoxx.Configuration;
 import com.devoxx.connection.model.TrackApiModel;
 import com.devoxx.data.RealmProvider;
@@ -30,6 +32,9 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
     @Bean
     ScheduleFilterManager scheduleFilterManager;
+
+    @Bean
+    Connection connection;
 
     @Background
     public void downloadTracksDescriptions(String confCode) {
@@ -61,7 +66,7 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
         String result = UNKNOWN_TRACK_ICON_URL;
         if (realmTrack != null) {
-            result = Configuration.API_URL + realmTrack.getImgsrc();
+            result = connection.getActiveConferenceApiUrl() + realmTrack.getImgsrc();
         }
 
         realm.close();

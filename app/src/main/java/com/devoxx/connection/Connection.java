@@ -2,6 +2,8 @@ package com.devoxx.connection;
 
 import android.content.Context;
 
+import com.devoxx.Configuration;
+import com.devoxx.connection.cfp.CfpApi;
 import com.devoxx.utils.Logger;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -11,33 +13,39 @@ import com.squareup.okhttp.Response;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.IOException;
-
-import com.devoxx.Configuration;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class Connection {
 
     @RootContext
     Context context;
 
+    @Pref
+    ConnectionConfigurationStore_ connectionConfigurationStore;
+
     private DevoxxApi devoxxApi;
+    private CfpApi cfpApi;
 
     @AfterInject
     void afterInject() {
-        setupApi();
+        initiCfpApi();
     }
 
-    private void setupApi() {
+    public void setupConferenceApi(String conferenceEndpoint) {
+        connectionConfigurationStore.edit().activeConferenceApiUrl()
+                .put(conferenceEndpoint).apply();
+
         final OkHttpClient client = new OkHttpClient();
         client.interceptors().add(new LoggingInterceptor());
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Configuration.API_URL)
+                .baseUrl(conferenceEndpoint)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -46,6 +54,25 @@ public class Connection {
 
     public DevoxxApi getDevoxxApi() {
         return devoxxApi;
+    }
+
+    public CfpApi getCfpApi() {
+        return cfpApi;
+    }
+
+    public String getActiveConferenceApiUrl() {
+        return connectionConfigurationStore.activeConferenceApiUrl().get();
+    }
+
+    private void initiCfpApi() {
+        final OkHttpClient client = new OkHttpClient();
+        client.interceptors().add(new LoggingInterceptor());
+        final Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Configuration.CFP_API_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        cfpApi = retrofit.create(CfpApi.class);
     }
 
     class LoggingInterceptor implements Interceptor {
