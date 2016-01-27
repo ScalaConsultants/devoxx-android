@@ -8,7 +8,7 @@
         android:layout_height="@dimen/track_icon_size"
         android:clickable="true"
         android:contentDescription="@null"
-        android:src="@drawable/ic_date_range_white_24dp"
+        android:src="@drawable/ic_event_white_24px"
         android:tint="@color/dark_gray"/>
 
     <LinearLayout
