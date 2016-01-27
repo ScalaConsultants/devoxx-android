@@ -10,12 +10,9 @@ import com.devoxx.R;
 import com.devoxx.android.view.selector.SelectorView;
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
-import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
-import com.devoxx.data.manager.AbstractDataManager;
-import com.devoxx.data.manager.SlotsDataManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -26,12 +23,8 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 import java.util.List;
 
 @EActivity(R.layout.activity_selector)
-public class SelectorActivity extends BaseActivity implements
-        AbstractDataManager.IDataManagerListener<SlotApiModel>,
-        ConferenceManager.IOnConferencesAvailableListener {
-
-    @Bean
-    SlotsDataManager slotsDataManager;
+public class SelectorActivity extends BaseActivity implements ConferenceManager.IConferencesListener,
+        ConferenceManager.IConferenceDataListener {
 
     @Bean
     ConferenceManager conferenceManager;
@@ -56,35 +49,10 @@ public class SelectorActivity extends BaseActivity implements
 
     @AfterViews
     void afterViews() {
-        selectorView.addNewItem();
-        selectorView.addNewItem();
-        selectorView.addNewItem();
-        selectorView.addNewItem();
-        selectorView.addNewItem();
-
+        // TODO Create items from conferences!
         conferenceManager.fetchAvailableConferences(this);
     }
 
-    @Override
-    public void onDataStartFetching() {
-        showLoader();
-    }
-
-    @Override
-    public void onDataAvailable(List<SlotApiModel> items) {
-        hideLoader();
-        navigateToHome();
-    }
-
-    @Override
-    public void onDataAvailable(SlotApiModel item) {
-        // Nothing here.
-    }
-
-    @Override
-    public void onDataError() {
-        hideLoader();
-    }
 
     public void showLoader() {
         progressBar.setVisibility(View.VISIBLE);
@@ -100,9 +68,18 @@ public class SelectorActivity extends BaseActivity implements
     }
 
     @Override
-    public void onConferencesAvailable(List<ConferenceApiModel> conferenceS) {
+    public void onConferencesDataStart() {
+        showLoader();
+    }
+
+    @Override
+    public void onConferencesAvailable(List<ConferenceApiModel> conferences) {
+        hideLoader();
+
         // TODO Dev list.
-        for (ConferenceApiModel conferenceApiModel : conferenceS) {
+        for (ConferenceApiModel conferenceApiModel : conferences) {
+            selectorView.addNewItem(conferenceApiModel);
+
             final TextView textView = new TextView(this);
             textView.setText(conferenceApiModel.cfpURL);
             textView.setOnClickListener(v -> {
@@ -111,9 +88,7 @@ public class SelectorActivity extends BaseActivity implements
 
                 connection.setupConferenceApi(conferenceApiModel.cfpURL);
                 voteConnection.setupApi(conferenceApiModel.votingURL);
-
-                conferenceManager.fetchConferenceData(conferenceApiModel);
-                slotsDataManager.fetchTalks(confCode, SelectorActivity.this);
+                conferenceManager.fetchConferenceData(conferenceApiModel, this);
             });
 
             final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -124,6 +99,22 @@ public class SelectorActivity extends BaseActivity implements
 
     @Override
     public void onConferencesError() {
-        // TODO Do something.
+        hideLoader();
+    }
+
+    @Override
+    public void onConferenceDataStart() {
+        showLoader();
+    }
+
+    @Override
+    public void onConferenceDataAvailable() {
+        hideLoader();
+        navigateToHome();
+    }
+
+    @Override
+    public void onConferenceDataError() {
+        hideLoader();
     }
 }

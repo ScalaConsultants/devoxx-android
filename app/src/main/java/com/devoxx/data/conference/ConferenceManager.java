@@ -1,8 +1,13 @@
 package com.devoxx.data.conference;
 
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.devoxx.data.RealmProvider;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.downloader.ConferenceDownloader;
+import com.devoxx.data.downloader.TracksDownloader;
+import com.devoxx.data.manager.SlotsDataManager;
+import com.devoxx.data.manager.SpeakersDataManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 
 import org.androidannotations.annotations.Background;
@@ -19,55 +24,115 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import io.realm.Realm;
+
 @EBean(scope = EBean.Scope.Singleton)
 public class ConferenceManager {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
-    public interface IOnConferencesAvailableListener {
+    public interface IConferencesListener {
+
+        void onConferencesDataStart();
+
         void onConferencesAvailable(List<ConferenceApiModel> conferenceS);
 
         void onConferencesError();
     }
 
-    @Bean
-    ScheduleFilterManager scheduleFilterManager;
+    public interface IConferenceDataListener {
+        void onConferenceDataStart();
+
+        void onConferenceDataAvailable();
+
+        void onConferenceDataError();
+    }
 
     @Bean
     ConferenceDownloader conferenceDownloader;
 
+    @Bean
+    ScheduleFilterManager scheduleFilterManager;
+
+    @Bean
+    SlotsDataManager slotsDataManager;
+
+    @Bean
+    SpeakersDataManager speakersDataManager;
+
+    @Bean
+    TracksDownloader tracksDownloader;
+
+    @Bean
+    RealmProvider realmProvider;
+
     @Background
-    public void fetchAvailableConferences(IOnConferencesAvailableListener listener) {
+    public void fetchAvailableConferences(IConferencesListener listener) {
         try {
+            notifyConferencesListenerAboutStart(listener);
             final List<ConferenceApiModel> conferences = conferenceDownloader.fetchAllConferences();
-            notifyConferencesAvailableListenerAboutSuccess(listener, conferences);
+            notifyConferencesListenerSuccess(listener, conferences);
         } catch (IOException e) {
-            notifyConferencesAvailableListenerAboutError(listener);
+            notifyConferencesListenerError(listener);
         }
     }
 
     @UiThread
-    void notifyConferencesAvailableListenerAboutSuccess(
-            IOnConferencesAvailableListener listener, List<ConferenceApiModel> list) {
+    void notifyConferencesListenerAboutStart(IConferencesListener listener) {
+        listener.onConferencesDataStart();
+    }
+
+    @UiThread
+    void notifyConferencesListenerSuccess(
+            IConferencesListener listener, List<ConferenceApiModel> list) {
         listener.onConferencesAvailable(list);
     }
 
     @UiThread
-    void notifyConferencesAvailableListenerAboutError(
-            IOnConferencesAvailableListener listener) {
+    void notifyConferencesListenerError(
+            IConferencesListener listener) {
         listener.onConferencesError();
     }
 
-    public void fetchConferenceData(ConferenceApiModel conferenceApiModel) {
-        // TODO Download speakers.
-        // TODO Download talks.
-        // TODO Download tracks.
-        final List<ConferenceDay> conferenceDays = getConferenceDays();
-        scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
+    @Background
+    public void fetchConferenceData(
+            ConferenceApiModel conferenceApiModel,
+            IConferenceDataListener listener) {
+        saveActiveConference(conferenceApiModel);
+
+        final String confCode = conferenceApiModel.id;
+        try {
+            notifyConferenceListenerStart(listener);
+            tracksDownloader.downloadTracksDescriptions(confCode);
+            slotsDataManager.fetchTalksSync(confCode);
+            speakersDataManager.fetchSpeakersSync(confCode);
+            final List<ConferenceDay> conferenceDays = getConferenceDays();
+            scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
+            notifyConferenceListenerSuccess(listener);
+        } catch (IOException e) {
+            notifyConferenceListenerError(listener);
+        }
+    }
+
+    @UiThread
+    void notifyConferenceListenerStart(IConferenceDataListener listener) {
+        listener.onConferenceDataStart();
+    }
+
+    @UiThread
+    void notifyConferenceListenerSuccess(IConferenceDataListener listener) {
+        listener.onConferenceDataAvailable();
+    }
+
+    @UiThread
+    void notifyConferenceListenerError(IConferenceDataListener listener) {
+        listener.onConferenceDataError();
     }
 
     public List<ConferenceDay> getConferenceDays() {
-        // TODO Test values.
+        final RealmConference realmConference = getActiveConference();
+
+        // TODO Take dates from model!
         final String fromDate = "2015-11-09T01:00:00.000Z";
         final String toDate = "2015-11-13T23:00:00.000Z";
         final DateTime fromConfDate = convertStringDate(fromDate);
@@ -82,6 +147,22 @@ public class ConferenceManager {
                     tmpDate.dayOfWeek().getAsText(Locale.getDefault())));
         }
 
+        return result;
+    }
+
+    private void saveActiveConference(ConferenceApiModel conferenceApiModel) {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.allObjects(RealmConference.class).clear();
+        realm.copyToRealmOrUpdate(new RealmConference(conferenceApiModel));
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    private RealmConference getActiveConference() {
+        final Realm realm = realmProvider.getRealm();
+        final RealmConference result = realm.where(RealmConference.class).findFirst();
+        realm.close();
         return result;
     }
 

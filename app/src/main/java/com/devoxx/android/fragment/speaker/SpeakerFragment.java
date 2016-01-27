@@ -1,18 +1,5 @@
 package com.devoxx.android.fragment.speaker;
 
-import com.annimon.stream.Optional;
-import com.devoxx.android.activity.BaseActivity;
-import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem;
-import com.devoxx.connection.model.TalkSpeakerApiModel;
-import com.devoxx.data.manager.SlotsDataManager;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -25,24 +12,33 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.annimon.stream.Optional;
+import com.devoxx.R;
+import com.devoxx.android.activity.BaseActivity;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.activity.TalkDetailsHostActivity_;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.android.view.speaker.SpeakerDetailsHeader;
-
+import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem;
 import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem_;
 import com.devoxx.connection.model.SlotApiModel;
-
+import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.data.Settings_;
-
+import com.devoxx.data.manager.AbstractDataManager;
+import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
-import com.devoxx.R;
+import com.devoxx.utils.InfoUtil;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
+import java.util.List;
 
 @EFragment(R.layout.fragment_speaker)
 public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
@@ -54,6 +50,9 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     @Bean
     SlotsDataManager slotsDataManager;
+
+    @Bean
+    InfoUtil infoUtil;
 
     @Pref
     Settings_ settings;
@@ -116,31 +115,29 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
             uuid = speakerUuid;
         }
 
-        final Subscriber<RealmSpeaker> s = new Subscriber<RealmSpeaker>() {
-            @Override
-            public void onStart() {
-                super.onStart();
-            }
+        speakersDataManager.fetchSpeakerAsync(settings.activeConferenceCode().get(), uuid,
+                new AbstractDataManager.IDataManagerListener<RealmSpeaker>() {
+                    @Override
+                    public void onDataStartFetching() {
 
-            @Override
-            public void onCompleted() {
-                realmSpeaker = speakersDataManager.getByUuid(uuid);
-                setupView();
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-            }
+                    @Override
+                    public void onDataAvailable(List<RealmSpeaker> items) {
+                        throw new IllegalStateException("Should not be here!");
+                    }
 
-            @Override
-            public void onNext(RealmSpeaker o) {
+                    @Override
+                    public void onDataAvailable(RealmSpeaker item) {
+                        realmSpeaker = speakersDataManager.getByUuid(uuid);
+                        setupView();
+                    }
 
-            }
-        };
-
-        speakersDataManager.fetchSpeaker(settings.activeConferenceCode().get(), uuid)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(s);
+                    @Override
+                    public void onDataError() {
+                        infoUtil.showToast("Something went wrong...");
+                    }
+                });
     }
 
     private void setupView() {

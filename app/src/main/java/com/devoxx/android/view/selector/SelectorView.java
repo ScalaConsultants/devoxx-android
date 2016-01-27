@@ -13,6 +13,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.devoxx.R;
+import com.devoxx.connection.cfp.model.ConferenceApiModel;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -70,7 +71,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
         setWillNotDraw(false);
     }
 
-    public void addNewItem() {
+    public void addNewItem(ConferenceApiModel conferenceApiModel) {
         final int index = getChildCount();
 
         final View view = new View(getContext());
@@ -99,6 +100,10 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+
+        if (!isAnyChild()) {
+            return;
+        }
 
         final int size = getChildCount();
 
@@ -211,6 +216,10 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
                 child.setBackground(itemActiveBackground);
             }
         }
+    }
+
+    private boolean isAnyChild() {
+        return getChildCount() > 0;
     }
 
     private int calculateArcStep() {

@@ -36,25 +36,19 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
     @Bean
     Connection connection;
 
-    @Background
-    public void downloadTracksDescriptions(String confCode) {
+    public void downloadTracksDescriptions(String confCode) throws IOException {
         final Call<TracksApiModel> tracksCall = connection.getDevoxxApi().tracks(confCode);
         final Realm realm = realmProvider.getRealm();
-        try {
-            final Response<TracksApiModel> response = tracksCall.execute();
-            final TracksApiModel tracksApiModel = response.body();
-            realm.beginTransaction();
-            for (TrackApiModel apiModel : tracksApiModel.tracks) {
-                realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
-            }
-            realm.commitTransaction();
-
-            final List<RealmTrack> tracks = realm.allObjects(RealmTrack.class);
-            scheduleFilterManager.createTrackFiltersDefinition(tracks);
-        } catch (IOException e) {
-            Logger.exc(e);
-            realm.cancelTransaction();
+        final Response<TracksApiModel> response = tracksCall.execute();
+        final TracksApiModel tracksApiModel = response.body();
+        realm.beginTransaction();
+        for (TrackApiModel apiModel : tracksApiModel.tracks) {
+            realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
         }
+        realm.commitTransaction();
+
+        final List<RealmTrack> tracks = realm.allObjects(RealmTrack.class);
+        scheduleFilterManager.createTrackFiltersDefinition(tracks);
 
         realm.close();
     }

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.realm.Realm;
+
 import com.devoxx.data.DataInformation_;
 
 import com.devoxx.data.cache.SpeakerCache;
@@ -38,39 +39,37 @@ public class SpeakersDownloader extends AbstractDownloader<SpeakerShortApiModel>
     @Pref
     DataInformation_ dataInformation;
 
-    public void downloadSpeakerSync(final String confCode, final String uuid) throws IOException {
+    public RealmSpeaker downloadSpeakerSync(final String confCode, final String uuid) throws IOException {
+        final RealmSpeaker result;
         if (!speakerCache.isValid(uuid)) {
             final DevoxxApi devoxxApi = connection.getDevoxxApi();
-            final Realm realm = realmProvider.getRealm();
 
             final Call<ResponseBody> callSpeaker = devoxxApi.speaker(confCode, uuid);
             final String rawModel = callSpeaker.execute().body().string();
             speakerCache.upsert(rawModel, uuid);
 
+            final Realm realm = realmProvider.getRealm();
             realm.beginTransaction();
-            realm.createOrUpdateObjectFromJson(
-                    RealmSpeaker.class, rawModel);
+            result = realm.createOrUpdateObjectFromJson(RealmSpeaker.class, rawModel);
             realm.commitTransaction();
             realm.close();
+        } else {
+            final Realm realm = realmProvider.getRealm();
+            result = realm.where(RealmSpeaker.class).equalTo("uuid", uuid).findFirst();
+            realm.close();
         }
+        return result;
     }
 
-    public void downloadSpeakersShortInfoList(
-            final String confCode) throws IOException {
-
+    public List<SpeakerShortApiModel> downloadSpeakersShortInfoList(final String confCode) throws IOException {
         final List<SpeakerShortApiModel> speakers;
         if (speakersCache.isValid()) {
             speakers = speakersCache.getData();
         } else {
-            try {
-                final DevoxxApi devoxxApi = connection.getDevoxxApi();
-                final Call<List<SpeakerShortApiModel>> call = devoxxApi.speakers(confCode);
-                speakers = call.execute().body();
-                speakersCache.upsert(speakers);
-            } catch (IOException e) {
-                Logger.exc(e);
-                throw e;
-            }
+            final DevoxxApi devoxxApi = connection.getDevoxxApi();
+            final Call<List<SpeakerShortApiModel>> call = devoxxApi.speakers(confCode);
+            speakers = call.execute().body();
+            speakersCache.upsert(speakers);
         }
 
         final Realm realm = realmProvider.getRealm();
@@ -81,5 +80,7 @@ public class SpeakersDownloader extends AbstractDownloader<SpeakerShortApiModel>
         }
         realm.commitTransaction();
         realm.close();
+
+        return speakers;
     }
 }

@@ -1,10 +1,12 @@
 package com.devoxx.data.manager;
 
+import com.devoxx.connection.model.SpeakerShortApiModel;
 import com.devoxx.data.RealmProvider;
+import com.devoxx.data.downloader.SpeakersDownloader;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmSpeakerShort;
-import com.devoxx.utils.Logger;
 
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
@@ -12,11 +14,6 @@ import java.io.IOException;
 import java.util.List;
 
 import io.realm.Realm;
-
-import com.devoxx.data.downloader.SpeakersDownloader;
-
-import rx.Observable;
-import rx.Subscriber;
 
 @EBean
 public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
@@ -27,40 +24,22 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
     @Bean
     RealmProvider realmProvider;
 
-    public Observable<Void> fetchSpeakersShortInfo(final String confCode) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> observer) {
-                if (!observer.isUnsubscribed()) {
-                    try {
-                        observer.onStart();
-                        speakersDownloader.downloadSpeakersShortInfoList(confCode);
-                        observer.onCompleted();
-                    } catch (IOException e) {
-                        Logger.exc(e);
-                        observer.onError(e);
-                    }
-                }
-            }
-        });
+    public List<SpeakerShortApiModel> fetchSpeakersSync(final String confCode) throws IOException {
+        return speakersDownloader.downloadSpeakersShortInfoList(confCode);
     }
 
-    public Observable<RealmSpeaker> fetchSpeaker(final String confCode, final String uuid) {
-        return Observable.create(new Observable.OnSubscribe<RealmSpeaker>() {
-            @Override
-            public void call(Subscriber<? super RealmSpeaker> observer) {
-                if (!observer.isUnsubscribed()) {
-                    try {
-                        observer.onStart();
-                        speakersDownloader.downloadSpeakerSync(confCode, uuid);
-                        observer.onCompleted();
-                    } catch (IOException e) {
-                        Logger.exc(e);
-                        observer.onError(e);
-                    }
-                }
-            }
-        });
+    @Background
+    public void fetchSpeakerAsync(
+            final String confCode, final String uuid,
+            final IDataManagerListener<RealmSpeaker> listener) {
+        try {
+            notifyAboutStart(listener);
+            final RealmSpeaker speaker = speakersDownloader
+                    .downloadSpeakerSync(confCode, uuid);
+            notifyAboutSuccess(listener, speaker);
+        } catch (IOException e) {
+            notifyAboutFailed(listener);
+        }
     }
 
     public RealmSpeaker getByUuid(String uuid) {

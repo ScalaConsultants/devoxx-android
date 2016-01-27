@@ -1,24 +1,5 @@
 package com.devoxx.android.fragment.speaker;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-import com.annimon.stream.function.Function;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.data.RealmProvider;
-import com.devoxx.data.model.RealmSpeakerShort;
-
-import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.SystemService;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import android.app.SearchManager;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -38,21 +19,34 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Function;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.devoxx.R;
+import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
+import com.devoxx.android.fragment.common.BaseFragment;
+import com.devoxx.data.RealmProvider;
+import com.devoxx.data.Settings_;
+import com.devoxx.data.manager.SpeakersDataManager;
+import com.devoxx.data.model.RealmSpeakerShort;
+import com.devoxx.utils.InfoUtil;
+
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
-import com.devoxx.android.fragment.common.BaseFragment;
-
-import com.devoxx.data.Settings_;
-import com.devoxx.data.manager.SpeakersDataManager;
-import com.devoxx.utils.InfoUtil;
-import com.devoxx.R;
-
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @EFragment(R.layout.fragment_speakers)
 public class SpeakersFragment extends BaseFragment {
@@ -106,32 +100,9 @@ public class SpeakersFragment extends BaseFragment {
 
         listView.setAdapter(itemAdapter);
 
-        final Subscriber<Void> subscriber = new Subscriber<Void>() {
-            @Override
-            public void onCompleted() {
-                final List<RealmSpeakerShort> speakers =
-                        speakersDataManager.getAllShortSpeakers();
-                populateList(speakers);
-                hideProgress();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                hideProgress();
-            }
-
-            @Override
-            public void onNext(Void aVoid) {
-                // Nothing.
-            }
-        };
-
-        speakersDataManager.fetchSpeakersShortInfo(settings.activeConferenceCode().get())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(this::showProgress)
-                .doOnError(throwable -> infoUtil.showToast(R.string.connection_error))
-                .subscribe(subscriber);
+        final List<RealmSpeakerShort> speakers =
+                speakersDataManager.getAllShortSpeakers();
+        populateList(speakers);
 
         listView.setOnItemClickListener((parent, view, position, id) ->
                 SpeakerDetailsHostActivity_.intent(getContext())
