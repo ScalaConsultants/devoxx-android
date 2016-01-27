@@ -52,7 +52,6 @@ public class SelectorActivity extends BaseActivity implements
 
     @AfterViews
     void afterViews() {
-        connection.warmUpCfpApi();
         conferenceManager.fetchAvailableConferences(this);
     }
 

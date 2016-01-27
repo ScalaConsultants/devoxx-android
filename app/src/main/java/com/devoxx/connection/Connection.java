@@ -10,6 +10,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -31,15 +32,9 @@ public class Connection {
     private DevoxxApi devoxxApi;
     private CfpApi cfpApi;
 
-    public void warmUpCfpApi() {
-        final OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(new LoggingInterceptor());
-        final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Configuration.CFP_API_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        cfpApi = retrofit.create(CfpApi.class);
+    @AfterInject
+    void afterInject() {
+        initiCfpApi();
     }
 
     public void setupConferenceApi(String conferenceEndpoint) {
@@ -67,6 +62,17 @@ public class Connection {
 
     public String getActiveConferenceApiUrl() {
         return connectionConfigurationStore.activeConferenceApiUrl().get();
+    }
+
+    private void initiCfpApi() {
+        final OkHttpClient client = new OkHttpClient();
+        client.interceptors().add(new LoggingInterceptor());
+        final Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Configuration.CFP_API_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        cfpApi = retrofit.create(CfpApi.class);
     }
 
     class LoggingInterceptor implements Interceptor {
