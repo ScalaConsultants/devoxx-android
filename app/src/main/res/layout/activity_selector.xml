@@ -7,40 +7,30 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <TextView
+        <Button
+            android:id="@+id/selectorGo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EVENT_SELECTOR"/>
+            android:text="GO"/>
 
         <ProgressBar
             android:id="@+id/homeProgressBar"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="@dimen/progressbar_size"
             android:layout_height="@dimen/progressbar_size"
-            android:layout_marginTop="@dimen/progressbar_size"
             android:visibility="invisible"/>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/conferencesChooser"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-
-        </ScrollView>
 
     </LinearLayout>
 
     <com.devoxx.android.view.selector.SelectorView_
         android:id="@+id/selectorWheel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
 
 </FrameLayout>

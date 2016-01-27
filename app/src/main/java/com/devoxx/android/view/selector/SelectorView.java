@@ -1,6 +1,7 @@
 package com.devoxx.android.view.selector;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
 import com.devoxx.R;
@@ -28,7 +30,13 @@ import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
 
 @EViewGroup
-public class SelectorView extends FrameLayout implements View.OnClickListener, Animator.AnimatorListener {
+public class SelectorView extends FrameLayout implements View.OnClickListener {
+
+    public interface IWheelItemActionListener {
+        void onWheelItemSelected(ConferenceApiModel data);
+
+        void onWheelItemClicked(ConferenceApiModel data);
+    }
 
     private static final int LAYOUTING_ARC_START_DEG = -90;
     private static final int FULL_CIRCLE_DEG = 360;
@@ -54,6 +62,8 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
     @IntegerRes(android.R.integer.config_mediumAnimTime)
     int rotateAnimationTime;
 
+    private IWheelItemActionListener listener;
+
     private Paint mainCirclePaint;
 
     private int centerX, centerY;
@@ -74,12 +84,17 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
     public void addNewItem(ConferenceApiModel conferenceApiModel) {
         final int index = getChildCount();
 
-        final View view = new View(getContext());
+        final SelectorItemView view = SelectorItemView_.build(getContext());
+        view.setupLabel(conferenceApiModel.country);
         view.setBackground(itemInactiveBackground);
         view.setOnClickListener(this);
-        view.setTag(new ItemViewInfo(index, index == 0));
+        view.setTag(new ItemViewInfo(index, index == 0, conferenceApiModel));
 
         addView(view, createLayoutParams());
+    }
+
+    public void setListener(IWheelItemActionListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -109,6 +124,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
 
         int arcStart = LAYOUTING_ARC_START_DEG;
         int arcStep = calculateArcStep();
+        int childRotation = 0;
 
         for (int i = 0; i < size; i++) {
             final View child = getChildAt(i);
@@ -121,7 +137,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
             final int newChY = (int) (centerY + globalCircleRadius * sin(toRadians(arcStart)));
 
             child.layout(newChX - hW, newChY - hH, newChX + hW, newChY + hH);
+            child.setRotation(childRotation);
 
+            childRotation += arcStep;
             arcStart += arcStep;
         }
     }
@@ -156,9 +174,20 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
     @Override
     public void onClick(View clickedView) {
         final ItemViewInfo clickedViewInfo = (ItemViewInfo) clickedView.getTag();
-        if (animationGuard || clickedViewInfo.isActive()) {
+
+        if (clickedViewInfo.isActive()) {
+            listener.onWheelItemSelected(clickedViewInfo.getData());
+            animateClickedViewIfNeeded(clickedView);
             return;
         }
+
+        if (animationGuard) {
+            return;
+        }
+
+        defaultApperance();
+
+        listener.onWheelItemClicked(clickedViewInfo.getData());
 
         final int clickedViewOldIndex = clickedViewInfo.getIndex();
 
@@ -177,8 +206,43 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
         clearAnimation();
         animate().rotation(getRotation() + calculateArcStep() * steps).setDuration(rotateAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setListener(this)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        animationGuard = true;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        listener.onWheelItemSelected(clickedViewInfo.data);
+                        animationGuard = false;
+
+                        animateClickedViewIfNeeded(clickedView);
+                    }
+                })
                 .start();
+    }
+
+    private void animateClickedViewIfNeeded(View clickedView) {
+        clickedView.clearAnimation();
+
+        if (clickedView.getScaleX() == 1f) {
+            clickedView.animate().scaleY(1.5f).scaleX(1.5f)
+                    .setInterpolator(new OvershootInterpolator(1.5f))
+                    .setDuration(350)
+                    .start();
+        }
+    }
+
+    private void defaultApperance() {
+        final int size = getChildCount();
+        for (int i = 0; i < size; i++) {
+            final View child = getChildAt(i);
+            child.clearAnimation();
+            if (child.getScaleX() > 1f) {
+                child.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+            }
+        }
     }
 
     private void recalculateIndexes(View clickedView, int steps) {
@@ -230,33 +294,15 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
         return new LayoutParams(itemCircleSize, itemCircleSize);
     }
 
-    @Override
-    public void onAnimationStart(Animator animation) {
-        animationGuard = true;
-    }
-
-    @Override
-    public void onAnimationEnd(Animator animation) {
-        animationGuard = false;
-    }
-
-    @Override
-    public void onAnimationCancel(Animator animation) {
-        // Nothing.
-    }
-
-    @Override
-    public void onAnimationRepeat(Animator animation) {
-        // Nothing.
-    }
-
     private static class ItemViewInfo {
         private int index;
         private boolean isActive;
+        private ConferenceApiModel data;
 
-        public ItemViewInfo(int index, boolean isActive) {
+        public ItemViewInfo(int index, boolean isActive, ConferenceApiModel data) {
             this.index = index;
             this.isActive = isActive;
+            this.data = data;
         }
 
         public int getIndex() {
@@ -275,6 +321,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener, A
             isActive = active;
         }
 
+        public ConferenceApiModel getData() {
+            return data;
+        }
 
         @Override
         public String toString() {

@@ -1,10 +1,7 @@
 package com.devoxx.android.activity;
 
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.devoxx.R;
 import com.devoxx.android.view.selector.SelectorView;
@@ -16,6 +13,7 @@ import com.devoxx.data.conference.ConferenceManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -24,7 +22,7 @@ import java.util.List;
 
 @EActivity(R.layout.activity_selector)
 public class SelectorActivity extends BaseActivity implements ConferenceManager.IConferencesListener,
-        ConferenceManager.IConferenceDataListener {
+        ConferenceManager.IConferenceDataListener, SelectorView.IWheelItemActionListener {
 
     @Bean
     ConferenceManager conferenceManager;
@@ -41,18 +39,26 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @ViewById(R.id.homeProgressBar)
     ProgressBar progressBar;
 
-    @ViewById(R.id.conferencesChooser)
-    LinearLayout container;
-
     @ViewById(R.id.selectorWheel)
     SelectorView selectorView;
 
+    private ConferenceApiModel lastSelectedConference;
+
     @AfterViews
     void afterViews() {
-        // TODO Create items from conferences!
         conferenceManager.fetchAvailableConferences(this);
+        selectorView.setListener(this);
     }
 
+    @Click(R.id.selectorGo)
+    void onGoClick() {
+        final String confCode = lastSelectedConference.id;
+        settings.edit().activeConferenceCode().put(confCode).apply();
+
+        connection.setupConferenceApi(lastSelectedConference.cfpURL);
+        voteConnection.setupApi(lastSelectedConference.votingURL);
+        conferenceManager.fetchConferenceData(lastSelectedConference, this);
+    }
 
     public void showLoader() {
         progressBar.setVisibility(View.VISIBLE);
@@ -74,27 +80,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferencesAvailable(List<ConferenceApiModel> conferences) {
-        hideLoader();
-
-        // TODO Dev list.
-        for (ConferenceApiModel conferenceApiModel : conferences) {
-            selectorView.addNewItem(conferenceApiModel);
-
-            final TextView textView = new TextView(this);
-            textView.setText(conferenceApiModel.cfpURL);
-            textView.setOnClickListener(v -> {
-                final String confCode = conferenceApiModel.id;
-                settings.edit().activeConferenceCode().put(confCode).apply();
-
-                connection.setupConferenceApi(conferenceApiModel.cfpURL);
-                voteConnection.setupApi(conferenceApiModel.votingURL);
-                conferenceManager.fetchConferenceData(conferenceApiModel, this);
-            });
-
-            final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            container.addView(textView, lp);
+        for (ConferenceApiModel conference : conferences) {
+            selectorView.addNewItem(conference);
         }
+        hideLoader();
     }
 
     @Override
@@ -116,5 +105,15 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Override
     public void onConferenceDataError() {
         hideLoader();
+    }
+
+    @Override
+    public void onWheelItemSelected(ConferenceApiModel data) {
+        lastSelectedConference = data;
+    }
+
+    @Override
+    public void onWheelItemClicked(ConferenceApiModel data) {
+        // Nothing here.
     }
 }
