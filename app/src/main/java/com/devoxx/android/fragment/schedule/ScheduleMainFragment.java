@@ -1,23 +1,5 @@
 package com.devoxx.android.fragment.schedule;
 
-import com.devoxx.android.activity.AboutActivity;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.TalkDetailsHostActivity;
-import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
-import com.devoxx.android.dialog.FiltersDialog;
-import com.devoxx.data.conference.model.ConferenceDay;
-import com.devoxx.data.manager.SlotsDataManager;
-import com.devoxx.data.schedule.filter.ScheduleFilterManager;
-import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.SystemService;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.ColorRes;
-
 import android.app.SearchManager;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
@@ -28,14 +10,30 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.devoxx.R;
+import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.TalkDetailsHostActivity;
+import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
+import com.devoxx.android.dialog.FiltersDialog;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.conference.model.ConferenceDay;
+import com.devoxx.data.manager.SlotsDataManager;
+import com.devoxx.data.schedule.filter.ScheduleFilterManager;
+import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
-import com.devoxx.R;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.ColorRes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @EFragment(R.layout.fragment_schedules)
 public class ScheduleMainFragment extends BaseFragment
