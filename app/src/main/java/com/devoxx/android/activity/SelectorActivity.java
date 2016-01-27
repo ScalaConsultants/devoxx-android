@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.devoxx.R;
+import com.devoxx.android.view.selector.SelectorView;
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.connection.model.SlotApiModel;
@@ -35,6 +36,12 @@ public class SelectorActivity extends BaseActivity implements
     @Bean
     ConferenceManager conferenceManager;
 
+    @Bean
+    Connection connection;
+
+    @Bean
+    VoteConnection voteConnection;
+
     @Pref
     Settings_ settings;
 
@@ -44,14 +51,17 @@ public class SelectorActivity extends BaseActivity implements
     @ViewById(R.id.conferencesChooser)
     LinearLayout container;
 
-    @Bean
-    Connection connection;
-
-    @Bean
-    VoteConnection voteConnection;
+    @ViewById(R.id.selectorWheel)
+    SelectorView selectorView;
 
     @AfterViews
     void afterViews() {
+        selectorView.addNewItem();
+        selectorView.addNewItem();
+        selectorView.addNewItem();
+        selectorView.addNewItem();
+        selectorView.addNewItem();
+
         conferenceManager.fetchAvailableConferences(this);
     }
 
