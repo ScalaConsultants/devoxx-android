@@ -59,6 +59,9 @@ public class ConferenceManager {
     }
 
     public void fetchConferenceData(ConferenceApiModel conferenceApiModel) {
+        // TODO Download speakers.
+        // TODO Download talks.
+        // TODO Download tracks.
         final List<ConferenceDay> conferenceDays = getConferenceDays();
         scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
     }

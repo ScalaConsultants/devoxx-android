@@ -106,8 +106,7 @@ public class SelectorActivity extends BaseActivity implements
             final TextView textView = new TextView(this);
             textView.setText(conferenceApiModel.cfpURL);
             textView.setOnClickListener(v -> {
-                // TODO Back with proper ID.
-                final String confCode = "DV15"; //conferenceApiModel.id;
+                final String confCode = conferenceApiModel.id;
                 settings.edit().activeConferenceCode().put(confCode).apply();
 
                 connection.setupConferenceApi(conferenceApiModel.cfpURL);
