@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -37,5 +37,10 @@
         </ScrollView>
 
     </LinearLayout>
+
+    <com.devoxx.android.view.selector.SelectorView_
+        android:id="@+id/selectorWheel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </FrameLayout>
