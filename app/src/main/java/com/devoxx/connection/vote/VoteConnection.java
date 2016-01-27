@@ -19,7 +19,7 @@ import com.devoxx.Configuration;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class VoteConnection {
 
     @RootContext
@@ -27,17 +27,12 @@ public class VoteConnection {
 
     private VoteApi voteApi;
 
-    @AfterInject
-    void afterInject() {
-        setupApi();
-    }
-
-    private void setupApi() {
+    public void setupApi(String apiUrl) {
         final OkHttpClient client = new OkHttpClient();
         client.interceptors().add(new LoggingInterceptor());
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Configuration.API_URL)
+                .baseUrl(apiUrl)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

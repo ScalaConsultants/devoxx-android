@@ -16,12 +16,6 @@
             android:layout_height="wrap_content"
             android:text="EVENT_SELECTOR"/>
 
-        <Button
-            android:id="@+id/selectorGo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/go"/>
-
         <ProgressBar
             android:id="@+id/homeProgressBar"
             style="?android:attr/progressBarStyleLarge"
@@ -29,6 +23,18 @@
             android:layout_height="@dimen/progressbar_size"
             android:layout_marginTop="@dimen/progressbar_size"
             android:visibility="invisible"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/conferencesChooser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+        </ScrollView>
 
     </LinearLayout>
 

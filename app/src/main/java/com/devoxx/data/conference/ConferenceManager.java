@@ -1,33 +1,64 @@
 package com.devoxx.data.conference;
 
+import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.data.conference.model.ConferenceDay;
+import com.devoxx.data.downloader.ConferenceDownloader;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.UiThread;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class ConferenceManager {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
+    public interface IOnConferencesAvailableListener {
+        void onConferencesAvailable(List<ConferenceApiModel> conferenceS);
+
+        void onConferencesError();
+    }
+
     @Bean
     ScheduleFilterManager scheduleFilterManager;
 
-    public void fetchAvailableConferences() {
-        // TODO TBD, download cfp.json from the server!
+    @Bean
+    ConferenceDownloader conferenceDownloader;
+
+    @Background
+    public void fetchAvailableConferences(IOnConferencesAvailableListener listener) {
+        try {
+            final List<ConferenceApiModel> conferences = conferenceDownloader.fetchAllConferences();
+            notifyConferencesAvailableListenerAboutSuccess(listener, conferences);
+        } catch (IOException e) {
+            notifyConferencesAvailableListenerAboutError(listener);
+        }
     }
 
-    public void fetchConferenceData(String confCode) {
-        // TODO TBD
+    @UiThread
+    void notifyConferencesAvailableListenerAboutSuccess(
+            IOnConferencesAvailableListener listener, List<ConferenceApiModel> list) {
+        listener.onConferencesAvailable(list);
+    }
+
+    @UiThread
+    void notifyConferencesAvailableListenerAboutError(
+            IOnConferencesAvailableListener listener) {
+        listener.onConferencesError();
+    }
+
+    public void fetchConferenceData(ConferenceApiModel conferenceApiModel) {
         final List<ConferenceDay> conferenceDays = getConferenceDays();
         scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
     }
@@ -39,11 +70,10 @@ public class ConferenceManager {
         final DateTime fromConfDate = convertStringDate(fromDate);
         final DateTime toConfDate = convertStringDate(toDate);
 
-        final int daysSpan = Days.daysBetween(
-                fromConfDate.toLocalDate(), toConfDate.toLocalDate()).getDays();
+        final int daysSpan = Days.daysBetween(fromConfDate, toConfDate).getDays();
 
-        final List<ConferenceDay> result = new ArrayList<>(daysSpan);
-        for (int i = 0; i < daysSpan; i++) {
+        final List<ConferenceDay> result = new ArrayList<>(daysSpan + 1 /* include days */);
+        for (int i = 0; i <= daysSpan; i++) {
             final DateTime tmpDate = fromConfDate.plusDays(i);
             result.add(new ConferenceDay(tmpDate.getMillis(),
                     tmpDate.dayOfWeek().getAsText(Locale.getDefault())));
