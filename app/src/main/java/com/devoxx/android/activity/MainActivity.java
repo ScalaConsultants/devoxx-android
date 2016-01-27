@@ -1,18 +1,5 @@
 package com.devoxx.android.activity;
 
-import com.annimon.stream.Optional;
-import com.annimon.stream.Stream;
-import com.devoxx.data.manager.NotificationsManager;
-import com.devoxx.data.manager.SlotsDataManager;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.sharedpreferences.Pref;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,17 +11,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import java.util.List;
-
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+import com.devoxx.R;
+import com.devoxx.android.fragment.map.MapMainFragment_;
 import com.devoxx.android.fragment.schedule.ScheduleMainFragment_;
 import com.devoxx.android.fragment.speaker.SpeakersFragment_;
 import com.devoxx.android.fragment.track.TracksMainFragment_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.Settings_;
-
+import com.devoxx.data.manager.NotificationsManager;
+import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.utils.InfoUtil;
-import com.devoxx.R;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.ColorRes;
+import org.androidannotations.annotations.sharedpreferences.Pref;
+
+import java.util.List;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity {
@@ -110,7 +109,7 @@ public class MainActivity extends BaseActivity {
                 replaceFragment(SpeakersFragment_.builder().build(), false);
                 break;
             case R.id.menu_map:
-                infoUtil.showToast("TBD");
+                replaceFragment(MapMainFragment_.builder().build(), false);
                 break;
         }
     }

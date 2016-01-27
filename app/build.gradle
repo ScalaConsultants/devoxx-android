@@ -127,6 +127,8 @@ dependencies {
         transitive = true
     }
 
+    compile 'com.commit451:PhotoView:1.2.4'
+
     compile project(path: ':scanner')
 }
 
