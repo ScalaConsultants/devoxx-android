@@ -17,7 +17,7 @@ public class SettingsActivity extends BaseActivity {
 
     @AfterViews
     void afterViews() {
-        toolbar.setTitle("Settings");
+        toolbar.setTitle(R.string.settings);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
