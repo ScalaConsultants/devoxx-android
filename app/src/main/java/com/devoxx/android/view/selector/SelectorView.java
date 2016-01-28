@@ -25,6 +25,8 @@ import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
 import org.androidannotations.annotations.res.DrawableRes;
 import org.androidannotations.annotations.res.IntegerRes;
 
+import java.util.List;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
@@ -81,16 +83,12 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         setWillNotDraw(false);
     }
 
-    public void addNewItem(ConferenceApiModel conferenceApiModel) {
-        final int index = getChildCount();
-
-        final SelectorItemView view = SelectorItemView_.build(getContext());
-        view.setupLabel(conferenceApiModel.country);
-        view.setBackground(itemInactiveBackground);
-        view.setOnClickListener(this);
-        view.setTag(new ItemViewInfo(index, index == 0, conferenceApiModel));
-
-        addView(view, createLayoutParams());
+    public void prepareForConferences(List<ConferenceApiModel> conferences) {
+        for (ConferenceApiModel conference : conferences) {
+            addNewItem(conference);
+        }
+        // By default first button is selected.
+        onClick(getChildAt(0));
     }
 
     public void setListener(IWheelItemActionListener listener) {
@@ -152,6 +150,18 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
     private void drawMainCircle(Canvas canvas) {
         canvas.drawCircle(centerX, centerY, globalCircleRadius, mainCirclePaint);
+    }
+
+    private void addNewItem(ConferenceApiModel conferenceApiModel) {
+        final int index = getChildCount();
+
+        final SelectorItemView view = SelectorItemView_.build(getContext());
+        view.setupLabel(conferenceApiModel.country);
+        view.setBackground(itemInactiveBackground);
+        view.setOnClickListener(this);
+        view.setTag(new ItemViewInfo(index, index == 0, conferenceApiModel));
+
+        addView(view, createLayoutParams());
     }
 
     public SelectorView(Context context) {

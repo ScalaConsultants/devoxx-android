@@ -112,6 +112,11 @@ public class ScheduleMainFragment extends BaseFragment
         SettingsActivity_.intent(this).start();
     }
 
+    @OptionsItem(R.id.action_about)
+    void onAboutClick() {
+        AboutActivity_.intent(this).start();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
@@ -127,11 +132,6 @@ public class ScheduleMainFragment extends BaseFragment
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
         }
-    }
-
-    @OptionsItem(R.id.action_about)
-    void onAboutClick() {
-        AboutActivity_.intent(this).start();
     }
 
     private void setupSearchView(Menu menu) {

@@ -1,6 +1,7 @@
 package com.devoxx.data.model;
 
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.google.android.gms.maps.model.LatLng;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -50,6 +51,11 @@ public class RealmConference extends RealmObject {
         cfpEndpoint = model.cfpEndpoint;
         cfpVersion = model.cfpVersion;
         youTubeId = model.youTubeId;
+    }
+
+    public static LatLng getLocation(RealmConference conference) {
+        return new LatLng(Double.parseDouble(conference.getLatitude()),
+                Double.parseDouble(conference.getLongitude()));
     }
 
     public String getId() {

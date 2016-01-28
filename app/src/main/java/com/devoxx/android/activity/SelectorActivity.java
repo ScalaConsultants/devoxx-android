@@ -2,6 +2,7 @@ package com.devoxx.android.activity;
 
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.devoxx.R;
 import com.devoxx.android.view.selector.SelectorView;
@@ -41,6 +42,12 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @ViewById(R.id.selectorWheel)
     SelectorView selectorView;
+
+    @ViewById(R.id.selectorGo)
+    View goButton;
+
+    @ViewById(R.id.selectorCurrentConference)
+    TextView currentConferenceLabel;
 
     private ConferenceApiModel lastSelectedConference;
 
@@ -85,9 +92,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferencesAvailable(List<ConferenceApiModel> conferences) {
-        for (ConferenceApiModel conference : conferences) {
-            selectorView.addNewItem(conference);
-        }
+        selectorView.prepareForConferences(conferences);
         hideLoader();
     }
 
@@ -114,11 +119,13 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onWheelItemSelected(ConferenceApiModel data) {
+        currentConferenceLabel.setText(data.country);
         lastSelectedConference = data;
+        goButton.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onWheelItemClicked(ConferenceApiModel data) {
-        // Nothing here.
+        goButton.setVisibility(View.GONE);
     }
 }
