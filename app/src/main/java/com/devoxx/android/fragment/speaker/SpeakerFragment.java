@@ -24,6 +24,7 @@ import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.data.Settings_;
+import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.AbstractDataManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
@@ -53,6 +54,9 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     @Bean
     InfoUtil infoUtil;
+
+    @Bean
+    ConferenceManager conferenceManager;
 
     @Pref
     Settings_ settings;
@@ -115,7 +119,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
             uuid = speakerUuid;
         }
 
-        speakersDataManager.fetchSpeakerAsync(settings.activeConferenceCode().get(), uuid,
+        speakersDataManager.fetchSpeakerAsync(conferenceManager.getActiveConferenceId(), uuid,
                 new AbstractDataManager.IDataManagerListener<RealmSpeaker>() {
                     @Override
                     public void onDataStartFetching() {

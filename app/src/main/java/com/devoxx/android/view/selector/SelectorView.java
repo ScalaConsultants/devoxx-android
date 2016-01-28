@@ -84,6 +84,8 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     }
 
     public void prepareForConferences(List<ConferenceApiModel> conferences) {
+        clearView();
+
         for (ConferenceApiModel conference : conferences) {
             addNewItem(conference);
         }
@@ -302,6 +304,11 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
     private LayoutParams createLayoutParams() {
         return new LayoutParams(itemCircleSize, itemCircleSize);
+    }
+
+    private void clearView() {
+        removeAllViews();
+        setRotation(0);
     }
 
     private static class ItemViewInfo {
