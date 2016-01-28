@@ -101,7 +101,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         }
     }
 
-    public void setupFragment(SlotApiModel slot) {
+    public void setupFragment(SlotApiModel slot, boolean notifyParentAboutChange) {
         slotModel = slot;
         toolbarHeaderView.setupHeader(slot.talk.title, slot.talk.track);
         floatHeaderView.setupHeader(slot.talk.title, slot.talk.track);
@@ -109,6 +109,10 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         setupScheduleButton();
 
         fillSectionsContainer(slot);
+
+        if (notifyParentAboutChange) {
+            notifyHostActivityAboutChangeOccured();
+        }
     }
 
     private void notifyHostActivityAboutChangeOccured() {

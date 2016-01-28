@@ -24,6 +24,7 @@ import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.utils.InfoUtil;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -67,7 +68,7 @@ public class MainActivity extends BaseActivity {
     @ColorRes(R.color.tab_text_unselected)
     int unselectedTablColor;
 
-    private String incomingSlotId;
+    private String fromNotificationSlotId;
     private boolean isSavedInstanceState;
 
     @Override
@@ -79,8 +80,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         if (intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
-            incomingSlotId = intent.getStringExtra(
+            fromNotificationSlotId = intent.getStringExtra(
                     NotificationsManager.EXTRA_TALK_ID);
+            loadTalkFromNotification();
         }
     }
 
@@ -137,53 +139,48 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadCoreData() {
-        if (TextUtils.isEmpty(incomingSlotId)) {
+        onMainMenuClick(menuScheduleView);
+
+        if (TextUtils.isEmpty(fromNotificationSlotId)) {
             initIncomingSlotId();
         }
 
-        final boolean fromNotification = !TextUtils.isEmpty(incomingSlotId);
+        final boolean fromNotification = !TextUtils.isEmpty(fromNotificationSlotId);
         if (fromNotification) {
-            loadDataForNotificationOnColdStart();
-        } else {
-            onMainMenuClick(menuScheduleView);
+            loadTalkFromNotification();
         }
     }
 
     private void initIncomingSlotId() {
         final Intent intent = getIntent();
         if (intent != null && intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
-            incomingSlotId = intent.getStringExtra(
+            fromNotificationSlotId = intent.getStringExtra(
                     NotificationsManager.EXTRA_TALK_ID);
         }
     }
 
-    private void loadDataForNotificationOnColdStart() {
+    private void loadTalkFromNotification() {
         final List<SlotApiModel> items = slotsDataManager.getLastTalks();
         final Optional<SlotApiModel> optModel = Stream.of(items)
-                .filter(new SlotApiModel.SameModelPredicate(incomingSlotId))
+                .filter(new SlotApiModel.SameModelPredicate(fromNotificationSlotId))
                 .findFirst();
 
         if (optModel.isPresent()) {
-            setupTalkFragment(optModel.get());
+            final Fragment fr = getSupportFragmentManager()
+                    .findFragmentByTag(TAG_CONTENT_FRAGMENT);
+
+            final TalkDetailsHostActivity_.IntentBuilder_ ib;
+            if (fr == null) {
+                ib = TalkDetailsHostActivity_.intent(this);
+            } else {
+                ib = TalkDetailsHostActivity_.intent(fr);
+            }
+            ib.slotApiModel(optModel.get())
+                    .notifyAboutChange(true)
+                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
         } else {
-            // TODO
+            infoUtil.showToast(R.string.no_talk_foud);
         }
-    }
-
-    private void setupTalkFragment(SlotApiModel slotApiModel) {
-        // TODO
-//        final FragmentManager fm = getSupportFragmentManager();
-//        final Fragment talkFragment = fm.findFragmentByTag(TAG_CONTENT_FRAGMENT);
-//        if (talkFragment instanceof TalkFragment) {
-//            ((TalkFragment) talkFragment).setupViews(slotApiModel);
-//        } else {
-//            removeFragments();
-//            replaceFragment(TalkFragment_.builder().slotModel(slotApiModel).build());
-//        }
-    }
-
-    public void replaceFragment(Fragment fragment) {
-        replaceFragment(fragment, false, FragmentTransaction.TRANSIT_NONE);
     }
 
     public void replaceFragment(Fragment fragment, boolean addToBackStack) {

@@ -12,6 +12,7 @@ import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.ActivityUtils;
 import com.devoxx.utils.Logger;
 
@@ -62,6 +63,8 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         super.onResume();
 
         if (conferenceManager.isConferenceChoosen()) {
+            final RealmConference conference = conferenceManager.getActiveConference();
+            setupRequiredApis(conference.getCfpURL(), conference.getVotingURL());
             navigateToHome();
             finish();
         } else {
@@ -72,8 +75,8 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Click(R.id.selectorGo)
     void onGoClick() {
-        connection.setupConferenceApi(lastSelectedConference.cfpURL);
-        voteConnection.setupApi(lastSelectedConference.votingURL);
+        setupRequiredApis(lastSelectedConference.cfpURL,
+                lastSelectedConference.votingURL);
         conferenceManager.fetchConferenceData(lastSelectedConference, this);
     }
 
@@ -138,5 +141,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Override
     public void onWheelItemClicked(ConferenceApiModel data) {
         goButton.setVisibility(View.GONE);
+    }
+
+    private void setupRequiredApis(String cfpUrl, String votingUrl) {
+        connection.setupConferenceApi(cfpUrl);
+        voteConnection.setupApi(votingUrl);
     }
 }

@@ -120,6 +120,7 @@ public class NotificationsManager {
     private PendingIntent createTalkPendingIntentToOpenMainActivity(String slotID) {
         final Intent internalIntent = new Intent(context, MainActivity_.class);
         internalIntent.putExtra(EXTRA_TALK_ID, slotID);
+        internalIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(context,
                 slotID.hashCode(), internalIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
@@ -132,12 +133,11 @@ public class NotificationsManager {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
         if (finishNotification) {
-            // Cancel post-talk notification.
             cancelPostTalkNotificationOnAlarmManager(slotId);
+            cancelTalkNotificationOnAlarmManager(slotId);
 
             flagNotificationAsComplete(realm, slotId);
         } else {
-            // Cancel talk notification.
             cancelTalkNotificationOnAlarmManager(slotId);
 
             flagNotificationAsFiredForTalk(realm, slotId);
@@ -236,7 +236,7 @@ public class NotificationsManager {
 
     @NonNull
     private Notification createTalkNotification(RealmNotification realmNotification, PendingIntent contentIntent) {
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context);
         notificationBuilder.setContentTitle(realmNotification.getRoomName());
         notificationBuilder.setContentText(realmNotification.getTalkTitle());
         notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
@@ -247,7 +247,7 @@ public class NotificationsManager {
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         notificationBuilder.setTicker(realmNotification.getTalkTitle());
 
-        Notification notification = notificationBuilder.build();
+        final Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         notification.defaults |= Notification.DEFAULT_SOUND;

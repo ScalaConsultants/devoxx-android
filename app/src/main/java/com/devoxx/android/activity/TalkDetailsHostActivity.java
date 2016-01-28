@@ -19,12 +19,15 @@ public class TalkDetailsHostActivity extends BaseActivity {
     @Extra
     SlotApiModel slotApiModel;
 
+    @Extra
+    boolean notifyAboutChange;
+
     @FragmentById(R.id.talkDetailsFragment)
     TalkFragment talkFragment;
 
     @AfterViews
     void afterViews() {
-        talkFragment.setupFragment(slotApiModel);
+        talkFragment.setupFragment(slotApiModel, notifyAboutChange);
     }
 
     @OptionsItem(android.R.id.home)
