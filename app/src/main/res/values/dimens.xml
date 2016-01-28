@@ -18,5 +18,5 @@
     <dimen name="header_view_end_margin_left">40dp</dimen>
     <dimen name="header_view_end_margin_right">40dp</dimen>
     <dimen name="selector_circle_padding">32dp</dimen>
-    <dimen name="selector_circle_item_size">64dp</dimen>
+    <dimen name="selector_circle_item_size">84dp</dimen>
 </resources>

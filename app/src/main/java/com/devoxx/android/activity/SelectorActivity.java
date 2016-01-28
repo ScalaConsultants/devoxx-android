@@ -1,6 +1,5 @@
 package com.devoxx.android.activity;
 
-import android.app.ActivityManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.ActivityUtils;
 import com.devoxx.utils.Logger;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;

@@ -8,5 +8,13 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32dp"/>
+        android:textSize="32dp"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/selectorItemIcon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"/>
 </merge>

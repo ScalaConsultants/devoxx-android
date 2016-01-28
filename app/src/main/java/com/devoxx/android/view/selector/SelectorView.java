@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 
 import com.devoxx.R;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.devoxx.connection.model.ConferencesApiModel;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -49,17 +50,11 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     @DimensionPixelOffsetRes(R.dimen.selector_circle_item_size)
     int itemCircleSize;
 
-    @ColorRes(R.color.primary)
+    @ColorRes(R.color.accent)
     int mainCircleColor;
 
     @ColorRes(R.color.degree_link)
     int pointCircleColor;
-
-    @DrawableRes(R.drawable.selector_sub_menu_inactive_background)
-    Drawable itemInactiveBackground;
-
-    @DrawableRes(R.drawable.selector_sub_menu_active_background)
-    Drawable itemActiveBackground;
 
     @IntegerRes(android.R.integer.config_mediumAnimTime)
     int rotateAnimationTime;
@@ -159,7 +154,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
         final SelectorItemView view = SelectorItemView_.build(getContext());
         view.setupLabel(conferenceApiModel.country);
-        view.setBackground(itemInactiveBackground);
+        view.setupIcon(getConferenceIcon(conferenceApiModel));
         view.setOnClickListener(this);
         view.setTag(new ItemViewInfo(index, index == 0, conferenceApiModel));
 
@@ -252,7 +247,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
             final View child = getChildAt(i);
             child.clearAnimation();
             if (child.getScaleX() > 1f) {
-                child.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                child.animate().scaleX(1f).scaleY(1f).setDuration(150).start();
             }
         }
     }
@@ -286,10 +281,6 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
                     }
                 }
                 viewInfo.setIndex(newIndex);
-
-                child.setBackground(itemInactiveBackground);
-            } else {
-                child.setBackground(itemActiveBackground);
             }
         }
     }
@@ -309,6 +300,23 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     private void clearView() {
         removeAllViews();
         setRotation(0);
+    }
+
+    @android.support.annotation.DrawableRes
+    private static int getConferenceIcon(ConferenceApiModel conf) {
+        if (conf.country.toLowerCase().contains("france")) {
+            return R.drawable.splash_btn_paris;
+        } else if (conf.country.toLowerCase().contains("uk")) {
+            return R.drawable.splash_btn_uk;
+        } else if (conf.country.toLowerCase().contains("poland")) {
+            return R.drawable.splash_btn_krakow;
+        } else if (conf.country.toLowerCase().contains("belgium")) {
+            return R.drawable.splash_btn_brussels;
+        } else if (conf.country.toLowerCase().contains("morocco")) {
+            return R.drawable.splash_btn_ma;
+        } else {
+            return R.drawable.splash_btn_paris;
+        }
     }
 
     private static class ItemViewInfo {
