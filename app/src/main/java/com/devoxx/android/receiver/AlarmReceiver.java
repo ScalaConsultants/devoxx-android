@@ -40,7 +40,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         final String slotId = intent.getStringExtra(NotificationsManager.EXTRA_TALK_ID);
 
         // TODO Texts probably will change.
-        notificationsManager.showPostNotification(slotId, "Give a vote!", "Add vote for the talk.");
+        notificationsManager.showNotificationForVote(slotId, "Give a vote!", "Add vote for the talk.");
     }
 
     private void handleIncomingTalkEvent(Intent intent) {
@@ -48,7 +48,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PowerManager.PARTIAL_WAKE_LOCK, "AlarmService");
         wl.acquire();
         final String slotId = intent.getStringExtra(NotificationsManager.EXTRA_TALK_ID);
-        notificationsManager.showNotification(slotId);
+        notificationsManager.showNotificationForTalk(slotId);
         wl.release();
     }
 }

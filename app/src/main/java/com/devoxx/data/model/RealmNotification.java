@@ -8,10 +8,12 @@ public class RealmNotification extends RealmObject {
     @PrimaryKey
     private String slotId;
     private String roomName;
-    private String talkName;
-    private long eventTime;
-    private long alarmTime;
+    private String talkTitle;
+    private long talkTime;
+    private long talkNotificationTime;
+    private long postNotificationTime;
     private boolean firedForTalk;
+    private boolean withToast;
 
     public boolean isFiredForTalk() {
         return firedForTalk;
@@ -29,22 +31,6 @@ public class RealmNotification extends RealmObject {
         this.slotId = slotId;
     }
 
-    public long getEventTime() {
-        return eventTime;
-    }
-
-    public void setEventTime(long eventTime) {
-        this.eventTime = eventTime;
-    }
-
-    public long getAlarmTime() {
-        return alarmTime;
-    }
-
-    public void setAlarmTime(long alarmTime) {
-        this.alarmTime = alarmTime;
-    }
-
     public String getRoomName() {
         return roomName;
     }
@@ -53,12 +39,44 @@ public class RealmNotification extends RealmObject {
         this.roomName = roomName;
     }
 
-    public String getTalkName() {
-        return talkName;
+    public String getTalkTitle() {
+        return talkTitle;
     }
 
-    public void setTalkName(String talkName) {
-        this.talkName = talkName;
+    public void setTalkTitle(String talkTitle) {
+        this.talkTitle = talkTitle;
+    }
+
+    public long getTalkNotificationTime() {
+        return talkNotificationTime;
+    }
+
+    public void setTalkNotificationTime(long talkNotificationTime) {
+        this.talkNotificationTime = talkNotificationTime;
+    }
+
+    public long getPostNotificationTime() {
+        return postNotificationTime;
+    }
+
+    public void setPostNotificationTime(long postNotificationTime) {
+        this.postNotificationTime = postNotificationTime;
+    }
+
+    public boolean isWithToast() {
+        return withToast;
+    }
+
+    public void setWithToast(boolean withToast) {
+        this.withToast = withToast;
+    }
+
+    public long getTalkTime() {
+        return talkTime;
+    }
+
+    public void setTalkTime(long talkTime) {
+        this.talkTime = talkTime;
     }
 
     public static class Contract {

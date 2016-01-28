@@ -77,11 +77,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     @Click(R.id.talkDetailsScheduleBtn)
     void onScheduleButtonClick() {
         if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
-            notificationsManager.unscheduleNotification(slotModel.slotId, true);
+            notificationsManager.removeNotification(slotModel.slotId);
         } else {
-            final NotificationsManager.ScheduleNotificationModel model =
-                    NotificationsManager.ScheduleNotificationModel.create(slotModel, true);
-            notificationsManager.scheduleNotification(model);
+            notificationsManager.scheduleNotification(slotModel, true);
         }
 
         notifyHostActivityAboutChangeOccured();
