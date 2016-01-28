@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/settings_change_conf_key"
+        android:summary="Clear all data for current conference and open conference selector screen."
+        android:title="Change conference"/>
+</PreferenceScreen>

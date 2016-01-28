@@ -22,6 +22,8 @@ public abstract class AbstractDataManager<T> {
         void onDataError();
     }
 
+    public abstract void clearData();
+
     @UiThread
     void notifyAboutSuccess(IDataManagerListener<T> listener, T result) {
         if (listener != null) {

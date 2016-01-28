@@ -12,6 +12,8 @@ import android.view.MenuItem;
 
 import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.SettingsActivity;
+import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
@@ -103,6 +105,11 @@ public class ScheduleMainFragment extends BaseFragment
         final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
         final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
         FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
+    }
+
+    @OptionsItem(R.id.action_settings)
+    void onSettingsClick() {
+        SettingsActivity_.intent(this).start();
     }
 
     @Override

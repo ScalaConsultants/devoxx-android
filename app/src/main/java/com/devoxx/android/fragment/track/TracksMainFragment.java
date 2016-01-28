@@ -4,6 +4,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
 import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.track.TracksPagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
@@ -103,6 +104,11 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     @OptionsItem(R.id.action_about)
     void onAboutClick() {
         AboutActivity_.intent(this).start();
+    }
+
+    @OptionsItem(R.id.action_settings)
+    void onSettingsClick() {
+        SettingsActivity_.intent(this).start();
     }
 
     @Override

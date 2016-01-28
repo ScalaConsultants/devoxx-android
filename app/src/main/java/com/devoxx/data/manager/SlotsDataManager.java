@@ -75,4 +75,11 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         return Stream.of(allSlots).filter(value -> dateComparator.compare(requestedDate,
                 tmpDate.withMillis(value.fromTimeMillis)) == 0).collect(Collectors.<SlotApiModel>toList());
     }
+
+    @Override
+    public void clearData() {
+        allSlots.clear();
+        talks.clear();
+        slotDao.clearData();
+    }
 }

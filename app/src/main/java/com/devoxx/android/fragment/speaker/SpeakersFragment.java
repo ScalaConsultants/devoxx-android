@@ -27,6 +27,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
+import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.data.RealmProvider;
@@ -156,6 +157,11 @@ public class SpeakersFragment extends BaseFragment {
     @OptionsItem(R.id.action_about)
     void onAboutClick() {
         AboutActivity_.intent(this).start();
+    }
+
+    @OptionsItem(R.id.action_settings)
+    void onSettingsClick() {
+        SettingsActivity_.intent(this).start();
     }
 
     private void onSearchQuery(String query) {
