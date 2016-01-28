@@ -16,6 +16,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -214,7 +215,8 @@ public class ConferenceManager {
     }
 
     private DateTime convertStringDate(String stringDate) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT)
+                .withZone(DateTimeZone.forID("Europe/Paris"));
         return formatter.parseDateTime(stringDate);
     }
 }
