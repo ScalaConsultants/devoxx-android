@@ -48,9 +48,7 @@ public class ScheduleFilterManager {
 
     private List getFilters(Class<? extends RealmObject> clazz, boolean isActive) {
         final Realm realm = realmProvider.getRealm();
-        final List result = realm.where(clazz).equalTo(IS_ACTIVE_COLUMN_NAME, isActive).findAll();
-        realm.close();
-        return result;
+        return realm.where(clazz).equalTo(IS_ACTIVE_COLUMN_NAME, isActive).findAll();
     }
 
     public void removeAllFilters() {

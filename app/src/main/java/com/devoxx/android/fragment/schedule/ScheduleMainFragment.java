@@ -228,7 +228,8 @@ public class ScheduleMainFragment extends BaseFragment
     }
 
     private List<ConferenceDay> combineDaysWithFilters() {
-        final List<RealmScheduleDayItemFilter> filters = scheduleFilterManager.getActiveDayFilters();
+        final List<RealmScheduleDayItemFilter> filters =
+                scheduleFilterManager.getActiveDayFilters();
         final List<ConferenceDay> days = conferenceManager.getConferenceDays();
         final List<ConferenceDay> result = new ArrayList<>();
         for (ConferenceDay day : days) {
