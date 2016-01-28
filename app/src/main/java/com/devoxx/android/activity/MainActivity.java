@@ -24,7 +24,6 @@ import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.utils.InfoUtil;
-import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
