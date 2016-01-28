@@ -71,4 +71,13 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
 
         return result;
     }
+
+    @Override
+    public void clearData() {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.allObjects(RealmSpeaker.class).clear();
+        realm.commitTransaction();
+        realm.close();
+    }
 }

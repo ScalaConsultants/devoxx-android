@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+
 import com.devoxx.connection.model.SlotApiModel;
 
 @EBean
@@ -24,6 +25,7 @@ public class SlotDao {
 
     @RootContext
     Context context;
+
     @Bean
     RealmProvider realmProvider;
 
@@ -40,6 +42,7 @@ public class SlotDao {
         realm.allObjects(RealmSlotsAggregate.class).clear();
         realm.copyToRealm(aggModel);
         realm.commitTransaction();
+        realm.close();
     }
 
     public List<SlotApiModel> getAllSlots() {
@@ -47,6 +50,7 @@ public class SlotDao {
         final RealmSlotsAggregate aggModel = realm
                 .where(RealmSlotsAggregate.class).findFirst();
         final String rawData = aggModel != null ? aggModel.getRawData() : "";
+        realm.close();
 
         final List<SlotApiModel> result = new ArrayList<>();
         if (!TextUtils.isEmpty(rawData)) {
@@ -57,5 +61,13 @@ public class SlotDao {
         }
 
         return result;
+    }
+
+    public void clearData() {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.allObjects(RealmSlotsAggregate.class).clear();
+        realm.commitTransaction();
+        realm.close();
     }
 }

@@ -2,6 +2,7 @@ package com.devoxx.data.conference;
 
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.data.RealmProvider;
+import com.devoxx.data.cache.BaseCache;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.downloader.ConferenceDownloader;
 import com.devoxx.data.downloader.TracksDownloader;
@@ -65,6 +66,9 @@ public class ConferenceManager {
 
     @Bean
     RealmProvider realmProvider;
+
+    @Bean
+    BaseCache baseCache;
 
     @Background
     public void fetchAvailableConferences(IConferencesListener listener) {
@@ -150,6 +154,54 @@ public class ConferenceManager {
         return result;
     }
 
+    public boolean isConferenceChoosen() {
+        return getActiveConference() != null;
+    }
+
+    public RealmConference getActiveConference() {
+        final Realm realm = realmProvider.getRealm();
+        final RealmConference result = realm.where(RealmConference.class).findFirst();
+        realm.close();
+        return result;
+    }
+
+    public void clearCurrentConferenceData() {
+        clearCurrentConference();
+        clearSlotsData();
+        clearTracksData();
+        clearSpeakersData();
+        clearFiltersDefinitions();
+        clearCache();
+    }
+
+    private void clearFiltersDefinitions() {
+        scheduleFilterManager.removeAllFilters();
+    }
+
+    private void clearSpeakersData() {
+        speakersDataManager.clearData();
+    }
+
+    private void clearTracksData() {
+        tracksDownloader.clearTracksData();
+    }
+
+    private void clearCache() {
+        baseCache.clearAllCache();
+    }
+
+    private void clearSlotsData() {
+        slotsDataManager.clearData();
+    }
+
+    private void clearCurrentConference() {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.where(RealmConference.class).findAll().clear();
+        realm.commitTransaction();
+        realm.close();
+    }
+
     private void saveActiveConference(ConferenceApiModel conferenceApiModel) {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();
@@ -157,13 +209,6 @@ public class ConferenceManager {
         realm.copyToRealmOrUpdate(new RealmConference(conferenceApiModel));
         realm.commitTransaction();
         realm.close();
-    }
-
-    private RealmConference getActiveConference() {
-        final Realm realm = realmProvider.getRealm();
-        final RealmConference result = realm.where(RealmConference.class).findFirst();
-        realm.close();
-        return result;
     }
 
     private DateTime convertStringDate(String stringDate) {

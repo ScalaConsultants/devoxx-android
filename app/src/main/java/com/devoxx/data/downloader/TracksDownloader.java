@@ -67,4 +67,12 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
         return result;
     }
+
+    public void clearTracksData() {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.allObjects(RealmTrack.class).clear();
+        realm.commitTransaction();
+        realm.close();
+    }
 }

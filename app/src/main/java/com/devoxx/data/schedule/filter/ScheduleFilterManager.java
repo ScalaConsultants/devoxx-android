@@ -53,6 +53,15 @@ public class ScheduleFilterManager {
         return result;
     }
 
+    public void removeAllFilters() {
+        final Realm realm = realmProvider.getRealm();
+        realm.beginTransaction();
+        realm.allObjects(RealmScheduleDayItemFilter.class).clear();
+        realm.allObjects(RealmScheduleTrackItemFilter.class).clear();
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void createDayFiltersDefinition(List<ConferenceDay> conferenceDays) {
         final Realm realm = realmProvider.getRealm();
         realm.beginTransaction();

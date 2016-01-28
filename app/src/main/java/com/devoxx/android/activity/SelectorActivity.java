@@ -46,8 +46,13 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @AfterViews
     void afterViews() {
-        conferenceManager.fetchAvailableConferences(this);
-        selectorView.setListener(this);
+        if (conferenceManager.isConferenceChoosen()) {
+            navigateToHome();
+            finish();
+        } else {
+            conferenceManager.fetchAvailableConferences(this);
+            selectorView.setListener(this);
+        }
     }
 
     @Click(R.id.selectorGo)
