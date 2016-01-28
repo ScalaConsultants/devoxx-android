@@ -1,5 +1,6 @@
 package com.devoxx.android.activity;
 
+import android.app.ActivityManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -11,6 +12,8 @@ import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.utils.ActivityUtils;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -34,6 +37,9 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Bean
     VoteConnection voteConnection;
 
+    @Bean
+    ActivityUtils activityUtils;
+
     @Pref
     Settings_ settings;
 
@@ -51,8 +57,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     private ConferenceApiModel lastSelectedConference;
 
-    @AfterViews
-    void afterViews() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         if (conferenceManager.isConferenceChoosen()) {
             navigateToHome();
             finish();
@@ -64,9 +72,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Click(R.id.selectorGo)
     void onGoClick() {
-        final String confCode = lastSelectedConference.id;
-        settings.edit().activeConferenceCode().put(confCode).apply();
-
         connection.setupConferenceApi(lastSelectedConference.cfpURL);
         voteConnection.setupApi(lastSelectedConference.votingURL);
         conferenceManager.fetchConferenceData(lastSelectedConference, this);
@@ -81,6 +86,8 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     }
 
     private void navigateToHome() {
+        Logger.l("SelectorActivity.navigateToHome");
+
         MainActivity_.intent(this).start();
         finish();
     }
@@ -108,8 +115,12 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferenceDataAvailable() {
-        hideLoader();
-        navigateToHome();
+        Logger.l("SelectorActivity.onConferenceDataAvailable");
+
+        if (activityUtils.isAppForeground(this)) {
+            hideLoader();
+            navigateToHome();
+        }
     }
 
     @Override

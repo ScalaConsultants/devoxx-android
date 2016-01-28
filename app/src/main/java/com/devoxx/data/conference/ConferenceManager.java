@@ -102,8 +102,6 @@ public class ConferenceManager {
     public void fetchConferenceData(
             ConferenceApiModel conferenceApiModel,
             IConferenceDataListener listener) {
-        saveActiveConference(conferenceApiModel);
-
         final String confCode = conferenceApiModel.id;
         try {
             notifyConferenceListenerStart(listener);
@@ -112,8 +110,10 @@ public class ConferenceManager {
             speakersDataManager.fetchSpeakersSync(confCode);
             final List<ConferenceDay> conferenceDays = getConferenceDays();
             scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
+            saveActiveConference(conferenceApiModel);
             notifyConferenceListenerSuccess(listener);
         } catch (IOException e) {
+            clearCurrentConferenceData();
             notifyConferenceListenerError(listener);
         }
     }
@@ -160,9 +160,11 @@ public class ConferenceManager {
 
     public RealmConference getActiveConference() {
         final Realm realm = realmProvider.getRealm();
-        final RealmConference result = realm.where(RealmConference.class).findFirst();
-        realm.close();
-        return result;
+        return realm.where(RealmConference.class).findFirst();
+    }
+
+    public String getActiveConferenceId() {
+        return getActiveConference().getId();
     }
 
     public void clearCurrentConferenceData() {
