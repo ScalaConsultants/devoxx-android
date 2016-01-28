@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.devoxx.R;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
 
@@ -22,6 +23,12 @@ public class SelectorItemView extends FrameLayout {
 
     @ViewById(R.id.selectorItemIcon)
     ImageView icon;
+
+    @AfterViews
+    void afterViews() {
+        setClipToPadding(false);
+        setClipChildren(false);
+    }
 
     public void setupLabel(String labelVal) {
         label.setText(labelVal.substring(0, 1));

@@ -76,6 +76,8 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     @AfterViews
     void afterViews() {
         setWillNotDraw(false);
+        setClipToPadding(false);
+        setClipChildren(false);
     }
 
     public void prepareForConferences(List<ConferenceApiModel> conferences) {
@@ -234,7 +236,8 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         clickedView.clearAnimation();
 
         if (clickedView.getScaleX() == 1f) {
-            clickedView.animate().scaleY(1.5f).scaleX(1.5f)
+            clickedView.animate()
+                    .scaleY(1.85f).scaleX(1.85f)
                     .setInterpolator(new OvershootInterpolator(1.5f))
                     .setDuration(350)
                     .start();
@@ -247,7 +250,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
             final View child = getChildAt(i);
             child.clearAnimation();
             if (child.getScaleX() > 1f) {
-                child.animate().scaleX(1f).scaleY(1f).setDuration(150).start();
+                child.animate()
+                        .scaleX(1f).scaleY(1f)
+                        .setDuration(150).start();
             }
         }
     }
