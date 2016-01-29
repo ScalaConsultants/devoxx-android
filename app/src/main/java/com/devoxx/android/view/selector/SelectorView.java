@@ -44,9 +44,6 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     private static final int LAYOUTING_ARC_START_DEG = -90;
     private static final int FULL_CIRCLE_DEG = 360;
 
-    @DimensionPixelOffsetRes(R.dimen.selector_circle_padding)
-    int mainCirclePadding;
-
     @DimensionPixelOffsetRes(R.dimen.selector_circle_item_size)
     int itemCircleSize;
 
@@ -106,7 +103,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         centerX = w / 2;
         centerY = h / 2;
 
-        globalCircleRadius = (int) (w / 2.5f - mainCirclePadding);
+        globalCircleRadius = (int) (w / 2f - (getPaddingLeft() + getPaddingRight()));
     }
 
     @Override
@@ -237,9 +234,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
         if (clickedView.getScaleX() == 1f) {
             clickedView.animate()
-                    .scaleY(1.85f).scaleX(1.85f)
+                    .scaleY(1.75f).scaleX(1.75f)
                     .setInterpolator(new OvershootInterpolator(1.5f))
-                    .setDuration(350)
+                    .setDuration(300)
                     .start();
         }
     }

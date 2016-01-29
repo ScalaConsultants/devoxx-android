@@ -35,6 +35,7 @@
             android:name="com.devoxx.android.activity.SelectorActivity_"
             android:label="${applicationLabel}"
             android:launchMode="singleTop"
+            android:theme="@style/SelectorTheme"
             tools:node="replace"
             tools:replace="android:label">
             <intent-filter>

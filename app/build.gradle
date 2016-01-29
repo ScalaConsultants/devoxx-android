@@ -30,6 +30,9 @@ android {
         versionCode 1010100
         versionName VERSION_NAME
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
+
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
 
     signingConfigs {

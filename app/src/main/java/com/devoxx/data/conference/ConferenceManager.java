@@ -140,8 +140,8 @@ public class ConferenceManager {
         // TODO Take dates from model!
         final String fromDate = "2015-11-09T01:00:00.000Z";
         final String toDate = "2015-11-13T23:00:00.000Z";
-        final DateTime fromConfDate = convertStringDate(fromDate);
-        final DateTime toConfDate = convertStringDate(toDate);
+        final DateTime fromConfDate = parseConfDate(fromDate);
+        final DateTime toConfDate = parseConfDate(toDate);
 
         final int daysSpan = Days.daysBetween(fromConfDate, toConfDate).getDays();
 
@@ -214,7 +214,7 @@ public class ConferenceManager {
         realm.close();
     }
 
-    private DateTime convertStringDate(String stringDate) {
+    public static DateTime parseConfDate(String stringDate) {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT)
                 .withZone(DateTimeZone.forID("Europe/Paris"));
         return formatter.parseDateTime(stringDate);
