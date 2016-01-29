@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.devoxx.R;
@@ -17,6 +19,7 @@ import com.devoxx.android.adapter.map.MapPagerAdapter;
 import com.devoxx.android.view.NonSwipeableViewPager;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
+import com.devoxx.data.model.RealmFloor;
 import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
@@ -67,6 +70,7 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
     @AfterViews
     @SuppressLint("DefaultLocale")
     protected void afterViews() {
+        setHasOptionsMenu(true);
         final RealmConference conference = conferenceManager.getActiveConference();
         confTitle.setText(conference.getVenue());
         confSubitle.setText(conference.getAddress());
@@ -89,6 +93,13 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
             infoUtil.showToast(R.string.map_permissions_failure);
         }
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.map_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 
     @OptionsItem(R.id.action_settings)
     void onSettingsClick() {
@@ -123,13 +134,13 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
         }
     }
 
-    private List<Integer> getFloors() {
-        return Arrays.asList(1, 2);
-    }
-
     private void setupPager(boolean withMap) {
-        final MapPagerAdapter adapter = new MapPagerAdapter(getChildFragmentManager(),
-                getFloors(), withMap);
+        final RealmConference conference = conferenceManager.getActiveConference();
+        final List<RealmFloor> floors = RealmConference.extractFloors(conference);
+        final int floorsCount = floors.size();
+
+        final MapPagerAdapter adapter = new MapPagerAdapter(
+                getChildFragmentManager(), floorsCount, withMap);
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorColor(tabStripColor);
@@ -138,10 +149,11 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
             tabLayout.addTab(tabLayout.newTab().setText(R.string.venue));
         }
 
-        // TODO Floor will be added from configuration.
-        for (Integer floor : getFloors()) {
-            tabLayout.addTab(tabLayout.newTab().setText(String.format("%d FLOOR", floor)));
+        for (int i = 0; i < floorsCount; i++) {
+            final RealmFloor floor = floors.get(i);
+            tabLayout.addTab(tabLayout.newTab().setText(floor.getTitle()));
         }
+
         tabLayout.setOnTabSelectedListener(this);
 
         pager.setAdapter(adapter);

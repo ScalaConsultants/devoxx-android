@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -20,9 +21,12 @@ import com.devoxx.android.fragment.speaker.SpeakersFragment_;
 import com.devoxx.android.fragment.track.TracksMainFragment_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.Settings_;
+import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
+import com.devoxx.data.model.RealmConference;
+import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
@@ -47,12 +51,18 @@ public class MainActivity extends BaseActivity {
     SpeakersDataManager speakersDataManager;
 
     @Bean
+    ConferenceManager conferenceManager;
+
+    @Bean
+    FontUtils fontUtils;
+
+    @Bean
     InfoUtil infoUtil;
 
     @Pref
     Settings_ settings;
 
-    @ViewById(R.id.toolbarWithSpinner)
+    @ViewById(R.id.toolbar)
     Toolbar toolbar;
 
     @ViewById(R.id.menuContainer)
@@ -200,6 +210,11 @@ public class MainActivity extends BaseActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
+        final TextView title = (TextView) toolbar.findViewById(R.id.toolbarTitle);
+        fontUtils.applyTypeface(title, FontUtils.Font.REGULAR);
+        final RealmConference conference = conferenceManager.getActiveConference();
+        title.setText(conference.getCountry());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setTitle("");
     }
 

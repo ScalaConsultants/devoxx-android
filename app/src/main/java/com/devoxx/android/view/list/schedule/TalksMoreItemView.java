@@ -13,6 +13,8 @@ import org.androidannotations.annotations.res.StringRes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -64,6 +66,7 @@ public class TalksMoreItemView extends LinearLayout {
         setGravity(Gravity.CENTER_VERTICAL);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
+        setupBackground();
     }
 
     public void setupMore(TalksScheduleItem talksScheduleItem, Runnable onOpenMoreAction) {
@@ -78,6 +81,14 @@ public class TalksMoreItemView extends LinearLayout {
         openMoreIcon.clearAnimation();
         openMoreIcon.animate().scaleY(openMoreIcon.getScaleY() * -1)
                 .setDuration(toggleAnimTime).start();
+    }
+
+    private void setupBackground() {
+        int[] attrs = new int[]{android.R.attr.selectableItemBackground};
+        TypedArray ta = getContext().getTheme().obtainStyledAttributes(attrs);
+        Drawable drawableFromTheme = ta.getDrawable(0);
+        ta.recycle();
+        setBackground(drawableFromTheme);
     }
 
     public TalksMoreItemView(Context context) {

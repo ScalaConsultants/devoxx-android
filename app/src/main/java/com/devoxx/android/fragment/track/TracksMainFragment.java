@@ -22,6 +22,9 @@ import org.androidannotations.annotations.res.ColorRes;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -130,7 +133,9 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
 
     private void setupFilterMenu(Menu menu) {
         if (scheduleFilterManager.isSomeFiltersActive()) {
-            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_white_24px);
+            final Drawable newIcon = getResources().getDrawable(R.drawable.ic_filter_white_24px).mutate();
+            newIcon.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+            menu.findItem(R.id.action_filter).setIcon(newIcon);
         } else {
             menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
         }

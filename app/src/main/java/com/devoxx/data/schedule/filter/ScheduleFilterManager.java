@@ -189,4 +189,9 @@ public class ScheduleFilterManager {
         return !getFilters(RealmScheduleDayItemFilter.class, false).isEmpty()
                 || !getFilters(RealmScheduleTrackItemFilter.class, false).isEmpty();
     }
+
+    public int unselectedFiltersCount() {
+        return getFilters(RealmScheduleDayItemFilter.class, false).size()
+                + getFilters(RealmScheduleTrackItemFilter.class, false).size();
+    }
 }

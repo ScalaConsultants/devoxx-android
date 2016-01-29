@@ -41,9 +41,10 @@ public class SelectorValues extends LinearLayout {
         fontUtils.applyTypeface(this, FontUtils.Font.REGULAR);
     }
 
-    public void setupView(String labelVal, String numberVal) {
+    public void setupView(String labelVal, int numberVal) {
+        final String numberAsString = String.format("%03d", numberVal);
         label.setText(labelVal);
-        final String[] letters = numberVal.split("");
+        final String[] letters = numberAsString.split("");
         for (int i = letters.length - 1; i >= 1; i--) {
             if (i == 3) {
                 third.setText(letters[i]);

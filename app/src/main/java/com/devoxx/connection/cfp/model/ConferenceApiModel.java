@@ -1,6 +1,7 @@
 package com.devoxx.connection.cfp.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ConferenceApiModel implements Serializable {
 
@@ -12,6 +13,11 @@ public class ConferenceApiModel implements Serializable {
     public String country;
     public String latitude;
     public String longitude;
+    public List<FloorApiModel> floors;
+    public String capacity;
+    public String sessions;
+    public String splashPhoneImgURL;
+    public String splashTabletImgURL;
     public String fromDate;
     public String toDate;
     public String wwwURL;

@@ -15,7 +15,9 @@ import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -40,6 +42,9 @@ public class TalkItemView extends LinearLayout {
 
     @ViewById(R.id.list_item_talk_place)
     TextView place;
+
+    @ViewById(R.id.list_item_talk_speakers)
+    TextView speakers;
 
     @ViewById(R.id.list_item_talk_track_icon)
     ImageView trackIcon;
@@ -66,6 +71,7 @@ public class TalkItemView extends LinearLayout {
         setGravity(Gravity.CENTER_VERTICAL);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
+        setupBackground();
     }
 
     public TalkItemView setupTalk(SlotApiModel slotModel) {
@@ -80,6 +86,7 @@ public class TalkItemView extends LinearLayout {
             title.setText(talkModel.title);
             track.setText(talkModel.track);
             place.setText(slotModel.roomName);
+            speakers.setText(slotModel.talk.getReadableSpeakers());
 
             Glide.with(getContext())
                     .load(obtainTrackIconUrl(talkModel))
@@ -120,5 +127,13 @@ public class TalkItemView extends LinearLayout {
 
     public void withoutTrackName() {
         track.setVisibility(View.INVISIBLE);
+    }
+
+    private void setupBackground() {
+        int[] attrs = new int[]{android.R.attr.selectableItemBackground};
+        TypedArray ta = getContext().getTheme().obtainStyledAttributes(attrs);
+        Drawable drawableFromTheme = ta.getDrawable(0);
+        ta.recycle();
+        setBackground(drawableFromTheme);
     }
 }

@@ -7,17 +7,15 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.devoxx.android.fragment.map.MapFloorFragment_;
 import com.devoxx.android.fragment.map.MapGoogleFragment_;
 
-import java.util.List;
-
 public class MapPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final int MAP_GOOGLE_POSITION = 0;
-    private final List<Integer> floors;
+    private final int floorsCount;
     private final boolean withMap;
 
-    public MapPagerAdapter(FragmentManager fm, List<Integer> floorsList, boolean map) {
+    public MapPagerAdapter(FragmentManager fm, int floorsVal, boolean map) {
         super(fm);
-        floors = floorsList;
+        floorsCount = floorsVal;
         withMap = map;
     }
 
@@ -32,7 +30,7 @@ public class MapPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return floors.size() + (withMap ? 1 : 0) /* +1 for Google Map */;
+        return floorsCount + (withMap ? 1 : 0) /* +1 for Google Map */;
     }
 
     @Override

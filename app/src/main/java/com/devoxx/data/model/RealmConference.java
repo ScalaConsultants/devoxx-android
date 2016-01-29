@@ -1,8 +1,15 @@
 package com.devoxx.data.model;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.devoxx.connection.cfp.model.FloorApiModel;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -18,6 +25,11 @@ public class RealmConference extends RealmObject {
     private String latitude;
     private String longitude;
     private String fromDate;
+    private RealmList<RealmFloor> floors;
+    private String capacity;
+    private String sessions;
+    private String splashPhoneImgURL;
+    private String splashTabletImgURL;
     private String toDate;
     private String wwwURL;
     private String regURL;
@@ -51,6 +63,20 @@ public class RealmConference extends RealmObject {
         cfpEndpoint = model.cfpEndpoint;
         cfpVersion = model.cfpVersion;
         youTubeId = model.youTubeId;
+        capacity = model.capacity;
+        sessions = model.sessions;
+        splashPhoneImgURL = model.splashPhoneImgURL;
+        splashTabletImgURL = model.splashTabletImgURL;
+        floors = new RealmList<>();
+        for (FloorApiModel floor : model.floors) {
+            floors.add(new RealmFloor(floor));
+        }
+    }
+
+    public static List<RealmFloor> extractFloors(RealmConference conference) {
+        return Stream.of(conference.getFloors())
+                .filter(value -> value.getTarget().equalsIgnoreCase("phone"))
+                .collect(Collectors.toList());
     }
 
     public static LatLng getLocation(RealmConference conference) {
@@ -200,5 +226,45 @@ public class RealmConference extends RealmObject {
 
     public void setYouTubeId(String youTubeId) {
         this.youTubeId = youTubeId;
+    }
+
+    public RealmList<RealmFloor> getFloors() {
+        return floors;
+    }
+
+    public void setFloors(RealmList<RealmFloor> floors) {
+        this.floors = floors;
+    }
+
+    public String getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
+    }
+
+    public String getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(String sessions) {
+        this.sessions = sessions;
+    }
+
+    public String getSplashPhoneImgURL() {
+        return splashPhoneImgURL;
+    }
+
+    public void setSplashPhoneImgURL(String splashPhoneImgURL) {
+        this.splashPhoneImgURL = splashPhoneImgURL;
+    }
+
+    public String getSplashTabletImgURL() {
+        return splashTabletImgURL;
+    }
+
+    public void setSplashTabletImgURL(String splashTabletImgURL) {
+        this.splashTabletImgURL = splashTabletImgURL;
     }
 }

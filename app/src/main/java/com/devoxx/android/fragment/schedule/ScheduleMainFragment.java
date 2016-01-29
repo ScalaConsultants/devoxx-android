@@ -2,17 +2,22 @@ package com.devoxx.android.fragment.schedule;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.SettingsActivity;
 import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
@@ -92,9 +97,37 @@ public class ScheduleMainFragment extends BaseFragment
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
+        final LayoutInflater inflater = LayoutInflater.from(getContext());
+        final View view = inflater.inflate(R.layout.toolbar_menu_item_with_badge_view, null);
+        view.setBackgroundResource(backgroundImageId);
+
+        if (count == 0) {
+            View counterTextPanel = view.findViewById(R.id.count);
+            counterTextPanel.setVisibility(View.GONE);
+        } else {
+            TextView textView = (TextView) view.findViewById(R.id.count);
+            textView.setText(String.valueOf(count));
+        }
+
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        view.setDrawingCacheEnabled(true);
+        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        final Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+        return new BitmapDrawable(getResources(), bitmap);
+    }
+
     private void setupFilterMenu(Menu menu) {
         if (scheduleFilterManager.isSomeFiltersActive()) {
-            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_white_24px);
+            final int activeFiltersCount = scheduleFilterManager.unselectedFiltersCount();
+            MenuItem menuItem = menu.findItem(R.id.action_filter);
+            menuItem.setIcon(buildCounterDrawable(activeFiltersCount, R.drawable.ic_filter_white_24px));
         } else {
             menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
         }

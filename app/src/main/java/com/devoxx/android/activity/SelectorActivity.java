@@ -21,6 +21,7 @@ import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.ActivityUtils;
 import com.devoxx.utils.BlurTransformation;
 import com.devoxx.utils.FontUtils;
+import com.devoxx.utils.InfoUtil;
 import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
@@ -30,6 +31,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -84,10 +86,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     SelectorValues daysLeft;
 
     @ViewById(R.id.selectorProposals)
-    SelectorValues daysProposals;
+    SelectorValues talks;
 
     @ViewById(R.id.selectorRegistrations)
-    SelectorValues daysRegs;
+    SelectorValues capacity;
 
     private ConferenceApiModel lastSelectedConference;
 
@@ -129,6 +131,14 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         setupRequiredApis(lastSelectedConference.cfpURL,
                 lastSelectedConference.votingURL);
         conferenceManager.fetchConferenceData(lastSelectedConference, this);
+    }
+
+    @Bean
+    InfoUtil infoUtil;
+
+    @Click(R.id.selectorRegistrations)
+    void onCapacityClick() {
+        infoUtil.showToast("Go to registration...");
     }
 
     public void showLoader() {
@@ -213,13 +223,15 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/YYYY");
         final String endDateRaw = fmt.print(endDate);
 
-        confInfo.setText(String.format(Locale.getDefault(), "From %d to %s\n%s",
+        confInfo.setText(String.format(Locale.getDefault(),
+                getString(R.string.selector_conf_info_format),
                 startDate.getDayOfMonth(), endDateRaw, data.venue));
 
-        // TODO Set data from cfp.json.
-        daysLeft.setupView("Days left", String.format("%02d", 102));
-        daysProposals.setupView("TALKS", String.format("%02d", 145));
-        daysRegs.setupView("CAPACITY", String.format("%02d", 92));
+        final DateTime now = new DateTime();
+        final int days = Days.daysBetween(now, startDate).getDays();
+        daysLeft.setupView(getString(R.string.selector_days), days);
+        talks.setupView(getString(R.string.selector_talks), Integer.decode(data.sessions));
+        capacity.setupView(getString(R.string.selector_capacity), Integer.decode(data.capacity));
     }
 
     public int getStatusBarHeight() {
