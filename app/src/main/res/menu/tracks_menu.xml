@@ -22,8 +22,18 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_register"
-        android:title="@string/register"
+        android:id="@+id/action_purchase_ticket"
+        android:title="@string/purchase_ticket"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_credits"
+        android:title="@string/credits"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_report_issue"
+        android:title="@string/report_issue"
         app:showAsAction="never"/>
 
     <item

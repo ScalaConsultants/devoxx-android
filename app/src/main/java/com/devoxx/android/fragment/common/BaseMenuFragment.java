@@ -21,6 +21,7 @@ import com.devoxx.android.dialog.FiltersDialog;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
+import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -40,6 +41,9 @@ public abstract class BaseMenuFragment extends BaseFragment
     @Bean
     protected ScheduleFilterManager scheduleFilterManager;
 
+    @Bean
+    protected InfoUtil infoUtil;
+
     @AfterViews
     protected void afterViews() {
         setHasOptionsMenu(true);
@@ -47,8 +51,6 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @MenuRes
     protected abstract int getMenuRes();
-
-    protected abstract FiltersDialog.IFiltersChangedListener getFiltersListener();
 
     protected abstract void onSearchQuery(String query);
 
@@ -175,5 +177,20 @@ public abstract class BaseMenuFragment extends BaseFragment
     @OptionsItem(R.id.action_about)
     protected void onAboutClick() {
         AboutActivity_.intent(this).start();
+    }
+
+    @OptionsItem(R.id.action_purchase_ticket)
+    protected void onRegisterClick() {
+        infoUtil.showToast("Go to purchase ticket..");
+    }
+
+    @OptionsItem(R.id.action_credits)
+    protected void onCreditsClick() {
+        infoUtil.showToast("Go to credits..");
+    }
+
+    @OptionsItem(R.id.action_report_issue)
+    protected void onReportIssueClick() {
+        infoUtil.showToast("Go to report issue..");
     }
 }

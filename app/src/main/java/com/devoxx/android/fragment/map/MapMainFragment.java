@@ -7,41 +7,32 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.TextView;
 
 import com.devoxx.R;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.adapter.map.MapPagerAdapter;
+import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.android.view.NonSwipeableViewPager;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.model.RealmFloor;
-import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 
-import java.util.Arrays;
 import java.util.List;
 
 @EFragment(R.layout.fragment_maps)
-public class MapMainFragment extends Fragment implements TabLayout.OnTabSelectedListener {
+public class MapMainFragment extends BaseMenuFragment
+        implements TabLayout.OnTabSelectedListener {
 
     private static final int CHECK_PERMISSION_REQ_CODE = 99;
     private static final String[] MAP_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
-
-    @Bean
-    InfoUtil infoUtil;
 
     @Bean
     ConferenceManager conferenceManager;
@@ -79,6 +70,16 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
     }
 
     @Override
+    protected int getMenuRes() {
+        return R.menu.map_menu;
+    }
+
+    @Override
+    protected void onSearchQuery(String query) {
+        // Not needed.
+    }
+
+    @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -92,23 +93,6 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
         if (!isGranted) {
             infoUtil.showToast(R.string.map_permissions_failure);
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.map_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-
-    @OptionsItem(R.id.action_settings)
-    void onSettingsClick() {
-        SettingsActivity_.intent(this).start();
-    }
-
-    @OptionsItem(R.id.action_about)
-    void onAboutClick() {
-        AboutActivity_.intent(this).start();
     }
 
     @Override
@@ -141,6 +125,7 @@ public class MapMainFragment extends Fragment implements TabLayout.OnTabSelected
 
         final MapPagerAdapter adapter = new MapPagerAdapter(
                 getChildFragmentManager(), floorsCount, withMap);
+        tabLayout.removeAllTabs();
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorColor(tabStripColor);

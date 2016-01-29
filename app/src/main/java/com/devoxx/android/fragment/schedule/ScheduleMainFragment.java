@@ -70,11 +70,6 @@ public class ScheduleMainFragment extends BaseMenuFragment
     }
 
     @Override
-    protected FiltersDialog.IFiltersChangedListener getFiltersListener() {
-        return this;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
                 && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {

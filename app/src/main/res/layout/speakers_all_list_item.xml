@@ -39,7 +39,7 @@
             android:fontFamily="sans-serif-medium"
             android:lines="1"
             android:textColor="@color/primary_text_90"
-            android:textSize="@dimen/activity_horizontal_margin"
+            android:textSize="16dp"
             tools:text="Jacek Modrakowski"/>
 
         <ImageView

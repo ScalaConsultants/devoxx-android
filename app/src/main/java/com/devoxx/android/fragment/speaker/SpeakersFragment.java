@@ -53,9 +53,6 @@ public class SpeakersFragment extends BaseMenuFragment {
     @Bean
     RealmProvider realmProvider;
 
-    @Bean
-    InfoUtil infoUtil;
-
     @Pref
     Settings_ settings;
 
@@ -111,11 +108,6 @@ public class SpeakersFragment extends BaseMenuFragment {
     @Override
     public int getMenuRes() {
         return R.menu.speakers_menu;
-    }
-
-    @Override
-    protected FiltersDialog.IFiltersChangedListener getFiltersListener() {
-        return this;
     }
 
     @Override

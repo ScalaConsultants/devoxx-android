@@ -56,11 +56,13 @@
     <string name="settings_change_conf_key">pref_key_change_conference</string>
     <string name="map_permissions_failure">Can\'t setup map, give us permission for that.</string>
     <string name="no_talk_foud">Can\'t find talk…</string>
-    <string name="register">Register</string>
+    <string name="purchase_ticket">Purchase ticket</string>
     <string name="selector_days">DAYS</string>
     <string name="selector_talks">TALKS</string>
     <string name="selector_capacity">CAPACITY</string>
     <string name="selector_conf_info_format" formatted="false">From %d to %s\n%s</string>
+    <string name="credits">Credits</string>
+    <string name="report_issue">Report Issue</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
