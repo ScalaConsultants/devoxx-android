@@ -1,58 +1,37 @@
 package com.devoxx.android.fragment.track;
 
+import android.content.Intent;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.annimon.stream.function.Predicate;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.SettingsActivity_;
+import com.devoxx.R;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.track.TracksPagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
-import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
-import com.devoxx.data.schedule.filter.ScheduleFilterManager;
+import com.devoxx.android.fragment.common.BaseMenuFragment;
+import com.devoxx.connection.model.SlotApiModel;
+import com.devoxx.data.manager.SlotsDataManager;
+import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 
-import android.app.SearchManager;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-
 import java.util.List;
 
-import com.devoxx.android.fragment.common.BaseFragment;
-import com.devoxx.connection.model.SlotApiModel;
-import com.devoxx.data.manager.SlotsDataManager;
-import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
-import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
-import com.devoxx.R;
-
 @EFragment(R.layout.fragment_tracks)
-public class TracksMainFragment extends BaseFragment implements FiltersDialog.IFiltersChangedListener {
+public class TracksMainFragment extends BaseMenuFragment
+        implements FiltersDialog.IFiltersChangedListener {
 
     @Bean
     SlotsDataManager slotsDataManager;
-
-    @Bean
-    ScheduleFilterManager scheduleFilterManager;
-
-    @SystemService
-    SearchManager searchManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -79,8 +58,8 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     }
 
     @AfterViews
-    void afterViews() {
-        setHasOptionsMenu(true);
+    void afterViewsInternal() {
+        super.afterViews();
 
         viewPager.setAdapter(tracksPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -90,28 +69,13 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.tracks_menu, menu);
-        setupFilterMenu(menu);
-        setupSearchView(menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    protected int getMenuRes() {
+        return R.menu.tracks_menu;
     }
 
-    @OptionsItem(R.id.action_filter)
-    void onFilterClicked() {
-        final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
-        final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
-        FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
-    }
-
-    @OptionsItem(R.id.action_about)
-    void onAboutClick() {
-        AboutActivity_.intent(this).start();
-    }
-
-    @OptionsItem(R.id.action_settings)
-    void onSettingsClick() {
-        SettingsActivity_.intent(this).start();
+    @Override
+    protected FiltersDialog.IFiltersChangedListener getFiltersListener() {
+        return this;
     }
 
     @Override
@@ -122,66 +86,32 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
         }
     }
 
-    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
-        final List<Fragment> fragments = getChildFragmentManager().getFragments();
-        for (Fragment fragment : fragments) {
-            if (fragment instanceof TracksListFragment) {
-                fragment.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-    }
-
-    private void setupFilterMenu(Menu menu) {
-        if (scheduleFilterManager.isSomeFiltersActive()) {
-            final Drawable newIcon = getResources().getDrawable(R.drawable.ic_filter_white_24px).mutate();
-            newIcon.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-            menu.findItem(R.id.action_filter).setIcon(newIcon);
-        } else {
-            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
-        }
-    }
-
-    private void setupSearchView(Menu menu) {
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-
-        SearchView searchView = null;
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(getActivity().getComponentName()));
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    onSearchQuery(query);
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    onSearchQuery(s);
-                    return false;
-                }
-            });
-
-            searchView.setOnCloseListener(() -> {
-                onSearchQuery("");
-                return false;
-            });
-
-            searchView.setQueryHint(getString(R.string.search_hint));
-        }
-    }
-
-    private void onSearchQuery(String query) {
+    @Override
+    protected void onSearchQuery(String query) {
         final List<SlotApiModel> resultList = filterByTrack(doQuery(query));
         tracksPagerAdapter.setData(resultList);
         viewPager.setAdapter(tracksPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tracksPagerAdapter.notifyDataSetChanged();
 
+    }
+
+    @Override
+    public void onFiltersCleared() {
+        super.onFiltersCleared();
+        invalidateAdapterOnFiltersChange();
+    }
+
+    @Override
+    public void onFiltersDismissed() {
+        super.onFiltersDismissed();
+        invalidateAdapterOnFiltersChange();
+    }
+
+    @Override
+    public void onFiltersDefault() {
+        super.onFiltersDefault();
+        invalidateAdapterOnFiltersChange();
     }
 
     private List<SlotApiModel> doQuery(String query) {
@@ -225,31 +155,12 @@ public class TracksMainFragment extends BaseFragment implements FiltersDialog.IF
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void onDayFiltersChanged(RealmScheduleDayItemFilter itemFilter, boolean isActive) {
-        scheduleFilterManager.updateFilter(itemFilter, isActive);
-    }
-
-    @Override
-    public void onTrackFiltersChanged(RealmScheduleTrackItemFilter itemFilter, boolean isActive) {
-        scheduleFilterManager.updateFilter(itemFilter, isActive);
-    }
-
-    @Override
-    public void onFiltersCleared() {
-        scheduleFilterManager.clearFilters();
-        invalidateAdapterOnFiltersChange();
-    }
-
-    @Override
-    public void onFiltersDismissed() {
-        invalidateAdapterOnFiltersChange();
-        getActivity().supportInvalidateOptionsMenu();
-    }
-
-    @Override
-    public void onFiltersDefault() {
-        scheduleFilterManager.defaultFilters();
-        invalidateAdapterOnFiltersChange();
+    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
+        final List<Fragment> fragments = getChildFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof TracksListFragment) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 }

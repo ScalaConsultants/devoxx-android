@@ -1,15 +1,10 @@
 package com.devoxx.android.fragment.speaker;
 
-import android.app.SearchManager;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +21,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.devoxx.R;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
-import com.devoxx.android.fragment.common.BaseFragment;
+import com.devoxx.android.dialog.FiltersDialog;
+import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.manager.SpeakersDataManager;
@@ -40,7 +34,6 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -50,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 @EFragment(R.layout.fragment_speakers)
-public class SpeakersFragment extends BaseFragment {
+public class SpeakersFragment extends BaseMenuFragment {
 
     private static final long SHOW_PROGRESS_DELAY_MS = 150;
 
@@ -66,6 +59,9 @@ public class SpeakersFragment extends BaseFragment {
     @Pref
     Settings_ settings;
 
+    @SystemService
+    InputMethodManager inputMethodManager;
+
     @ViewById(R.id.listProgressBar)
     View progressBar;
 
@@ -74,12 +70,6 @@ public class SpeakersFragment extends BaseFragment {
 
     @ViewById(R.id.listViewContainer)
     View container;
-
-    @SystemService
-    SearchManager searchManager;
-
-    @SystemService
-    InputMethodManager inputMethodManager;
 
     private ItemAdapter itemAdapter;
 
@@ -96,8 +86,8 @@ public class SpeakersFragment extends BaseFragment {
     }
 
     @AfterViews
-    void afterViews() {
-        setHasOptionsMenu(true);
+    void afterViewsInternal() {
+        super.afterViews();
 
         listView.setAdapter(itemAdapter);
 
@@ -119,52 +109,17 @@ public class SpeakersFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.speakers_menu, menu);
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-
-        SearchView searchView = null;
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(getActivity().getComponentName()));
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    onSearchQuery(query);
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    onSearchQuery(s);
-                    return false;
-                }
-            });
-
-            searchView.setOnCloseListener(() -> {
-                onSearchQuery("");
-                return false;
-            });
-        }
-
-        super.onCreateOptionsMenu(menu, inflater);
+    public int getMenuRes() {
+        return R.menu.speakers_menu;
     }
 
-    @OptionsItem(R.id.action_about)
-    void onAboutClick() {
-        AboutActivity_.intent(this).start();
+    @Override
+    protected FiltersDialog.IFiltersChangedListener getFiltersListener() {
+        return this;
     }
 
-    @OptionsItem(R.id.action_settings)
-    void onSettingsClick() {
-        SettingsActivity_.intent(this).start();
-    }
-
-    private void onSearchQuery(String query) {
+    @Override
+    protected void onSearchQuery(String query) {
         final List<RealmSpeakerShort> speakers = speakersDataManager.
                 getAllShortSpeakersWithFilter(query);
         populateList(speakers);

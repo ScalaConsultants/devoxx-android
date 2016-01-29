@@ -1,41 +1,25 @@
 package com.devoxx.android.fragment.schedule;
 
-import android.app.SearchManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.devoxx.R;
-import com.devoxx.android.activity.AboutActivity_;
-import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
-import com.devoxx.android.fragment.common.BaseFragment;
+import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
-import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 
@@ -43,11 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EFragment(R.layout.fragment_schedules)
-public class ScheduleMainFragment extends BaseFragment
+public class ScheduleMainFragment extends BaseMenuFragment
         implements FiltersDialog.IFiltersChangedListener {
-
-    @SystemService
-    SearchManager searchManager;
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -57,9 +38,6 @@ public class ScheduleMainFragment extends BaseFragment
 
     @Bean
     ConferenceManager conferenceManager;
-
-    @Bean
-    ScheduleFilterManager scheduleFilterManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -77,77 +55,23 @@ public class ScheduleMainFragment extends BaseFragment
     int tabStripColor;
 
     @AfterViews
-    void afterViews() {
+    void afterViewsInner() {
+        super.afterViews();
         invalidateViewPager();
 
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorColor(tabStripColor);
-
-        setHasOptionsMenu(true);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.schedule_menu, menu);
-
-        setupFilterMenu(menu);
-        setupSearchView(menu);
-
-        super.onCreateOptionsMenu(menu, inflater);
+    public int getMenuRes() {
+        return R.menu.schedule_menu;
     }
 
-    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
-        final LayoutInflater inflater = LayoutInflater.from(getContext());
-        final View view = inflater.inflate(R.layout.toolbar_menu_item_with_badge_view, null);
-        view.setBackgroundResource(backgroundImageId);
-
-        if (count == 0) {
-            View counterTextPanel = view.findViewById(R.id.count);
-            counterTextPanel.setVisibility(View.GONE);
-        } else {
-            TextView textView = (TextView) view.findViewById(R.id.count);
-            textView.setText(String.valueOf(count));
-        }
-
-        view.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-
-        view.setDrawingCacheEnabled(true);
-        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        final Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-        view.setDrawingCacheEnabled(false);
-
-        return new BitmapDrawable(getResources(), bitmap);
-    }
-
-    private void setupFilterMenu(Menu menu) {
-        if (scheduleFilterManager.isSomeFiltersActive()) {
-            final int activeFiltersCount = scheduleFilterManager.unselectedFiltersCount();
-            MenuItem menuItem = menu.findItem(R.id.action_filter);
-            menuItem.setIcon(buildCounterDrawable(activeFiltersCount, R.drawable.ic_filter_white_24px));
-        } else {
-            menu.findItem(R.id.action_filter).setIcon(R.drawable.ic_filter_outline_white_24px);
-        }
-    }
-
-    @OptionsItem(R.id.action_filter)
-    void onFilterClicked() {
-        final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
-        final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
-        FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
-    }
-
-    @OptionsItem(R.id.action_settings)
-    void onSettingsClick() {
-        SettingsActivity_.intent(this).start();
-    }
-
-    @OptionsItem(R.id.action_about)
-    void onAboutClick() {
-        AboutActivity_.intent(this).start();
+    @Override
+    protected FiltersDialog.IFiltersChangedListener getFiltersListener() {
+        return this;
     }
 
     @Override
@@ -167,42 +91,6 @@ public class ScheduleMainFragment extends BaseFragment
         }
     }
 
-    private void setupSearchView(Menu menu) {
-        // TODO Get conference days from ConferenceManager class to build filter menu.
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-
-        SearchView searchView = null;
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(getActivity().getComponentName()));
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    onSearchQuery(query);
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    onSearchQuery(s);
-                    return false;
-                }
-            });
-
-            searchView.setOnCloseListener(() -> {
-                onSearchQuery("");
-                return false;
-            });
-
-            searchView.setQueryHint(getString(R.string.search_hint));
-        }
-    }
-
     @Override
     public void onDestroy() {
         scheduleLineupSearchManager.clearLastQuery();
@@ -210,35 +98,20 @@ public class ScheduleMainFragment extends BaseFragment
     }
 
     @Override
-    public void onDayFiltersChanged(RealmScheduleDayItemFilter itemFilter, boolean isActive) {
-        // TODO update UI
-        scheduleFilterManager.updateFilter(itemFilter, isActive);
-    }
-
-    @Override
-    public void onTrackFiltersChanged(RealmScheduleTrackItemFilter itemFilter, boolean isActive) {
-        // TODO update UI
-        scheduleFilterManager.updateFilter(itemFilter, isActive);
-    }
-
-    @Override
     public void onFiltersCleared() {
-        scheduleFilterManager.clearFilters();
+        super.onFiltersCleared();
         invalidateViewPager();
     }
 
     @Override
     public void onFiltersDismissed() {
+        super.onFiltersDismissed();
         invalidateViewPager();
-        getActivity().supportInvalidateOptionsMenu();
-
-        getMainActivity().sendBroadcast(new Intent(
-                ScheduleFilterManager.FILTERS_CHANGED_ACTION));
     }
 
     @Override
     public void onFiltersDefault() {
-        scheduleFilterManager.defaultFilters();
+        super.onFiltersDefault();
         invalidateViewPager();
     }
 
@@ -253,8 +126,8 @@ public class ScheduleMainFragment extends BaseFragment
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private void onSearchQuery(String query) {
-        // TODO Adds labels with filters! x_label
+    @Override
+    protected void onSearchQuery(String query) {
         scheduleLineupSearchManager.saveLastQuery(query);
         getMainActivity().sendBroadcast(new Intent(
                 ScheduleLineupSearchManager.SEARCH_INTENT_ACTION));
