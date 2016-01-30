@@ -87,6 +87,21 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         setupScheduleButton();
     }
 
+    @Click(R.id.talkDetailsNotesBtn)
+    void onNotesClick() {
+        // TODO
+    }
+
+    @Click(R.id.talkDetailsTweetBtn)
+    void onTweetClick() {
+        // TODO
+    }
+
+    @Click(R.id.talkDetailsLikeBtn)
+    void onLikeClick() {
+        // TODO
+    }
+
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
         int maxScroll = appBarLayout.getTotalScrollRange();
