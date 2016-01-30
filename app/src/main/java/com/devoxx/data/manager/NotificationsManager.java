@@ -37,8 +37,8 @@ import com.devoxx.R;
 public class NotificationsManager {
 
     public static final String EXTRA_TALK_ID = "com.devoxx.android.intent.extra.TALK_ID";
-    public static final String EXTRA_NOTIFICATION_TYPE = "com.devoxx.android.intent.extra.EXTRA_NOTIFICATION_TYPE";
-    public static final String EXTRA_NOTIFICATION_TYPE_VALUE = "com.devoxx.android.intent.POST_NOTIFICATION";
+    public static final String NOTIFICATION_TALK_TYPE = "com.devoxx.android.intent.NOTIFICATION_TALK_TYPE";
+    public static final String NOTIFICATION_POST_TYPE = "com.devoxx.android.intent.NOTIFICATION_POST_TYPE";
     public static final String TALK_NOTIFICATION_ACTION = "com.devoxx.android.intent.TALK_NOTIFICATION_ACTION";
 
     private static final long DEBUG_POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.SECONDS.toMillis(10);
@@ -112,18 +112,27 @@ public class NotificationsManager {
     private PendingIntent createPostNotificationPendingIntent(NotificationConfiguration cfg) {
         final Intent intent = new Intent(context, AlarmReceiver_.class);
         final String slotID = cfg.getSlotId();
+        intent.setAction(NOTIFICATION_POST_TYPE);
         intent.putExtra(EXTRA_TALK_ID, slotID);
-        intent.putExtra(EXTRA_NOTIFICATION_TYPE, EXTRA_NOTIFICATION_TYPE_VALUE);
-        return PendingIntent.getBroadcast(context, (int) (slotID.hashCode()
-                + cfg.getPostTalkNotificationTime()), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, slotID.hashCode(), intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent createPendingIntentForAlarmReceiver(NotificationConfiguration cfg) {
+        final Intent intent = new Intent(context, AlarmReceiver_.class);
+        intent.setAction(NOTIFICATION_TALK_TYPE);
+        final String slotID = cfg.getSlotId();
+        intent.putExtra(EXTRA_TALK_ID, slotID);
+        return PendingIntent.getBroadcast(context, slotID.hashCode(), intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private PendingIntent createTalkPendingIntentToOpenMainActivity(String slotID) {
-        final Intent internalIntent = new Intent(context, MainActivity_.class);
-        internalIntent.putExtra(EXTRA_TALK_ID, slotID);
-        internalIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        return PendingIntent.getActivity(context,
-                slotID.hashCode(), internalIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        final Intent intent = new Intent(context, MainActivity_.class);
+        intent.putExtra(EXTRA_TALK_ID, slotID);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return PendingIntent.getActivity(context, slotID.hashCode(),
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     public void removeNotification(String slotid) {
@@ -148,19 +157,16 @@ public class NotificationsManager {
 
     private void cancelPostTalkNotificationOnAlarmManager(String slotId) {
         final NotificationConfiguration cfg = getConfiguration(slotId);
-        alarmManager.cancel(createPostNotificationPendingIntent(cfg));
+        final PendingIntent toBeCancelled = createPostNotificationPendingIntent(cfg);
+        toBeCancelled.cancel();
+        alarmManager.cancel(toBeCancelled);
     }
 
     private void cancelTalkNotificationOnAlarmManager(String slotId) {
         final NotificationConfiguration cfg = getConfiguration(slotId);
-        alarmManager.cancel(createPendingIntentForAlarmReceiver(cfg));
-    }
-
-    private PendingIntent createPendingIntentForAlarmReceiver(NotificationConfiguration cfg) {
-        final Intent intent = new Intent(context, AlarmReceiver_.class);
-        intent.putExtra(EXTRA_TALK_ID, cfg.getSlotId());
-        return PendingIntent.getBroadcast(context, cfg.getSlotId().hashCode(), intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        final PendingIntent toBeCancelled = createPendingIntentForAlarmReceiver(cfg);
+        toBeCancelled.cancel();
+        alarmManager.cancel(toBeCancelled);
     }
 
     private void flagNotificationAsFiredForTalk(Realm realm, String slotId) {
