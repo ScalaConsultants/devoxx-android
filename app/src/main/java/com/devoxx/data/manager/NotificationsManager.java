@@ -38,7 +38,8 @@ public class NotificationsManager {
 
     public static final String EXTRA_TALK_ID = "com.devoxx.android.intent.extra.TALK_ID";
     public static final String EXTRA_NOTIFICATION_TYPE = "com.devoxx.android.intent.extra.EXTRA_NOTIFICATION_TYPE";
-    public static final String EXTRA_NOTIFICATION_TYPE_VALUE = "post_notification";
+    public static final String EXTRA_NOTIFICATION_TYPE_VALUE = "com.devoxx.android.intent.POST_NOTIFICATION";
+    public static final String TALK_NOTIFICATION_ACTION = "com.devoxx.android.intent.TALK_NOTIFICATION_ACTION";
 
     private static final long DEBUG_POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.SECONDS.toMillis(10);
     private static final long PROD_POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.MINUTES.toMillis(15);
@@ -114,7 +115,7 @@ public class NotificationsManager {
         intent.putExtra(EXTRA_TALK_ID, slotID);
         intent.putExtra(EXTRA_NOTIFICATION_TYPE, EXTRA_NOTIFICATION_TYPE_VALUE);
         return PendingIntent.getBroadcast(context, (int) (slotID.hashCode()
-                + cfg.getPostTalkNotificationTime()), intent, 0);
+                + cfg.getPostTalkNotificationTime()), intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private PendingIntent createTalkPendingIntentToOpenMainActivity(String slotID) {
@@ -158,15 +159,14 @@ public class NotificationsManager {
     private PendingIntent createPendingIntentForAlarmReceiver(NotificationConfiguration cfg) {
         final Intent intent = new Intent(context, AlarmReceiver_.class);
         intent.putExtra(EXTRA_TALK_ID, cfg.getSlotId());
-        return PendingIntent.getBroadcast(context, cfg.getSlotId().hashCode(), intent, 0);
+        return PendingIntent.getBroadcast(context, cfg.getSlotId().hashCode(), intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private void flagNotificationAsFiredForTalk(Realm realm, String slotId) {
         final RealmNotification notification = realm.where(RealmNotification.class)
                 .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
-        if (notification != null) {
-            notification.setFiredForTalk(true);
-        }
+        notification.setFiredForTalk(true);
     }
 
     private void flagNotificationAsComplete(Realm realm, String slotId) {
@@ -198,10 +198,26 @@ public class NotificationsManager {
             final Notification notification = createTalkNotification(
                     realmNotification, createTalkPendingIntentToOpenMainActivity(slotId));
             notificationManager.notify(slotId.hashCode(), notification);
+
+            notifyListenerAboutTalkNotification();
         }
 
         unscheduleNotification(slotId, false);
     }
+
+    private void notifyListenerAboutTalkNotification() {
+        context.sendBroadcast(new Intent(TALK_NOTIFICATION_ACTION));
+    }
+
+    public boolean isNotificationAvailable(String slotId) {
+        final Realm realm = realmProvider.getRealm();
+        final RealmNotification notification = realm.where(RealmNotification.class)
+                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
+        final boolean isNotificationLive = notification != null;
+        realm.close();
+        return isNotificationLive;
+    }
+
 
     public boolean isNotificationScheduled(String slotId) {
         final Realm realm = realmProvider.getRealm();

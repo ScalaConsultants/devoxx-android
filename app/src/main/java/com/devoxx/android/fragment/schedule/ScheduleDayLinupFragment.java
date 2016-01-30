@@ -3,6 +3,7 @@ package com.devoxx.android.fragment.schedule;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.fragment.common.BaseListFragment;
+import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 
 import org.androidannotations.annotations.AfterInject;
@@ -99,6 +100,11 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
                 resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
             onRefreshData();
         }
+    }
+
+    @Receiver(actions = {NotificationsManager.TALK_NOTIFICATION_ACTION})
+    void onTalkNotification() {
+        onRefreshData();
     }
 
     private void initAdapterWithLastQuery() {
