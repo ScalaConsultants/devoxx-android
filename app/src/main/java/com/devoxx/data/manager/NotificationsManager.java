@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 
 import com.devoxx.android.activity.MainActivity_;
+import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
 import com.devoxx.android.receiver.AlarmReceiver_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.RealmProvider;
@@ -39,7 +40,6 @@ public class NotificationsManager {
     public static final String EXTRA_TALK_ID = "com.devoxx.android.intent.extra.TALK_ID";
     public static final String NOTIFICATION_TALK_TYPE = "com.devoxx.android.intent.NOTIFICATION_TALK_TYPE";
     public static final String NOTIFICATION_POST_TYPE = "com.devoxx.android.intent.NOTIFICATION_POST_TYPE";
-    public static final String TALK_NOTIFICATION_ACTION = "com.devoxx.android.intent.TALK_NOTIFICATION_ACTION";
 
     private static final long DEBUG_POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.SECONDS.toMillis(10);
     private static final long PROD_POST_TALK_NOTIFICATION_DELAY_MS = TimeUnit.MINUTES.toMillis(15);
@@ -212,7 +212,7 @@ public class NotificationsManager {
     }
 
     private void notifyListenerAboutTalkNotification() {
-        context.sendBroadcast(new Intent(TALK_NOTIFICATION_ACTION));
+        context.sendBroadcast(ScheduleDayLinupFragment.getRefreshIntent());
     }
 
     public boolean isNotificationAvailable(String slotId) {

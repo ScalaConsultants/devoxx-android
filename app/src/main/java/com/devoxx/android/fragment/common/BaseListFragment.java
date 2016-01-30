@@ -29,7 +29,7 @@ public abstract class BaseListFragment extends BaseFragment implements ItemClick
         setupList();
 
         recyclerView.setOnTouchListener((v, event) -> {
-            if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_MOVE) {
+            if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
                 inputMethodManager.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
             }
             return false;

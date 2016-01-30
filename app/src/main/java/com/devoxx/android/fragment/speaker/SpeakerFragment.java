@@ -30,12 +30,14 @@ import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
+import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
@@ -45,6 +47,9 @@ import java.util.List;
 public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
     private static final float FULL_FACTOR = 1f;
+
+    @FragmentArg
+    String speakerUuid;
 
     @Bean
     SpeakersDataManager speakersDataManager;
@@ -57,6 +62,9 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @Bean
+    DeviceUtil deviceUtil;
 
     @Pref
     Settings_ settings;
@@ -97,7 +105,12 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     @AfterViews
     void afterViews() {
+        setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
+
         setupMainLayout();
+        if (speakerUuid != null) {
+            setupFragment(speakerUuid);
+        }
     }
 
     @Click(R.id.speakerDetailsFirstButton)
@@ -110,15 +123,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
         // TODO
     }
 
-    public void setupFragment(String speakerUuid, TalkSpeakerApiModel speakerModel) {
-        final String uuid;
-        if (speakerModel != null) {
-            speakerTalkModel = speakerModel;
-            uuid = TalkSpeakerApiModel.getUuidFromLink(speakerModel.link);
-        } else {
-            uuid = speakerUuid;
-        }
-
+    public void setupFragment(final String uuid) {
         speakersDataManager.fetchSpeakerAsync(conferenceManager.getActiveConferenceId(), uuid,
                 new AbstractDataManager.IDataManagerListener<RealmSpeaker>() {
                     @Override
@@ -183,9 +188,11 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     private void setupMainLayout() {
         collapsingToolbarLayout.setTitle(" ");
         final BaseActivity baseActivity = ((BaseActivity) getActivity());
-        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
-        baseActivity.setSupportActionBar(toolbar);
-        baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (toolbar != null) {
+            toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+            baseActivity.setSupportActionBar(toolbar);
+            baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         appBarLayout.addOnOffsetChangedListener(this);
     }
 

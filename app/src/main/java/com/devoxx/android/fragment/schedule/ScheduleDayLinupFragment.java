@@ -24,16 +24,22 @@ import com.devoxx.android.adapter.schedule.ScheduleDayLineupAdapter;
 import com.devoxx.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
+import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.InfoUtil;
 import com.devoxx.R;
 
 @EFragment(R.layout.fragment_list)
 public class ScheduleDayLinupFragment extends BaseListFragment {
 
+    public static final String REFRESH_ACTION = "com.devoxx.android.intent.REFRESH_ACTION";
+
     private static final long UNKNOWN_LINEUP_TIME = -1;
 
     @FragmentArg
     long lineupDayMs = UNKNOWN_LINEUP_TIME;
+
+    @Bean
+    Navigator navigator;
 
     @Bean
     ScheduleDayLineupAdapter scheduleDayLineupAdapter;
@@ -85,9 +91,7 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         final SlotApiModel slotApiModel = scheduleDayLineupAdapter.getClickedSlot(position);
 
         if (slotApiModel.isTalk()) {
-            TalkDetailsHostActivity_.intent(getParentFragment()).
-                    slotApiModel(slotApiModel)
-                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
+            navigator.openTalkDetails(getMainActivity(), slotApiModel, getParentFragment(), false);
         }
     }
 
@@ -102,9 +106,13 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         }
     }
 
-    @Receiver(actions = {NotificationsManager.TALK_NOTIFICATION_ACTION})
+    @Receiver(actions = {REFRESH_ACTION})
     void onTalkNotification() {
         onRefreshData();
+    }
+
+    public static Intent getRefreshIntent() {
+        return new Intent(REFRESH_ACTION);
     }
 
     private void initAdapterWithLastQuery() {

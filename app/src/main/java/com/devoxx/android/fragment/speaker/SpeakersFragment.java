@@ -21,14 +21,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.devoxx.R;
-import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
-import com.devoxx.android.dialog.FiltersDialog;
 import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeakerShort;
-import com.devoxx.utils.InfoUtil;
+import com.devoxx.navigation.Navigator;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -45,22 +43,20 @@ import java.util.Map;
 @EFragment(R.layout.fragment_speakers)
 public class SpeakersFragment extends BaseMenuFragment {
 
-    private static final long SHOW_PROGRESS_DELAY_MS = 150;
-
     @Bean
     SpeakersDataManager speakersDataManager;
 
     @Bean
     RealmProvider realmProvider;
 
+    @Bean
+    Navigator navigator;
+
     @Pref
     Settings_ settings;
 
     @SystemService
     InputMethodManager inputMethodManager;
-
-    @ViewById(R.id.listProgressBar)
-    View progressBar;
 
     @ViewById(R.id.listView)
     ListView listView;
@@ -69,13 +65,6 @@ public class SpeakersFragment extends BaseMenuFragment {
     View container;
 
     private ItemAdapter itemAdapter;
-
-    private Runnable showProgressRunnable = new Runnable() {
-        @Override
-        public void run() {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-    };
 
     @AfterInject
     void afterInject() {
@@ -93,9 +82,8 @@ public class SpeakersFragment extends BaseMenuFragment {
         populateList(speakers);
 
         listView.setOnItemClickListener((parent, view, position, id) ->
-                SpeakerDetailsHostActivity_.intent(getContext())
-                        .speakerUuid(itemAdapter.getClickedItem(position).getUuid())
-                        .start());
+                navigator.openSpeakerDetails(getMainActivity(),
+                        itemAdapter.getClickedItem(position).getUuid()));
 
         listView.setOnTouchListener((v, event) -> {
             if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
@@ -126,15 +114,6 @@ public class SpeakersFragment extends BaseMenuFragment {
 
         itemAdapter.setSpeakers(list);
         itemAdapter.notifyDataSetChanged();
-    }
-
-    private void showProgress() {
-        progressBar.postDelayed(showProgressRunnable, SHOW_PROGRESS_DELAY_MS);
-    }
-
-    private void hideProgress() {
-        progressBar.removeCallbacks(showProgressRunnable);
-        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private static Function<SpeakersGroup, Comparable> speakersGroupSorter() {

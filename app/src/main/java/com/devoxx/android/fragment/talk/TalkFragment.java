@@ -2,6 +2,7 @@ package com.devoxx.android.fragment.talk;
 
 import com.devoxx.android.activity.BaseActivity;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
+import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.data.manager.NotificationsManager;
 
@@ -9,6 +10,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -31,6 +33,7 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.model.SlotApiModel;
 
 import com.devoxx.R;
+import com.devoxx.utils.DeviceUtil;
 
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
@@ -40,12 +43,21 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     private static final float FULL_FACTOR = 1f;
 
     @Bean
+    DeviceUtil deviceUtil;
+
+    @Bean
     NotificationsManager notificationsManager;
+
+    @FragmentArg
+    SlotApiModel slotApiModel;
+
+    @FragmentArg
+    boolean notifyAboutChange;
 
     @ViewById(R.id.talkDetailsScheduleBtn)
     FloatingActionButton scheduleButton;
 
-    @ViewById(R.id.main_toolbar)
+    @ViewById(R.id.fragment_talk_toolbar)
     Toolbar toolbar;
 
     @ViewById(R.id.main_appbar)
@@ -71,7 +83,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @AfterViews
     void afterViews() {
+        setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
         setupMainLayout();
+
+        if (slotApiModel != null) {
+            setupFragment(slotApiModel, notifyAboutChange);
+        }
     }
 
     @Click(R.id.talkDetailsScheduleBtn)
@@ -82,7 +99,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
             notificationsManager.scheduleNotification(slotModel, true);
         }
 
-        notifyHostActivityAboutChangeOccured();
+        if (deviceUtil.isLandscapeTablet()) {
+            // Notify ScheduleLineupFragment about change.
+            getActivity().sendBroadcast(ScheduleDayLinupFragment.getRefreshIntent());
+        } else {
+            notifyHostActivityAboutChangeOccured();
+        }
 
         setupScheduleButton();
     }
@@ -184,9 +206,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     private void setupMainLayout() {
         collapsingToolbarLayout.setTitle(" ");
         final BaseActivity baseActivity = ((BaseActivity) getActivity());
-        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
-        baseActivity.setSupportActionBar(toolbar);
-        baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (toolbar != null) {
+            toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+            baseActivity.setSupportActionBar(toolbar);
+            baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         appBarLayout.addOnOffsetChangedListener(this);
     }
 }

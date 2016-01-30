@@ -1,6 +1,7 @@
 package com.devoxx.android.activity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +27,8 @@ import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
+import com.devoxx.navigation.Navigator;
+import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
 
@@ -43,6 +46,13 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
+    private static final String TAG_CONTENT_FRAGMENT_SECOND = "content_fragment_second";
+
+    @Bean
+    DeviceUtil deviceUtil;
+
+    @Bean
+    Navigator navigator;
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -70,6 +80,9 @@ public class MainActivity extends BaseActivity {
 
     @ViewById(R.id.menu_schedule)
     View menuScheduleView;
+
+    @ViewById(R.id.content_frame_second)
+    View secondFragmentContainer;
 
     @ColorRes(R.color.primary_text)
     int selectedTablColor;
@@ -104,25 +117,46 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        onMainMenuClick(menuScheduleView);
+    }
+
     @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
     void onMainMenuClick(View view) {
         setupMenuApperance(view);
-        removeFragments();
 
         switch (view.getId()) {
             case R.id.menu_schedule:
-                replaceFragment(ScheduleMainFragment_.builder().build(), false);
+                openSchedule();
                 break;
             case R.id.menu_tracks:
-                replaceFragment(TracksMainFragment_.builder().build(), false);
+                openTracks();
                 break;
             case R.id.menu_speakers:
-                replaceFragment(SpeakersFragment_.builder().build(), false);
+                openSpeakers();
                 break;
             case R.id.menu_map:
-                replaceFragment(MapMainFragment_.builder().build(), false);
+                openMaps();
                 break;
         }
+    }
+
+    private void openMaps() {
+        navigator.openMaps(this);
+    }
+
+    private void openSpeakers() {
+        replaceFragmentInGivenContainer(SpeakersFragment_.builder().build(), false, R.id.content_frame);
+    }
+
+    private void openTracks() {
+        replaceFragmentInGivenContainer(TracksMainFragment_.builder().build(), false, R.id.content_frame);
+    }
+
+    private void openSchedule() {
+        replaceFragmentInGivenContainer(ScheduleMainFragment_.builder().build(), false, R.id.content_frame);
     }
 
     @Override
@@ -177,30 +211,25 @@ public class MainActivity extends BaseActivity {
         if (optModel.isPresent()) {
             final Fragment fr = getSupportFragmentManager()
                     .findFragmentByTag(TAG_CONTENT_FRAGMENT);
-
-            final TalkDetailsHostActivity_.IntentBuilder_ ib;
             if (fr == null) {
-                ib = TalkDetailsHostActivity_.intent(this);
+                navigator.openTalkDetails(this, optModel.get(), true);
             } else {
-                ib = TalkDetailsHostActivity_.intent(fr);
+                navigator.openTalkDetails(this, optModel.get(), fr, true);
             }
-            ib.slotApiModel(optModel.get())
-                    .notifyAboutChange(true)
-                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
         } else {
             infoUtil.showToast(R.string.no_talk_foud);
         }
     }
 
-    public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-        replaceFragment(fragment, addToBackStack, FragmentTransaction.TRANSIT_NONE);
+    public void replaceFragmentInGivenContainer(Fragment fragment, boolean addToBackStack, int container) {
+        replaceFragmentInGivenContainer(fragment, addToBackStack, FragmentTransaction.TRANSIT_NONE, container);
     }
 
-    public void replaceFragment(Fragment fragment, boolean addToBackStack, int fragmentTransition) {
+    public void replaceFragmentInGivenContainer(Fragment fragment, boolean addToBackStack, int fragmentTransition, int container) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(fragmentTransition);
-        ft.replace(R.id.content_frame, fragment, TAG_CONTENT_FRAGMENT);
+        ft.replace(container, fragment, container == R.id.content_frame ? TAG_CONTENT_FRAGMENT : TAG_CONTENT_FRAGMENT_SECOND);
         ft.attach(fragment);
         if (addToBackStack) {
             ft.addToBackStack(null);
@@ -219,9 +248,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void removeFragments() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
-        List<Fragment> fragments = fragmentManager.getFragments();
+        final List<Fragment> fragments = fragmentManager.getFragments();
         if (fragments != null) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
             for (Fragment fragment : fragments) {
@@ -232,5 +261,4 @@ public class MainActivity extends BaseActivity {
             fragmentManager.executePendingTransactions();
         }
     }
-
 }

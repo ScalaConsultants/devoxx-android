@@ -1,3 +1,4 @@
 <resources>
     <dimen name="menu_width">64dp</dimen>
+    <dimen name="talk_header_height">200dp</dimen>
 </resources>

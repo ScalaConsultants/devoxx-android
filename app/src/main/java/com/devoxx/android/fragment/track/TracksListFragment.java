@@ -9,6 +9,7 @@ import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
+import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DateUtils;
 
 import org.androidannotations.annotations.AfterInject;
@@ -37,6 +38,9 @@ public class TracksListFragment extends BaseListFragment {
     ScheduleFilterManager scheduleFilterManager;
 
     @Bean
+    Navigator navigator;
+
+    @Bean
     TracksAdapter tracksAdapter;
 
     @FragmentArg
@@ -63,9 +67,8 @@ public class TracksListFragment extends BaseListFragment {
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
-        TalkDetailsHostActivity_.intent(getParentFragment())
-                .slotApiModel(tracksAdapter.getClickedItem(position))
-                .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
+        final SlotApiModel slotApiModel = tracksAdapter.getClickedItem(position);
+        navigator.openTalkDetails(getMainActivity(), slotApiModel, getParentFragment(), false);
     }
 
     @Override

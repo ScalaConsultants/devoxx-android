@@ -29,8 +29,8 @@ import java.util.List;
 public class MapMainFragment extends BaseMenuFragment
         implements TabLayout.OnTabSelectedListener {
 
-    private static final int CHECK_PERMISSION_REQ_CODE = 99;
-    private static final String[] MAP_PERMISSIONS = new String[]{
+    public static final int CHECK_PERMISSION_REQ_CODE = 99;
+    public static final String[] MAP_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -144,7 +144,7 @@ public class MapMainFragment extends BaseMenuFragment
         pager.setAdapter(adapter);
     }
 
-    private boolean isGranted(int[] grantResults) {
+    public static boolean isGranted(int[] grantResults) {
         boolean result = true;
         for (int granResult : grantResults) {
             result &= granResult == PackageManager.PERMISSION_GRANTED;
@@ -152,7 +152,7 @@ public class MapMainFragment extends BaseMenuFragment
         return result;
     }
 
-    private static boolean checkGivenPermissions(Activity activity, String... permissions) {
+    public static boolean checkGivenPermissions(Activity activity, String... permissions) {
         boolean result = true;
         for (String permission : permissions) {
             result &= ActivityCompat.checkSelfPermission(activity, permission)

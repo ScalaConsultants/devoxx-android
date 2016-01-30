@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.devoxx.android.view.talk.TalkDetailsHeader;
 import com.devoxx.R;
+import com.devoxx.utils.DeviceUtil;
+import com.devoxx.utils.DeviceUtil_;
 
 @SuppressWarnings("unused")
 public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<TalkDetailsHeader> {
@@ -23,9 +25,11 @@ public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<Ta
     private int mMarginRight;
     private int mStartMarginBottom;
     private boolean isHide;
+    private DeviceUtil deviceUtil;
 
     public TalkDetailsHeaderViewBehavior(Context context, AttributeSet attrs) {
         mContext = context;
+        deviceUtil = DeviceUtil_.getInstance_(context);
     }
 
     @Override
@@ -49,7 +53,8 @@ public class TalkDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior<Ta
         calculatedChildPosition = calculatedChildPosition - mStartMarginBottom * (FULL_FACTOR - factor);
 
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        lp.leftMargin = (int) (factor * mEndMargintLeft) + mStartMarginLeft;
+        lp.leftMargin = deviceUtil.isLandscapeTablet()
+                ? mStartMarginLeft : (int) (factor * mEndMargintLeft) + mStartMarginLeft;
         lp.rightMargin = mMarginRight;
         child.setLayoutParams(lp);
 
