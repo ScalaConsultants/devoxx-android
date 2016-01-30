@@ -16,7 +16,9 @@ import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -58,6 +60,9 @@ public class TalkItemView extends LinearLayout {
     @ColorRes(R.color.primary)
     int scheduledIndicatorColor;
 
+    @ColorRes(R.color.active_slot)
+    int activeSlotColor;
+
     @Bean
     TracksDownloader tracksDownloader;
 
@@ -71,10 +76,9 @@ public class TalkItemView extends LinearLayout {
         setGravity(Gravity.CENTER_VERTICAL);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        setupBackground();
     }
 
-    public TalkItemView setupTalk(SlotApiModel slotModel) {
+    public TalkItemView setupTalk(SlotApiModel slotModel, boolean isRunning) {
         if (slotModel.notAllocated) {
             // TODO Handle somehow free slots.
             title.setText("Free slot...");
@@ -99,6 +103,12 @@ public class TalkItemView extends LinearLayout {
             scheduleIcon.setColorFilter(scheduledIndicatorColor, PorterDuff.Mode.MULTIPLY);
         } else {
             scheduleIcon.setVisibility(View.GONE);
+        }
+
+        if (isRunning) {
+            setupRunningBackground();
+        } else {
+            setupNormalBackground();
         }
 
         return this;
@@ -129,11 +139,15 @@ public class TalkItemView extends LinearLayout {
         track.setVisibility(View.INVISIBLE);
     }
 
-    private void setupBackground() {
+    private void setupNormalBackground() {
         int[] attrs = new int[]{android.R.attr.selectableItemBackground};
         TypedArray ta = getContext().getTheme().obtainStyledAttributes(attrs);
         Drawable drawableFromTheme = ta.getDrawable(0);
         ta.recycle();
         setBackground(drawableFromTheme);
+    }
+
+    private void setupRunningBackground() {
+        setBackground(new ColorDrawable(activeSlotColor));
     }
 }

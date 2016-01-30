@@ -19,6 +19,7 @@ public class TalksScheduleItem extends ScheduleItem {
     private List<SlotApiModel> favouredSlots;
     private List<SlotApiModel> otherSlots;
     private boolean isOthersVisible = true;
+    private boolean isRunning;
 
     public TalksScheduleItem(long startTime, long endTime, int strIndex, int stpIndex) {
         super(startTime, endTime, strIndex, stpIndex);
@@ -145,5 +146,13 @@ public class TalksScheduleItem extends ScheduleItem {
                 .filter(SlotApiModel::isTalk)
                 .groupBy(value -> value.talk.track)
                 .collect(Collectors.counting()).intValue();
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 }

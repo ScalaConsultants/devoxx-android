@@ -13,7 +13,6 @@ import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.manager.SlotsDataManager;
-import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
 
@@ -119,6 +118,12 @@ public class ScheduleMainFragment extends BaseMenuFragment
         schedulePagerAdapter.notifyDataSetChanged();
 
         tabLayout.setupWithViewPager(viewPager);
+
+        final ConferenceDay activeDay = conferenceManager.getCurrentConfDay();
+        if (days.contains(activeDay)) {
+            final int index = days.indexOf(activeDay);
+            viewPager.setCurrentItem(index);
+        }
     }
 
     @Override

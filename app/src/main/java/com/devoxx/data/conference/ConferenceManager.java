@@ -1,5 +1,6 @@
 package com.devoxx.data.conference;
 
+import com.annimon.stream.Stream;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.cache.BaseCache;
@@ -70,6 +71,8 @@ public class ConferenceManager {
 
     @Bean
     BaseCache baseCache;
+
+    private List<ConferenceDay> conferenceDays;
 
     @Background
     public void fetchAvailableConferences(IConferencesListener listener) {
@@ -142,15 +145,21 @@ public class ConferenceManager {
         final String toDate = "2015-11-13T23:00:00.000Z";
         final DateTime fromConfDate = parseConfDate(fromDate);
         final DateTime toConfDate = parseConfDate(toDate);
+        final DateTime now = new DateTime(getNow());
 
         final int daysSpan = Days.daysBetween(fromConfDate, toConfDate).getDays();
 
         final List<ConferenceDay> result = new ArrayList<>(daysSpan + 1 /* include days */);
         for (int i = 0; i <= daysSpan; i++) {
             final DateTime tmpDate = fromConfDate.plusDays(i);
-            result.add(new ConferenceDay(tmpDate.getMillis(),
-                    tmpDate.dayOfWeek().getAsText(Locale.getDefault())));
+            final boolean isToday = tmpDate.getDayOfYear() == now.getDayOfYear();
+            result.add(new ConferenceDay(
+                    tmpDate.getMillis(),
+                    tmpDate.dayOfWeek().getAsText(Locale.getDefault()),
+                    isToday));
         }
+
+        conferenceDays = new ArrayList<>(result);
 
         return result;
     }
@@ -175,6 +184,16 @@ public class ConferenceManager {
         clearSpeakersData();
         clearFiltersDefinitions();
         clearCache();
+    }
+
+    public ConferenceDay getCurrentConfDay() {
+        return Stream.of(conferenceDays).filter(ConferenceDay::isRunning).findFirst().get();
+    }
+
+    public long getNow() {
+        //TODO Tests!
+        final String test = "2015-11-10T10:00:00.000Z";
+        return parseConfDate(test).getMillis();
     }
 
     private void clearFiltersDefinitions() {

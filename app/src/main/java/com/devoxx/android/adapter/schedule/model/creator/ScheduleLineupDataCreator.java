@@ -7,6 +7,8 @@ import com.annimon.stream.function.Function;
 import com.devoxx.android.adapter.schedule.model.BreakScheduleItem;
 import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.adapter.schedule.model.TalksScheduleItem;
+import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.utils.tuple.TripleTuple;
@@ -30,6 +32,9 @@ public class ScheduleLineupDataCreator {
 
     @Bean
     NotificationsManager notificationsManager;
+
+    @Bean
+    ConferenceManager conferenceManager;
 
     private Collector<SlotApiModel, ?, Map<TripleTuple<Long, Long, String>, List<SlotApiModel>>>
             triplesCollector = createTriplesCollector();
@@ -91,6 +96,8 @@ public class ScheduleLineupDataCreator {
                     }
                 }
 
+                talksScheduleItem.setRunning(isRunningItem(talksScheduleItem));
+
                 result.add(talksScheduleItem);
             }
 
@@ -98,6 +105,12 @@ public class ScheduleLineupDataCreator {
         }
 
         return result;
+    }
+
+    private boolean isRunningItem(ScheduleItem scheduleItem) {
+        final long currentTime = conferenceManager.getNow();
+        return scheduleItem.getStartTime() <= currentTime
+                && scheduleItem.getEndTime() >= currentTime;
     }
 
     private boolean isBreak(List<SlotApiModel> models) {

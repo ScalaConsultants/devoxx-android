@@ -12,7 +12,7 @@ public class TalkItemHolder extends BaseItemHolder {
         talkItemView = itemView;
     }
 
-    public void setupTalk(SlotApiModel slotApiModel) {
-        talkItemView.setupTalk(slotApiModel);
+    public void setupTalk(SlotApiModel slotApiModel, boolean isRunning) {
+        talkItemView.setupTalk(slotApiModel, isRunning);
     }
 }

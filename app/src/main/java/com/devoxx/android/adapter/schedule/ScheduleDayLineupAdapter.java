@@ -1,5 +1,6 @@
 package com.devoxx.android.adapter.schedule;
 
+import com.annimon.stream.Stream;
 import com.devoxx.android.adapter.schedule.model.BreakScheduleItem;
 import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.adapter.schedule.model.TalksScheduleItem;
@@ -37,6 +38,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     public static final int BREAK_VIEW = 2;
     public static final int TALK_VIEW = 3;
     public static final int TALK_MORE_VIEW = 4;
+    public static final int INVALID_RUNNING_SLOT_INDEX = -1;
 
     @IntDef({
             TIMESPAN_VIEW,
@@ -106,6 +108,15 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
         }
     }
 
+    public int getRunningFirstPosition() {
+        for (ScheduleItem item : data) {
+            if (item instanceof TalksScheduleItem && ((TalksScheduleItem) item).isRunning()) {
+                return item.getStartIndex();
+            }
+        }
+        return INVALID_RUNNING_SLOT_INDEX;
+    }
+
     private void setupMoreItemHolder(TalksMoreItemHolder holder, int position) {
         final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
         holder.setupMore(item, () -> {
@@ -131,7 +142,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     private void setupTalkItemHolder(BaseItemHolder holder, ScheduleItem scheduleItem, int position) {
         final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) scheduleItem;
         final SlotApiModel slotModel = talksScheduleItem.getItem(position);
-        ((TalkItemHolder) holder).setupTalk(slotModel);
+        ((TalkItemHolder) holder).setupTalk(slotModel, talksScheduleItem.isRunning());
         setupOnItemClickListener(holder, position);
     }
 

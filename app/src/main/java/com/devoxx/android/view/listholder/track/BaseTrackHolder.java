@@ -11,5 +11,5 @@ public abstract class BaseTrackHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public abstract void setupView(SlotApiModel slotApiModel);
+    public abstract void setupView(SlotApiModel slotApiModel, boolean isRunning);
 }

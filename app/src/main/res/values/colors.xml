@@ -31,4 +31,5 @@
     <color name="tab_text_unselected">#A0FFFFFF</color>
     <color name="divider_color">#50212121</color>
     <color name="dark_gray">#212121</color>
+    <color name="active_slot">#35aed581</color>
 </resources>

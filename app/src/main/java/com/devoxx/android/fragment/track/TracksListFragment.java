@@ -12,6 +12,7 @@ import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.utils.DateUtils;
 
 import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
@@ -47,6 +48,19 @@ public class TracksListFragment extends BaseListFragment {
         tracksAdapter.setData(tracks);
     }
 
+    @AfterViews
+    void afterViewsInternal() {
+        super.afterViews();
+        scrollToFirstActiveItem();
+    }
+
+    private void scrollToFirstActiveItem() {
+        final int index = tracksAdapter.getRunningFirstIndex();
+        if (index != TracksAdapter.INVALID_RUNNING_FIRST_INDEX) {
+            recyclerView.scrollToPosition(index);
+        }
+    }
+
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
         TalkDetailsHostActivity_.intent(getParentFragment())
@@ -79,6 +93,7 @@ public class TracksListFragment extends BaseListFragment {
         final List<SlotApiModel> tracks = filterSlotsByDay();
         tracksAdapter.setData(tracks);
         tracksAdapter.notifyDataSetChanged();
+        scrollToFirstActiveItem();
     }
 
     private List<SlotApiModel> filterSlotsByDay() {

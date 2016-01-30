@@ -111,5 +111,10 @@ public class ScheduleDayLinupFragment extends BaseListFragment {
         }
         items = scheduleFilterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
+
+        final int runningIndex = scheduleDayLineupAdapter.getRunningFirstPosition();
+        if (runningIndex != ScheduleDayLineupAdapter.INVALID_RUNNING_SLOT_INDEX) {
+            recyclerView.scrollToPosition(runningIndex);
+        }
     }
 }

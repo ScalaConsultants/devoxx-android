@@ -5,6 +5,7 @@ import com.devoxx.connection.model.TracksApiModel;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.utils.Logger;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -36,6 +37,13 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
     @Bean
     Connection connection;
 
+    private String activeConferenceApiUrl;
+
+    @AfterInject
+    void afterInject() {
+        activeConferenceApiUrl = connection.getActiveConferenceApiUrl();
+    }
+
     public void downloadTracksDescriptions(String confCode) throws IOException {
         final Call<TracksApiModel> tracksCall = connection.getDevoxxApi().tracks(confCode);
         final Realm realm = realmProvider.getRealm();
@@ -60,7 +68,7 @@ public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
 
         String result = UNKNOWN_TRACK_ICON_URL;
         if (realmTrack != null) {
-            result = connection.getActiveConferenceApiUrl() + realmTrack.getImgsrc();
+            result = activeConferenceApiUrl + realmTrack.getImgsrc();
         }
 
         realm.close();
