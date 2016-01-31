@@ -16,9 +16,7 @@ import android.widget.TextView;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devoxx.R;
-import com.devoxx.android.fragment.common.EmptyFragment;
 import com.devoxx.android.fragment.common.EmptyFragment_;
-import com.devoxx.android.fragment.map.MapMainFragment_;
 import com.devoxx.android.fragment.schedule.ScheduleMainFragment_;
 import com.devoxx.android.fragment.speaker.SpeakersFragment_;
 import com.devoxx.android.fragment.track.TracksMainFragment_;
@@ -30,7 +28,6 @@ import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.navigation.Navigator;
-import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
 
@@ -242,7 +239,7 @@ public class MainActivity extends BaseActivity {
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     private void setupToolbar() {
@@ -255,18 +252,4 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setTitle("");
     }
 
-    private void removeFragments() {
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStackImmediate();
-        final List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments != null) {
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            for (Fragment fragment : fragments) {
-                if (fragment != null)
-                    ft.detach(fragment).remove(fragment);
-            }
-            ft.commit();
-            fragmentManager.executePendingTransactions();
-        }
-    }
 }
