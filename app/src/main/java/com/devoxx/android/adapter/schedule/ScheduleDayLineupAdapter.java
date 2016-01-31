@@ -130,7 +130,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
 
     private void setupTimespanItemHolder(TimespanItemHolder holder, ScheduleItem scheduleItem) {
         final TalksScheduleItem item = (TalksScheduleItem) scheduleItem;
-        holder.setupTimespan(item.getStartTime(), item.getEndTime());
+        holder.setupTimespan(item.getStartTime(), item.getEndTime(), item.isRunning());
     }
 
     private void setupBreakItemHolder(BreakItemHolder holder, ScheduleItem scheduleItem) {

@@ -32,4 +32,6 @@
     <color name="divider_color">#50212121</color>
     <color name="dark_gray">#212121</color>
     <color name="active_slot">#35aed581</color>
+    <color name="talk_item_sub_icon_color">#757575</color>
+    <color name="running_timespan">#f1464c</color>
 </resources>

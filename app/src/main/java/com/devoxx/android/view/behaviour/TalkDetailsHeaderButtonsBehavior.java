@@ -12,7 +12,7 @@ import com.devoxx.R;
 
 public class TalkDetailsHeaderButtonsBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
 
-    private static final float HIDE_FACTOR = 0.4f;
+    private static final float HIDE_FACTOR = 0.25f;
 
     private final Context context;
     private boolean isHidden;

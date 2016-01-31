@@ -14,7 +14,7 @@
     <dimen name="item_talks_more_icon_size">32dp</dimen>
 
     <dimen name="header_view_start_margin_left">16dp</dimen>
-    <dimen name="header_view_start_margin_bottom">14dp</dimen>
+    <dimen name="header_view_start_margin_bottom">36dp</dimen>
     <dimen name="header_view_end_margin_left">40dp</dimen>
     <dimen name="header_view_end_margin_right">40dp</dimen>
 
@@ -28,4 +28,5 @@
     <dimen name="elevation_toolbar">0dp</dimen>
     <dimen name="elevation_main_frame">0dp</dimen>
     <dimen name="elevation_menu">0dp</dimen>
+    <dimen name="talk_item_sub_icon_size">20dp</dimen>
 </resources>

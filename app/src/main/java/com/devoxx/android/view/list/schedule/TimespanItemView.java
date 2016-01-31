@@ -2,6 +2,7 @@ package com.devoxx.android.view.list.schedule;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.ColorRes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -22,9 +23,16 @@ public class TimespanItemView extends LinearLayout {
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(
             TIME_FORMAT_RAW, Locale.getDefault());
     public static final String TIMESPAN_PLACEHOLDER = "%s-%s";
+    public static final String RUNNING_TIMESPAN_PLACEHOLDER = "NOW: %s to %s";
 
     @ViewById(R.id.list_item_timespan)
     TextView label;
+
+    @ColorRes(R.color.primary)
+    int notRunningTimespanColor;
+
+    @ColorRes(R.color.running_timespan)
+    int runningTimespanColor;
 
     public TimespanItemView(Context context) {
         super(context);
@@ -43,10 +51,16 @@ public class TimespanItemView extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setupTimespan(long timeStart, long timeEnd) {
+    public void setupTimespan(long timeStart, long timeEnd, boolean running) {
         final String startString = formatTime(timeStart);
         final String endString = formatTime(timeEnd);
-        label.setText(String.format(TIMESPAN_PLACEHOLDER, startString, endString));
+        if (running) {
+            label.setText(String.format(RUNNING_TIMESPAN_PLACEHOLDER, startString, endString));
+            label.setTextColor(runningTimespanColor);
+        } else {
+            label.setText(String.format(TIMESPAN_PLACEHOLDER, startString, endString));
+            label.setTextColor(notRunningTimespanColor);
+        }
     }
 
     public static String formatTime(long time) {

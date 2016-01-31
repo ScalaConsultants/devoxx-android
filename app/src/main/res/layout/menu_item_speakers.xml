@@ -16,7 +16,7 @@
         android:layout_marginTop="2dp"
         android:layout_weight="0.6"
         android:contentDescription="@null"
-        android:src="@drawable/ic_microphone_black_24px"/>
+        android:src="@drawable/ic_microphone"/>
 
     <TextView
         style="@style/MenuItemLabelStyle"

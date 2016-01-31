@@ -163,7 +163,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
             scheduleButton.setImageResource(R.drawable.ic_star);
         } else {
-            scheduleButton.setImageResource(R.drawable.ic_star_grey600_18dp);
+            scheduleButton.setImageResource(R.drawable.ic_star_border);
         }
     }
 

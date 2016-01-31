@@ -36,8 +36,8 @@ public class TalkDetailsSectionItem extends LinearLayout {
 
     public void setupView(String iconUrl, @StringRes int titleResId, String subtitleVal) {
         // TODO Proper icon!
-        Glide.with(getContext()).load(R.drawable.ic_star_grey600_18dp)
-                .fallback(R.drawable.ic_star_grey600_18dp).into(icon);
+        Glide.with(getContext()).load(R.drawable.ic_star)
+                .fallback(R.drawable.ic_star).into(icon);
         title.setText(titleResId);
         subtitle.setText(subtitleVal);
     }

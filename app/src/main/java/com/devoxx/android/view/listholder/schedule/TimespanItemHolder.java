@@ -11,7 +11,7 @@ public class TimespanItemHolder extends BaseItemHolder {
         timespanItemView = aTimespanItemView;
     }
 
-    public void setupTimespan(long timeStart, long timeEnd) {
-        timespanItemView.setupTimespan(timeStart, timeEnd);
+    public void setupTimespan(long timeStart, long timeEnd, boolean running) {
+        timespanItemView.setupTimespan(timeStart, timeEnd, running);
     }
 }
