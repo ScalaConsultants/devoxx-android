@@ -27,6 +27,7 @@ import com.devoxx.data.Settings_;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeakerShort;
 import com.devoxx.navigation.Navigator;
+import com.devoxx.utils.DeviceUtil;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -51,6 +52,9 @@ public class SpeakersFragment extends BaseMenuFragment {
 
     @Bean
     Navigator navigator;
+
+    @Bean
+    DeviceUtil deviceUtil;
 
     @Pref
     Settings_ settings;
@@ -114,6 +118,12 @@ public class SpeakersFragment extends BaseMenuFragment {
 
         itemAdapter.setSpeakers(list);
         itemAdapter.notifyDataSetChanged();
+
+        // By Default open first speaker in landscape mode.
+        if (deviceUtil.isLandscapeTablet()) {
+            navigator.openSpeakerDetails(getMainActivity(),
+                    itemAdapter.getClickedItem(0).getUuid());
+        }
     }
 
     private static Function<SpeakersGroup, Comparable> speakersGroupSorter() {
