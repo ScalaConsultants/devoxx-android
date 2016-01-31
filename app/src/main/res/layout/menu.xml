@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/menuContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/menuContainer"
     android:layout_width="match_parent"
     android:layout_height="@dimen/menu_height"
     android:background="?colorPrimary"
     android:baselineAligned="false"
+    android:elevation="@dimen/elevation_menu"
     android:orientation="horizontal"
     tools:showIn="@layout/activity_main">
 

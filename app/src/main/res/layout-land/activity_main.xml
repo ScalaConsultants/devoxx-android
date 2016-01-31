@@ -20,13 +20,20 @@
             android:id="@+id/content_frame"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:elevation="@dimen/elevation_main_frame"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/primary_text_15"/>
 
         <FrameLayout
             android:id="@+id/content_frame_second"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:elevation="0dp"/>
 
     </LinearLayout>
 </LinearLayout>

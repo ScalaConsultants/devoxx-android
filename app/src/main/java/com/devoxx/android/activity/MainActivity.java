@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devoxx.R;
+import com.devoxx.android.fragment.common.EmptyFragment;
+import com.devoxx.android.fragment.common.EmptyFragment_;
 import com.devoxx.android.fragment.map.MapMainFragment_;
 import com.devoxx.android.fragment.schedule.ScheduleMainFragment_;
 import com.devoxx.android.fragment.speaker.SpeakersFragment_;
@@ -153,10 +155,12 @@ public class MainActivity extends BaseActivity {
 
     private void openTracks() {
         replaceFragmentInGivenContainer(TracksMainFragment_.builder().build(), false, R.id.content_frame);
+        replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
     }
 
     private void openSchedule() {
         replaceFragmentInGivenContainer(ScheduleMainFragment_.builder().build(), false, R.id.content_frame);
+        replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
     }
 
     @Override

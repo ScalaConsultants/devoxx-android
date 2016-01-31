@@ -23,4 +23,9 @@
     <dimen name="value_16dp">16dp</dimen>
     <dimen name="value_12dp">12dp</dimen>
     <dimen name="talk_header_height">300dp</dimen>
+
+    <dimen name="elevation_tab_layout">0dp</dimen>
+    <dimen name="elevation_toolbar">0dp</dimen>
+    <dimen name="elevation_main_frame">0dp</dimen>
+    <dimen name="elevation_menu">0dp</dimen>
 </resources>
