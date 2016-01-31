@@ -22,4 +22,8 @@ public class DeviceUtil {
         return context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE && isTablet;
     }
+
+    public boolean isTablet(){
+        return isTablet;
+    }
 }

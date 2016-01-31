@@ -34,6 +34,7 @@ public class AboutActivity extends BaseActivity {
 
     @AfterViews
     void afterViews() {
+        super.afterViews();
         collapsingToolbarLayout.setTitle(getString(R.string.about));
         setSupportActionBar(toolbar);
 

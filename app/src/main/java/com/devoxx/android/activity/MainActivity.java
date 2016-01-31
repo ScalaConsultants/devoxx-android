@@ -51,9 +51,6 @@ public class MainActivity extends BaseActivity {
     private static final String TAG_CONTENT_FRAGMENT_SECOND = "content_fragment_second";
 
     @Bean
-    DeviceUtil deviceUtil;
-
-    @Bean
     Navigator navigator;
 
     @Bean
@@ -112,6 +109,7 @@ public class MainActivity extends BaseActivity {
 
     @AfterViews
     void afterViews() {
+        super.afterViews();
         setupToolbar();
 
         if (!isSavedInstanceState) {

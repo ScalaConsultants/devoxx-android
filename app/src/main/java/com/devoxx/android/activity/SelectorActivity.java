@@ -42,7 +42,6 @@ import java.util.Locale;
 public class SelectorActivity extends BaseActivity implements ConferenceManager.IConferencesListener,
         ConferenceManager.IConferenceDataListener, SelectorView.IWheelItemActionListener {
 
-
     @Bean
     ConferenceManager conferenceManager;
 
@@ -95,6 +94,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @AfterViews
     void afterViews() {
+        super.afterViews();
         conferenceManager.warmUp();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
