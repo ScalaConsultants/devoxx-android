@@ -155,12 +155,18 @@ public class MainActivity extends BaseActivity {
 
     private void openTracks() {
         replaceFragmentInGivenContainer(TracksMainFragment_.builder().build(), false, R.id.content_frame);
-        replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
+
+        if (deviceUtil.isLandscapeTablet()) {
+            replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
+        }
     }
 
     private void openSchedule() {
         replaceFragmentInGivenContainer(ScheduleMainFragment_.builder().build(), false, R.id.content_frame);
-        replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
+
+        if (deviceUtil.isLandscapeTablet()) {
+            replaceFragmentInGivenContainer(EmptyFragment_.builder().build(), false, R.id.content_frame_second);
+        }
     }
 
     @Override
