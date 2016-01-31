@@ -56,7 +56,6 @@ android {
         devoxx {
             debuggable true
             versionNameSuffix "@devoxx"
-            applicationIdSuffix ".devoxx"
             buildConfigField "boolean", "LOGGING", "true"
             signingConfig signingConfigs.debug
             manifestPlaceholders = [applicationLabel: "@string/app_name_devox"]
