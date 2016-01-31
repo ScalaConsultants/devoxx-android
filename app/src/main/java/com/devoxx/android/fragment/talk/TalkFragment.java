@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import android.app.Activity;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -86,7 +87,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
         setupMainLayout();
 
-        if (slotApiModel != null) {
+        if (deviceUtil.isLandscapeTablet() && slotApiModel != null) {
             setupFragment(slotApiModel, notifyAboutChange);
         }
     }
@@ -168,6 +169,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private void fillSectionsContainer(SlotApiModel slotModel) {
+        sectionContainer.removeAllViews();
         sectionContainer.addView(createDateTimeSection(slotModel));
         sectionContainer.addView(createPresenterSection(slotModel));
         sectionContainer.addView(createRoomSection(slotModel));
@@ -175,15 +177,15 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private View createFormatSection(SlotApiModel slotModel) {
-        return createSection("icon_TBD", R.string.talk_details_section_format, slotModel.talk.talkType);
+        return createSection(R.drawable.ic_star, R.string.talk_details_section_format, slotModel.talk.talkType);
     }
 
     private View createRoomSection(SlotApiModel slotModel) {
-        return createSection("icon_TBD", R.string.talk_details_section_room, slotModel.roomName);
+        return createSection(R.drawable.ic_place_big, R.string.talk_details_section_room, slotModel.roomName);
     }
 
     private View createPresenterSection(SlotApiModel slotModel) {
-        return createSection("icon_TBD", R.string.talk_details_section_presentor,
+        return createSection(R.drawable.ic_microphone_big, R.string.talk_details_section_presentor,
                 slotModel.talk.getReadableSpeakers());
     }
 
@@ -193,13 +195,13 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         final String startDateString = startDate.toString(DateTimeFormat.forPattern(DATE_TEXT_FORMAT));
         final String startTimeString = startDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
         final String endTimeString = endDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
-        return createSection("icon_TBD", R.string.talk_details_section_date_time,
+        return createSection(R.drawable.ic_star, R.string.talk_details_section_date_time,
                 String.format("%s, %s to %s", startDateString, startTimeString, endTimeString));
     }
 
-    private TalkDetailsSectionItem createSection(String iconUrl, @StringRes int title, String subtitle) {
+    private TalkDetailsSectionItem createSection(@DrawableRes int icon, @StringRes int title, String subtitle) {
         final TalkDetailsSectionItem result = TalkDetailsSectionItem_.build(getContext());
-        result.setupView(iconUrl, title, subtitle);
+        result.setupView(icon, title, subtitle);
         return result;
     }
 

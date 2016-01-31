@@ -108,7 +108,8 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
         setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
 
         setupMainLayout();
-        if (speakerUuid != null) {
+
+        if (deviceUtil.isLandscapeTablet()&&speakerUuid != null) {
             setupFragment(speakerUuid);
         }
     }

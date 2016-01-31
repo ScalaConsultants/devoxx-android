@@ -9,6 +9,7 @@ import org.androidannotations.annotations.ViewById;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -34,10 +35,8 @@ public class TalkDetailsSectionItem extends LinearLayout {
         setOrientation(HORIZONTAL);
     }
 
-    public void setupView(String iconUrl, @StringRes int titleResId, String subtitleVal) {
-        // TODO Proper icon!
-        Glide.with(getContext()).load(R.drawable.ic_star)
-                .fallback(R.drawable.ic_star).into(icon);
+    public void setupView(@DrawableRes int iconRes, @StringRes int titleResId, String subtitleVal) {
+        icon.setImageResource(iconRes);
         title.setText(titleResId);
         subtitle.setText(subtitleVal);
     }
