@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="56dp"
+             android:background="?attr/selectableItemBackground"
+             android:orientation="horizontal"
+             tools:ignore="UseCompoundDrawables">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:duplicateParentState="true"
+        android:paddingLeft="72dp"
+        android:paddingStart="72dp">
+
+        <TextView
+            android:id="@+id/mapLandscapeMenuTitle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:duplicateParentState="true"
+            android:gravity="center_vertical"
+            android:textColor="@drawable/map_landscape_menu_text_label_selector"
+            android:textSize="24dp"
+            tools:test="VENUE"/>
+
+        <ImageView
+            style="@style/ScheduleImageButtonStyle"
+            android:layout_width="@dimen/item_talks_more_icon_size"
+            android:layout_height="@dimen/item_talks_more_icon_size"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+            android:tint="@color/dark_gray"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="72dp"
+        android:layout_marginStart="72dp"
+        android:background="@color/primary_text_30"/>
+</FrameLayout>

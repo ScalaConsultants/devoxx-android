@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/menuContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/menu_width"
+    android:id="@+id/menuContainer"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="?colorPrimary"
     android:orientation="vertical"
+    android:padding="4dp"
     tools:showIn="@layout/activity_main">
 
     <include
         layout="@layout/menu_item_schedule"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_width="@dimen/menu_width"
+        android:layout_height="@dimen/menu_width"/>
 
     <include
         layout="@layout/menu_item_tracks"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_width="@dimen/menu_width"
+        android:layout_height="@dimen/menu_width"/>
 
     <include
         layout="@layout/menu_item_speakers"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_width="@dimen/menu_width"
+        android:layout_height="@dimen/menu_width"/>
 
     <include
         layout="@layout/menu_item_map"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_width="@dimen/menu_width"
+        android:layout_height="@dimen/menu_width"/>
 
 </LinearLayout>

@@ -9,6 +9,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.devoxx.R;
 import com.devoxx.android.adapter.map.MapPagerAdapter;
 import com.devoxx.android.fragment.common.BaseMenuFragment;
@@ -123,8 +125,11 @@ public class MapMainFragment extends BaseMenuFragment
         final List<RealmFloor> floors = RealmConference.extractFloors(conference);
         final int floorsCount = floors.size();
 
+        final List<String> floorsImages = Stream.of(floors)
+                .map(RealmFloor::getImg).collect(Collectors.toList());
+
         final MapPagerAdapter adapter = new MapPagerAdapter(
-                getChildFragmentManager(), floorsCount, withMap);
+                getChildFragmentManager(), floorsCount, withMap, floorsImages);
         tabLayout.removeAllTabs();
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);

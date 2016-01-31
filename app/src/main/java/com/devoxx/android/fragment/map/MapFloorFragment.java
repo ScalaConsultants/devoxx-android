@@ -16,7 +16,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class MapFloorFragment extends BaseFragment {
 
     @FragmentArg
-    int floor;
+    String imageUrl;
 
     @ViewById(R.id.mapFloorImage)
     ImageView imageView;

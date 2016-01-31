@@ -3,7 +3,7 @@ package com.devoxx.android.fragment.map;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,11 +13,11 @@ import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.model.RealmFloor;
-import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
@@ -28,8 +28,8 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     @Bean
     ConferenceManager conferenceManager;
 
-    @Bean
-    protected InfoUtil infoUtil;
+    @SystemService
+    LayoutInflater layoutInflater;
 
     @ViewById(R.id.mapsMenuFragmentContainer)
     LinearLayout menuContaier;
@@ -72,34 +72,47 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
 
     private void setupMenu(boolean withMap) {
         menuContaier.removeAllViews();
-        // TODO
-
         final RealmConference conference = conferenceManager.getActiveConference();
         final List<RealmFloor> floors = RealmConference.extractFloors(conference);
         final int floorsCount = floors.size();
 
+        boolean mapOpened = false;
         if (withMap) {
-            menuContaier.addView(createMenuItem(getString(R.string.venue), this::openMap));
+            final View mapMenuItem = createMenuItem(getString(R.string.venue), this::openMap);
+            menuContaier.addView(mapMenuItem);
+            mapMenuItem.performClick();
+            mapOpened = true;
         }
 
+        View floorMenuItem = null;
         for (int i = 0; i < floorsCount; i++) {
             final RealmFloor floor = floors.get(i);
-            final int finalI = i;
-            menuContaier.addView(createMenuItem(floor.getTitle(), () -> openFloor(finalI)));
+            floorMenuItem = createMenuItem(floor.getTitle(), () -> openFloor(floor.getImg()));
+            menuContaier.addView(floorMenuItem);
+        }
+
+        if (!mapOpened && floorMenuItem != null) {
+            floorMenuItem.performClick();
         }
     }
 
-    private void openFloor(int floor) {
-        final MapFloorFragment fr = MapFloorFragment_.builder().floor(floor).build();
+    private void openFloor(String floorImageUrl) {
+        final MapFloorFragment fr = MapFloorFragment_.builder().imageUrl(floorImageUrl).build();
         getMainActivity().replaceFragmentInGivenContainer(fr, false, R.id.content_frame_second);
     }
 
     private View createMenuItem(String title, Runnable action) {
-        final TextView result = new TextView(getContext());
-        result.setTextSize(50);
-        result.setText(title);
-        result.setTextColor(Color.BLUE);
-        result.setOnClickListener(v -> action.run());
+        final View result = layoutInflater.inflate(R.layout.map_landscape_menu_item, menuContaier, false);
+        final TextView label = (TextView) result.findViewById(R.id.mapLandscapeMenuTitle);
+        label.setText(title);
+        result.setOnClickListener(v -> {
+            final int size = menuContaier.getChildCount();
+            for (int i = 0; i < size; i++) {
+                final View child = menuContaier.getChildAt(i);
+                child.setSelected(child.equals(v));
+            }
+            action.run();
+        });
         return result;
     }
 
