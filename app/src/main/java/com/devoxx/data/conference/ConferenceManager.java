@@ -85,6 +85,10 @@ public class ConferenceManager {
         }
     }
 
+    public void warmUp() {
+        conferenceDownloader.warmUp();
+    }
+
     @UiThread
     void notifyConferencesListenerAboutStart(IConferencesListener listener) {
         listener.onConferencesDataStart();

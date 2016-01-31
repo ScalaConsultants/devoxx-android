@@ -30,7 +30,7 @@ public class MapPagerAdapter extends FragmentStatePagerAdapter {
             return MapGoogleFragment_.builder().build();
         } else {
             return MapFloorFragment_.builder()
-                    .imageUrl(floorsImages.get(position)).build();
+                    .imageUrl(floorsImages.get(withMap ? position - 1 : position)).build();
         }
     }
 

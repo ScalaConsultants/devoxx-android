@@ -61,7 +61,7 @@ public class ConferencesCache implements DataCache<List<ConferenceApiModel>, Str
         throw new IllegalStateException("Not needed here!");
     }
 
-    private List<ConferenceApiModel> deserializeData(String fromCache) {
+    public List<ConferenceApiModel> deserializeData(String fromCache) {
         return new Gson().fromJson(fromCache, getType());
     }
 

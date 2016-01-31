@@ -95,6 +95,8 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @AfterViews
     void afterViews() {
+        conferenceManager.warmUp();
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             final int statusBarHeight = getStatusBarHeight();
             mainContainer.setPadding(mainContainer.getPaddingLeft(), statusBarHeight,
