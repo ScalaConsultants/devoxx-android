@@ -26,6 +26,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -52,7 +53,7 @@ import java.util.List;
 public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
     public static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014
-    public static final String TIME_TEXT_FORMAT = "HH:MM"; // 9:30
+    public static final String TIME_TEXT_FORMAT = "HH:mm"; // 9:30
     private static final float FULL_FACTOR = 1f;
 
     @Bean
@@ -220,7 +221,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
             speakerView.setText(content);
             final String speakeruuid = TalkSpeakerApiModel.getUuidFromLink(speaker.link);
             speakerView.setOnClickListener(v ->
-                    navigator.openSpeakerDetails(getMainActivity(), speakeruuid));
+                    navigator.openSpeakerDetails(getActivity(), speakeruuid));
             result.addSpeakerView(speakerView);
         }
         return result;
@@ -244,7 +245,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     private void setupMainLayout() {
         collapsingToolbarLayout.setTitle(" ");
-        final BaseActivity baseActivity = ((BaseActivity) getActivity());
+        final AppCompatActivity baseActivity = ((AppCompatActivity) getActivity());
         if (toolbar != null) {
             toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
             baseActivity.setSupportActionBar(toolbar);

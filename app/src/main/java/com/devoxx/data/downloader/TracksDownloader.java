@@ -3,10 +3,8 @@ package com.devoxx.data.downloader;
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.TracksApiModel;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
-import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
@@ -15,7 +13,6 @@ import java.util.List;
 
 import io.realm.Realm;
 
-import com.devoxx.Configuration;
 import com.devoxx.connection.model.TrackApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.model.RealmTrack;
@@ -24,7 +21,7 @@ import retrofit.Call;
 import retrofit.Response;
 
 @EBean
-public class TracksDownloader extends AbstractDownloader<TracksApiModel> {
+public class TracksDownloader {
 
     private static final String UNKNOWN_TRACK_ICON_URL = "";
 

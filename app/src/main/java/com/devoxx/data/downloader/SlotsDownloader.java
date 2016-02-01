@@ -1,5 +1,6 @@
 package com.devoxx.data.downloader;
 
+import com.devoxx.connection.Connection;
 import com.google.gson.Gson;
 import com.devoxx.utils.Logger;
 
@@ -21,11 +22,14 @@ import com.devoxx.data.cache.SlotsCache;
 import retrofit.Call;
 
 @EBean
-public class SlotsDownloader extends AbstractDownloader<SlotApiModel> {
+public class SlotsDownloader {
 
     private final List<String> AVAILABLE_CONFERENCE_DAYS = Collections.unmodifiableList(
             Arrays.asList("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
     );
+
+    @Bean
+    Connection connection;
 
     @Bean
     SlotsCache slotsCache;

@@ -1,5 +1,6 @@
 package com.devoxx.navigation;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import com.devoxx.R;
@@ -37,9 +38,9 @@ public class Navigator {
         }
     }
 
-    public void openTalkDetails(MainActivity mainActivity, SlotApiModel slotApiModel, boolean notifyAboutChange) {
+    public void openTalkDetails(Activity mainActivity, SlotApiModel slotApiModel, boolean notifyAboutChange) {
         if (deviceUtil.isLandscapeTablet()) {
-            mainActivity.replaceFragmentInGivenContainer(
+            ((MainActivity) mainActivity).replaceFragmentInGivenContainer(
                     TalkFragment_.builder().slotApiModel(slotApiModel)
                             .notifyAboutChange(notifyAboutChange).build(),
                     false, R.id.content_frame_second);
@@ -50,9 +51,9 @@ public class Navigator {
         }
     }
 
-    public void openSpeakerDetails(MainActivity mainActivity, String speakerUuid) {
+    public void openSpeakerDetails(Activity mainActivity, String speakerUuid) {
         if (deviceUtil.isLandscapeTablet()) {
-            mainActivity.replaceFragmentInGivenContainer(
+            ((MainActivity) mainActivity).replaceFragmentInGivenContainer(
                     SpeakerFragment_.builder().speakerUuid(speakerUuid).build(),
                     false, R.id.content_frame_second);
         } else {

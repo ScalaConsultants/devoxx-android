@@ -203,7 +203,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                     item.setupView(talkModel.getTrack(), talkModel.getTitle(),
                             slotApiModel.fromTimeMillis, slotApiModel.toTimeMillis, slotApiModel.roomName);
                     item.setOnClickListener(v ->
-                            navigator.openTalkDetails(getMainActivity(), slotApiModel, true));
+                            navigator.openTalkDetails(getActivity(), slotApiModel, true));
                     talkSection.addView(item);
                 }
             }

@@ -87,12 +87,12 @@ public class SpeakersFragment extends BaseMenuFragment {
 
         // By Default open first speaker in landscape mode.
         if (deviceUtil.isLandscapeTablet()) {
-            navigator.openSpeakerDetails(getMainActivity(),
+            navigator.openSpeakerDetails(getActivity(),
                     itemAdapter.getClickedItem(0).getUuid());
         }
 
         listView.setOnItemClickListener((parent, view, position, id) ->
-                navigator.openSpeakerDetails(getMainActivity(),
+                navigator.openSpeakerDetails(getActivity(),
                         itemAdapter.getClickedItem(position).getUuid()));
 
         listView.setOnTouchListener((v, event) -> {

@@ -1,12 +1,12 @@
 package com.devoxx.data.downloader;
 
+import com.devoxx.connection.Connection;
 import com.devoxx.connection.DevoxxApi;
 import com.devoxx.connection.model.SpeakerShortApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.cache.SpeakersCache;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmSpeakerShort;
-import com.devoxx.utils.Logger;
 import com.squareup.okhttp.ResponseBody;
 
 import org.androidannotations.annotations.Bean;
@@ -25,7 +25,10 @@ import com.devoxx.data.cache.SpeakerCache;
 import retrofit.Call;
 
 @EBean
-public class SpeakersDownloader extends AbstractDownloader<SpeakerShortApiModel> {
+public class SpeakersDownloader  {
+
+    @Bean
+    Connection connection;
 
     @Bean
     RealmProvider realmProvider;
