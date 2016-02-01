@@ -65,6 +65,7 @@ public class TalksMoreItemView extends LinearLayout {
 
     public void setupMore(TalksScheduleItem talksScheduleItem, Runnable onOpenMoreAction) {
         openMore.setOnClickListener(v -> onOpenMoreAction.run());
+        trackIcon.setOnClickListener(v -> onOpenMoreAction.run());
         setOnClickListener(v -> onOpenMoreAction.run());
         final int talksCount = talksScheduleItem.talksCount();
         final int trackCount = talksScheduleItem.tracksCount();

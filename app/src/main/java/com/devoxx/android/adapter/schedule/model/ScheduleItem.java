@@ -2,6 +2,7 @@ package com.devoxx.android.adapter.schedule.model;
 
 import java.util.List;
 
+import com.annimon.stream.Optional;
 import com.devoxx.android.adapter.schedule.ScheduleDayLineupAdapter;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.utils.tuple.Tuple;
@@ -46,7 +47,7 @@ public abstract class ScheduleItem {
     @ScheduleDayLineupAdapter.ViewType
     public abstract int getItemType(int position);
 
-    public abstract SlotApiModel getItem(int position);
+    public abstract Optional<SlotApiModel> getItem(int position);
 
     public abstract List<SlotApiModel> getAllItems();
 }

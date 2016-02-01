@@ -16,7 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import com.devoxx.R;
 
 @EFragment
-public abstract class BaseListFragment extends BaseFragment implements ItemClickSupport.OnItemClickListener {
+public abstract class BaseListFragment extends BaseFragment
+        implements ItemClickSupport.OnItemClickListener {
 
     @ViewById(R.id.tracksList)
     protected RecyclerView recyclerView;
@@ -44,14 +45,7 @@ public abstract class BaseListFragment extends BaseFragment implements ItemClick
         recyclerView.setLongClickable(false);
         ItemClickSupport clickSupport = ItemClickSupport.addTo(recyclerView);
         recyclerView.setAdapter(getAdapter());
-
-        if (wantBaseClickListener()) {
-            clickSupport.setOnItemClickListener(this);
-        }
-    }
-
-    protected boolean wantBaseClickListener() {
-        return false;
+        clickSupport.setOnItemClickListener(this);
     }
 
     public abstract void onItemClick(RecyclerView parent, View view, int position, long id);

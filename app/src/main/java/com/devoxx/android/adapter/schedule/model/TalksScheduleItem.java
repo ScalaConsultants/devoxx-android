@@ -1,6 +1,7 @@
 package com.devoxx.android.adapter.schedule.model;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class TalksScheduleItem extends ScheduleItem {
     }
 
     @Override
-    public SlotApiModel getItem(int globalPosition) {
+    public Optional<SlotApiModel> getItem(int globalPosition) {
         final int localIndex = globalPosition - getStartIndex();
         if (favouredSlots.isEmpty()) {
             return getSlotWithoutFavs(globalPosition, localIndex);
@@ -110,28 +111,28 @@ public class TalksScheduleItem extends ScheduleItem {
         return otherSlots.size();
     }
 
-    private SlotApiModel getSlotWithFavs(int localIndex) {
+    private Optional<SlotApiModel> getSlotWithFavs(int localIndex) {
         final int favsStartIndex = TIMESPAN_INDEX + EXTRA_TIMESPAN_ELEMENT_COUNT;
         final int favsEndIndex = favsStartIndex + favouredSlots.size() - 1;
 
         if (localIndex >= favsStartIndex && localIndex <= favsEndIndex) {
-            return favouredSlots.get(localIndex - favsStartIndex);
+            return Optional.ofNullable(favouredSlots.get(localIndex - favsStartIndex));
         } else {
             final int slotIndex = localIndex - (favsEndIndex +
                     EXTRA_OPEN_MORE_ELEMENT_COUNT + EXTRA_TIMESPAN_ELEMENT_COUNT);
-            return otherSlots.get(slotIndex);
+            return Optional.ofNullable(otherSlots.get(slotIndex));
         }
     }
 
-    private SlotApiModel getSlotWithoutFavs(int globalPosition, int localIndex) {
+    private Optional<SlotApiModel> getSlotWithoutFavs(int globalPosition, int localIndex) {
         if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TALK_VIEW) {
             final int slotIndex = localIndex - EXTRA_TIMESPAN_ELEMENT_COUNT
                     - EXTRA_OPEN_MORE_ELEMENT_COUNT;
-            return otherSlots.get(slotIndex);
+            return Optional.ofNullable(otherSlots.get(slotIndex));
         } else if (getItemType(globalPosition) == ScheduleDayLineupAdapter.TIMESPAN_VIEW) {
-            return otherSlots.get(0); // We need to get only start-end time from slot.
+            return Optional.ofNullable(otherSlots.get(0)); // We need to get only start-end time from slot.
         } else {
-            throw new IllegalArgumentException("Bad globalPosition!");
+            return Optional.empty();
         }
     }
 

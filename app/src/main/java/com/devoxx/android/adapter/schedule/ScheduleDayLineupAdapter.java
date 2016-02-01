@@ -1,5 +1,6 @@
 package com.devoxx.android.adapter.schedule;
 
+import com.annimon.stream.Optional;
 import com.devoxx.android.adapter.schedule.model.BreakScheduleItem;
 import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.adapter.schedule.model.TalksScheduleItem;
@@ -64,7 +65,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
         clickListener = listener;
     }
 
-    public SlotApiModel getClickedSlot(int position) {
+    public Optional<SlotApiModel> getClickedSlot(int position) {
         return getItem(position).getItem(position);
     }
 
@@ -140,9 +141,11 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
 
     private void setupTalkItemHolder(BaseItemHolder holder, ScheduleItem scheduleItem, int position) {
         final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) scheduleItem;
-        final SlotApiModel slotModel = talksScheduleItem.getItem(position);
-        ((TalkItemHolder) holder).setupTalk(slotModel, talksScheduleItem.isRunning());
-        setupOnItemClickListener(holder, position);
+        final Optional<SlotApiModel> slotModel = talksScheduleItem.getItem(position);
+        if (slotModel.isPresent()) {
+            ((TalkItemHolder) holder).setupTalk(slotModel.get(), talksScheduleItem.isRunning());
+            setupOnItemClickListener(holder, position);
+        }
     }
 
     private void setupOnItemClickListener(BaseItemHolder holder, int position) {

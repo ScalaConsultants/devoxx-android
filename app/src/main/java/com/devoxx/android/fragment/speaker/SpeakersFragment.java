@@ -85,6 +85,12 @@ public class SpeakersFragment extends BaseMenuFragment {
                 speakersDataManager.getAllShortSpeakers();
         populateList(speakers);
 
+        // By Default open first speaker in landscape mode.
+        if (deviceUtil.isLandscapeTablet()) {
+            navigator.openSpeakerDetails(getMainActivity(),
+                    itemAdapter.getClickedItem(0).getUuid());
+        }
+
         listView.setOnItemClickListener((parent, view, position, id) ->
                 navigator.openSpeakerDetails(getMainActivity(),
                         itemAdapter.getClickedItem(position).getUuid()));
@@ -118,12 +124,6 @@ public class SpeakersFragment extends BaseMenuFragment {
 
         itemAdapter.setSpeakers(list);
         itemAdapter.notifyDataSetChanged();
-
-        // By Default open first speaker in landscape mode.
-        if (deviceUtil.isLandscapeTablet()) {
-            navigator.openSpeakerDetails(getMainActivity(),
-                    itemAdapter.getClickedItem(0).getUuid());
-        }
     }
 
     private static Function<SpeakersGroup, Comparable> speakersGroupSorter() {

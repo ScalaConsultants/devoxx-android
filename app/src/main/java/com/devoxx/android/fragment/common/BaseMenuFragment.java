@@ -133,14 +133,14 @@ public abstract class BaseMenuFragment extends BaseFragment
             if (searchView != null) {
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        onSearchQuery(query);
+                    public boolean onQueryTextSubmit(String s) {
+                        onSearchQuery(validateQuery(s));
                         return false;
                     }
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        onSearchQuery(s);
+                        onSearchQuery(validateQuery(s));
                         return false;
                     }
                 });
@@ -153,6 +153,10 @@ public abstract class BaseMenuFragment extends BaseFragment
                 searchView.setQueryHint(getString(R.string.search_hint));
             }
         }
+    }
+
+    private String validateQuery(String query) {
+        return query.trim();
     }
 
     @OptionsItem(R.id.action_filter)

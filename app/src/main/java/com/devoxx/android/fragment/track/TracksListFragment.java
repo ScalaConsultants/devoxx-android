@@ -77,11 +77,6 @@ public class TracksListFragment extends BaseListFragment {
     }
 
     @Override
-    protected boolean wantBaseClickListener() {
-        return true;
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         /** Called from TracksMainFragment.onActivityResult() */
         super.onActivityResult(requestCode, resultCode, data);
