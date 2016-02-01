@@ -94,7 +94,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @AfterViews
     void afterViews() {
-        super.afterViews();
         conferenceManager.warmUp();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

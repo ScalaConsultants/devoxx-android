@@ -28,6 +28,8 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,7 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.model.SlotApiModel;
 
 import com.devoxx.R;
+import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
 
 import java.util.List;
@@ -57,6 +60,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     NotificationsManager notificationsManager;
+
+    @Bean
+    Navigator navigator;
 
     @SystemService
     LayoutInflater li;
@@ -209,10 +215,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         for (TalkSpeakerApiModel speaker : readableSpeakers) {
             final TextView speakerView = (TextView) li.inflate(
                     R.layout.talk_details_section_speaker_item, container, false);
-            speakerView.setText(speaker.name);
+            SpannableString content = new SpannableString(speaker.name);
+            content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+            speakerView.setText(content);
             final String speakeruuid = TalkSpeakerApiModel.getUuidFromLink(speaker.link);
             speakerView.setOnClickListener(v ->
-                    SpeakerDetailsHostActivity_.intent(getContext()).speakerUuid(speakeruuid).start());
+                    navigator.openSpeakerDetails(getMainActivity(), speakeruuid));
             result.addSpeakerView(speakerView);
         }
         return result;

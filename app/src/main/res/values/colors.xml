@@ -34,4 +34,5 @@
     <color name="active_slot">#35aed581</color>
     <color name="talk_item_sub_icon_color">#757575</color>
     <color name="running_timespan">#f1464c</color>
+    <color name="link">#2979ff</color>
 </resources>

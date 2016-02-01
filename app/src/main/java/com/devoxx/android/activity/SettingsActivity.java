@@ -17,8 +17,6 @@ public class SettingsActivity extends BaseActivity {
 
     @AfterViews
     void afterViews() {
-        super.afterViews();
-
         toolbar.setTitle(R.string.settings);
         setSupportActionBar(toolbar);
 

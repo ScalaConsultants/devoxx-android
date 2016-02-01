@@ -1,6 +1,5 @@
 package com.devoxx.android.fragment.common;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,16 +26,12 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.SystemService;
 
 import java.util.List;
 
 @EFragment
 public abstract class BaseMenuFragment extends BaseFragment
         implements FiltersDialog.IFiltersChangedListener {
-
-    @SystemService
-    protected SearchManager searchManager;
 
     @Bean
     protected ScheduleFilterManager scheduleFilterManager;
@@ -136,8 +131,6 @@ public abstract class BaseMenuFragment extends BaseFragment
             }
 
             if (searchView != null) {
-                searchView.setSearchableInfo(searchManager
-                        .getSearchableInfo(getActivity().getComponentName()));
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {

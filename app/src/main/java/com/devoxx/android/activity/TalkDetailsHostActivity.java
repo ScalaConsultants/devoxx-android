@@ -40,7 +40,6 @@ public class TalkDetailsHostActivity extends BaseActivity {
 
     @AfterViews
     void afterViewsInner() {
-        super.afterViews();
         talkFragment.setupFragment(slotApiModel, notifyAboutChange);
     }
 

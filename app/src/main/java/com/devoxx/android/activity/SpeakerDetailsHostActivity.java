@@ -20,7 +20,6 @@ public class SpeakerDetailsHostActivity extends BaseActivity {
 
     @AfterViews
     void afterViewsInner() {
-        super.afterViews();
         speakerFragment.setupFragment(speakerUuid);
     }
 

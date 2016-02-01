@@ -8,10 +8,8 @@ import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.activity.TalkDetailsHostActivity_;
 import com.devoxx.android.fragment.map.MapMainFragment_;
-import com.devoxx.android.fragment.map.MapMenuLandscapeFragment;
 import com.devoxx.android.fragment.map.MapMenuLandscapeFragment_;
 import com.devoxx.android.fragment.speaker.SpeakerFragment_;
-import com.devoxx.android.fragment.speaker.SpeakersFragment_;
 import com.devoxx.android.fragment.talk.TalkFragment_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.utils.DeviceUtil;
@@ -25,35 +23,8 @@ public class Navigator {
     @Bean
     DeviceUtil deviceUtil;
 
-    public void openSchedule(MainActivity mainActivity) {
-        if (deviceUtil.isLandscapeTablet()) {
-
-        } else {
-
-        }
-    }
-
-    public void openTracks(MainActivity mainActivity) {
-        if (deviceUtil.isLandscapeTablet()) {
-
-        } else {
-
-        }
-    }
-
-    public void openSpeakers(MainActivity mainActivity) {
-        if (deviceUtil.isLandscapeTablet()) {
-
-        } else {
-
-        }
-    }
-
-    public void openTalkDetails(MainActivity mainActivity) {
-
-    }
-
-    public void openTalkDetails(MainActivity mainActivity, SlotApiModel slotApiModel, Fragment fragment, boolean notifyAboutChange) {
+    public void openTalkDetails(
+            MainActivity mainActivity, SlotApiModel slotApiModel, Fragment fragment, boolean notifyAboutChange) {
         if (deviceUtil.isLandscapeTablet()) {
             mainActivity.replaceFragmentInGivenContainer(
                     TalkFragment_.builder().slotApiModel(slotApiModel)

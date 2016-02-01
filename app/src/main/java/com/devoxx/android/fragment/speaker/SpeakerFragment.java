@@ -30,6 +30,7 @@ import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
+import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.InfoUtil;
 import com.devoxx.utils.Logger;
@@ -51,6 +52,9 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     @FragmentArg
     String speakerUuid;
+
+    @Bean
+    Navigator navigator;
 
     @Bean
     SpeakersDataManager speakersDataManager;
@@ -198,11 +202,8 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                     final SpeakerDetailsTalkItem item = SpeakerDetailsTalkItem_.build(getActivity());
                     item.setupView(talkModel.getTrack(), talkModel.getTitle(),
                             slotApiModel.fromTimeMillis, slotApiModel.toTimeMillis, slotApiModel.roomName);
-                    item.setOnClickListener(v -> {
-                        TalkDetailsHostActivity_.intent(this)
-                                .slotApiModel(slotApiModel)
-                                .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
-                    });
+                    item.setOnClickListener(v ->
+                            navigator.openTalkDetails(getMainActivity(), slotApiModel, true));
                     talkSection.addView(item);
                 }
             }

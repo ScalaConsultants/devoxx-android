@@ -17,11 +17,6 @@ public class RegisterUserActivity extends BaseActivity {
 
     private static final int RC_BARCODE_CAPTURE = 1578;
 
-    @AfterViews
-    void afterViews() {
-        super.afterViews();
-    }
-
     @Click(R.id.registerUserViaNfc)
     void onNfcClick() {
         NfcScanningActivity_.intent(this).start();

@@ -1,11 +1,12 @@
 package com.devoxx.android.activity;
 
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.devoxx.utils.DeviceUtil;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
@@ -15,12 +16,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Bean
     DeviceUtil deviceUtil;
 
-    @AfterViews
-    void afterViews() {
-        if (deviceUtil.isTablet()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        } else {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (!deviceUtil.isTablet()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
+        super.onCreate(savedInstanceState);
     }
 }

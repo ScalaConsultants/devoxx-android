@@ -46,6 +46,7 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG_CONTENT_FRAGMENT = "content_fragment";
     private static final String TAG_CONTENT_FRAGMENT_SECOND = "content_fragment_second";
+    private static final java.lang.String LAST_CLICKED_ITEM_ID = "last_clicked_item";
 
     @Bean
     Navigator navigator;
@@ -88,6 +89,7 @@ public class MainActivity extends BaseActivity {
 
     private String fromNotificationSlotId;
     private boolean isSavedInstanceState;
+    private int lastClickedMenuId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +108,6 @@ public class MainActivity extends BaseActivity {
 
     @AfterViews
     void afterViews() {
-        super.afterViews();
         setupToolbar();
 
         if (!isSavedInstanceState) {
@@ -114,17 +115,15 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        onMainMenuClick(menuScheduleView);
-    }
-
     @Click({R.id.menu_schedule, R.id.menu_tracks, R.id.menu_speakers, R.id.menu_map})
     void onMainMenuClick(View view) {
-        setupMenuApperance(view);
+        handleMenuClick(view.getId());
+    }
 
-        switch (view.getId()) {
+    private void handleMenuClick(final int id) {
+        lastClickedMenuId = id;
+        setupMenuApperance(lastClickedMenuId);
+        switch (lastClickedMenuId) {
             case R.id.menu_schedule:
                 openSchedule();
                 break;
@@ -138,6 +137,19 @@ public class MainActivity extends BaseActivity {
                 openMaps();
                 break;
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        lastClickedMenuId = savedInstanceState.getInt(LAST_CLICKED_ITEM_ID);
+        handleMenuClick(lastClickedMenuId);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(LAST_CLICKED_ITEM_ID, lastClickedMenuId);
+        super.onSaveInstanceState(outState);
     }
 
     private void openMaps() {
@@ -170,11 +182,11 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void setupMenuApperance(View clickedMenuItem) {
+    private void setupMenuApperance(int id) {
         final int size = menuContainer.getChildCount();
         for (int i = 0; i < size; i++) {
             final ViewGroup child = (ViewGroup) menuContainer.getChildAt(i);
-            final boolean shouldBeSelected = clickedMenuItem.getId() == child.getId();
+            final boolean shouldBeSelected = id == child.getId();
             child.setSelected(shouldBeSelected);
 
             final ImageView icon = (ImageView) child.getChildAt(0);
@@ -230,12 +242,13 @@ public class MainActivity extends BaseActivity {
         replaceFragmentInGivenContainer(fragment, addToBackStack, FragmentTransaction.TRANSIT_NONE, container);
     }
 
-    public void replaceFragmentInGivenContainer(Fragment fragment, boolean addToBackStack, int fragmentTransition, int container) {
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        final FragmentTransaction ft = fragmentManager.beginTransaction();
+    public void replaceFragmentInGivenContainer(
+            Fragment fragment, boolean addToBackStack, int fragmentTransition, int container) {
+        final FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
         ft.setTransition(fragmentTransition);
-        ft.replace(container, fragment, container == R.id.content_frame ? TAG_CONTENT_FRAGMENT : TAG_CONTENT_FRAGMENT_SECOND);
-//        ft.attach(fragment);
+        ft.replace(container, fragment, container == R.id.content_frame
+                ? TAG_CONTENT_FRAGMENT : TAG_CONTENT_FRAGMENT_SECOND);
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
@@ -252,4 +265,19 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setTitle("");
     }
 
+    private void removeFragmentsWithTag(String tag) {
+        final FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStackImmediate();
+        final List<Fragment> fragments = fm.getFragments();
+        if (fragments != null) {
+            final FragmentTransaction ft = fm.beginTransaction();
+            for (Fragment fragment : fragments) {
+                if (fragment != null && fragment.getTag().equalsIgnoreCase(tag)) {
+                    ft.detach(fragment).remove(fragment);
+                }
+            }
+            ft.commit();
+            fm.executePendingTransactions();
+        }
+    }
 }

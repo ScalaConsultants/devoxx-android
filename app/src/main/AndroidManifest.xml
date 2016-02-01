@@ -33,7 +33,6 @@
 
         <activity
             android:name="com.devoxx.android.activity.SelectorActivity_"
-            android:configChanges="orientation|screenSize"
             android:label="${applicationLabel}"
             android:launchMode="singleTop"
             android:theme="@style/SelectorTheme"
@@ -48,45 +47,37 @@
 
         <activity
             android:name="com.devoxx.android.activity.MainActivity_"
-            android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
-
             android:windowSoftInputMode="adjustPan"/>
 
         <activity
-            android:name="com.devoxx.android.activity.RegisterUserActivity_"
-            android:configChanges="orientation|screenSize"/>
+            android:name="com.devoxx.android.activity.RegisterUserActivity_"/>
 
         <activity
             android:name="com.devoxx.android.activity.TalkDetailsHostActivity_"
-            android:configChanges="orientation|screenSize"
+
             android:launchMode="singleTask"
             android:theme="@style/TalkDetailsTheme"/>
 
         <activity
             android:name="com.devoxx.android.activity.SpeakerDetailsHostActivity_"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/SpeakerDetailsTheme"/>
 
         <activity
             android:name="com.devoxx.android.activity.NfcScanningActivity_"
-            android:configChanges="orientation|screenSize"
             />
 
         <activity
             android:name="com.devoxx.android.activity.AboutActivity_"
-            android:configChanges="orientation|screenSize"
 
             android:theme="@style/AboutTheme"/>
 
         <activity
             android:name="com.devoxx.android.activity.SettingsActivity_"
-            android:configChanges="orientation|screenSize"
             />
 
         <activity
             android:name="io.scalac.scanner.BarcodeCaptureActivity"
-            android:configChanges="orientation|screenSize"
             />
 
         <receiver
