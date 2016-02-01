@@ -73,9 +73,9 @@ public class RealmConference extends RealmObject {
         }
     }
 
-    public static List<RealmFloor> extractFloors(RealmConference conference) {
+    public static List<RealmFloor> extractFloors(RealmConference conference, String res) {
         return Stream.of(conference.getFloors())
-                .filter(value -> value.getTarget().equalsIgnoreCase("phone"))
+                .filter(value -> value.getTarget().equalsIgnoreCase(res))
                 .collect(Collectors.toList());
     }
 

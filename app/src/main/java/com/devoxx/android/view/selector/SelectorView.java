@@ -56,6 +56,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     @IntegerRes(android.R.integer.config_mediumAnimTime)
     int rotateAnimationTime;
 
+    @DrawableRes(R.drawable.globe)
+    Drawable globeIcon;
+
     private IWheelItemActionListener listener;
 
     private Paint mainCirclePaint;
@@ -104,6 +107,8 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         centerY = h / 2;
 
         globalCircleRadius = (int) (w / 2f - (getPaddingLeft() + getPaddingRight()));
+        globeIcon.setBounds(centerX - globalCircleRadius, centerY - globalCircleRadius,
+                centerX + globalCircleRadius, centerY + globalCircleRadius);
     }
 
     @Override
@@ -142,6 +147,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawMainCircle(canvas);
+        globeIcon.draw(canvas);
     }
 
     private void drawMainCircle(Canvas canvas) {

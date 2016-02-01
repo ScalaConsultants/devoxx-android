@@ -29,7 +29,7 @@ import com.devoxx.utils.InfoUtil;
 import com.devoxx.R;
 
 @EFragment(R.layout.fragment_list)
-public class ScheduleDayLinupFragment extends BaseListFragment {
+public class ScheduleLineupFragment extends BaseListFragment {
 
     public static final String REFRESH_ACTION = "com.devoxx.android.intent.REFRESH_ACTION";
 

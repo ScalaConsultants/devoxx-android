@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,8 +17,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
 
-@EViewGroup(R.layout.talk_details_section_item)
-public class TalkDetailsSectionItem extends LinearLayout {
+@EViewGroup(R.layout.talk_details_section_clickable_item)
+public class TalkDetailsSectionClickableItem extends LinearLayout {
 
     @ViewById(R.id.talkDetailsSectionIcon)
     ImageView icon;
@@ -25,34 +26,41 @@ public class TalkDetailsSectionItem extends LinearLayout {
     @ViewById(R.id.talkDetailsSectionTitle)
     TextView title;
 
-    @ViewById(R.id.talkDetailsSectionSubtitle)
-    TextView subtitle;
+    @ViewById(R.id.talkDetailsSectionSpeakersContainer)
+    LinearLayout speakers;
 
     @AfterViews
     void afterViews() {
         setOrientation(HORIZONTAL);
     }
 
-    public void setupView(@DrawableRes int iconRes, @StringRes int titleResId, String subtitleVal) {
+    public void setupView(@DrawableRes int iconRes, @StringRes int titleResId) {
         icon.setImageResource(iconRes);
         title.setText(titleResId);
-        subtitle.setText(subtitleVal);
     }
 
-    public TalkDetailsSectionItem(Context context) {
+    public void addSpeakerView(View view) {
+        speakers.addView(view);
+    }
+
+    public LinearLayout getSpeakersContainer() {
+        return speakers;
+    }
+
+    public TalkDetailsSectionClickableItem(Context context) {
         super(context);
     }
 
-    public TalkDetailsSectionItem(Context context, AttributeSet attrs) {
+    public TalkDetailsSectionClickableItem(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TalkDetailsSectionItem(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TalkDetailsSectionClickableItem(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TalkDetailsSectionItem(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TalkDetailsSectionClickableItem(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 }

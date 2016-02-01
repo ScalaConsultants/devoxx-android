@@ -13,6 +13,8 @@ import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.model.RealmFloor;
+import com.devoxx.utils.DeviceUtil;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -28,11 +30,16 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     @Bean
     ConferenceManager conferenceManager;
 
+    @Bean
+    DeviceUtil deviceUtil;
+
     @SystemService
     LayoutInflater layoutInflater;
 
     @ViewById(R.id.mapsMenuFragmentContainer)
     LinearLayout menuContaier;
+
+    private boolean requestedForPermissions;
 
     @Override
     protected int getMenuRes() {
@@ -41,9 +48,10 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
 
     @AfterViews
     @SuppressLint("DefaultLocale")
-    protected void afterViews() {
+    protected void afterViewsInner() {
+        Logger.l("MapMenuLandscapeFragment.afterViews");
+
         setHasOptionsMenu(true);
-        checkPermissions();
     }
 
     @Override
@@ -55,9 +63,9 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
             return;
         }
 
-        final boolean isGranted = MapMainFragment.isGranted(grantResults);
-        setupMenu(isGranted);
-        if (!isGranted) {
+        Logger.l("MapMenuLandscapeFragment.onRequestPermissionsResult");
+
+        if (!MapMainFragment.isGranted(grantResults)) {
             infoUtil.showToast(R.string.map_permissions_failure);
         }
     }
@@ -65,7 +73,8 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     private void checkPermissions() {
         if (MapMainFragment.checkGivenPermissions(getActivity(), MapMainFragment.MAP_PERMISSIONS)) {
             setupMenu(true);
-        } else {
+        } else if (!requestedForPermissions) {
+            requestedForPermissions = true;
             requestPermissions(MapMainFragment.MAP_PERMISSIONS, MapMainFragment.CHECK_PERMISSION_REQ_CODE);
         }
     }
@@ -73,7 +82,8 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     private void setupMenu(boolean withMap) {
         menuContaier.removeAllViews();
         final RealmConference conference = conferenceManager.getActiveConference();
-        final List<RealmFloor> floors = RealmConference.extractFloors(conference);
+        final String res = deviceUtil.isTablet() ? "tablet" : "phone";
+        final List<RealmFloor> floors = RealmConference.extractFloors(conference, res);
         final int floorsCount = floors.size();
 
         boolean mapOpened = false;
@@ -97,6 +107,8 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     }
 
     private void openFloor(String floorImageUrl) {
+        Logger.l("MapMenuLandscapeFragment.openFloor");
+
         final MapFloorFragment fr = MapFloorFragment_.builder().imageUrl(floorImageUrl).build();
         getMainActivity().replaceFragmentInGivenContainer(fr, false, R.id.content_frame_second);
     }
@@ -117,6 +129,8 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     }
 
     private void openMap() {
+        Logger.l("MapMenuLandscapeFragment.openMap");
+
         final MapGoogleFragment fr = MapGoogleFragment_.builder().build();
         getMainActivity().replaceFragmentInGivenContainer(fr, false, R.id.content_frame_second);
     }
@@ -124,5 +138,30 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
     @Override
     protected void onSearchQuery(String query) {
         // Not needed.
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkPermissions();
+        Logger.l("MapMenuLandscapeFragment.onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Logger.l("MapMenuLandscapeFragment.onPause");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Logger.l("MapMenuLandscapeFragment.onDestroy");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Logger.l("MapMenuLandscapeFragment.onDestroyView");
     }
 }

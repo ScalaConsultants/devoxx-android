@@ -12,6 +12,8 @@ import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
 import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -36,6 +38,8 @@ import com.devoxx.R;
 @EViewGroup(R.layout.list_item_talk)
 public class TalkItemView extends LinearLayout {
 
+    private static final String DAY_TEXT_FORMAT = "EEE dd"; // WED 11
+
     @ViewById(R.id.list_item_talk_title)
     TextView title;
 
@@ -53,6 +57,12 @@ public class TalkItemView extends LinearLayout {
 
     @ViewById(R.id.list_item_talk_track_schedule)
     ImageView scheduleIcon;
+
+    @ViewById(R.id.list_item_talk_time_container)
+    View timeContainer;
+
+    @ViewById(R.id.list_item_talk_time)
+    TextView time;
 
     @DimensionPixelOffsetRes(R.dimen.activity_horizontal_margin)
     int paddingLr;
@@ -91,6 +101,10 @@ public class TalkItemView extends LinearLayout {
             track.setText(talkModel.track);
             place.setText(slotModel.roomName);
             speakers.setText(slotModel.talk.getReadableSpeakers());
+
+            final DateTime date = new DateTime(slotModel.fromTimeMillis);
+            final String dateRaw = date.toString(DateTimeFormat.forPattern(DAY_TEXT_FORMAT));
+            time.setText(String.format("%s, %s-%s", dateRaw, slotModel.fromTime, slotModel.toTime));
 
             Glide.with(getContext())
                     .load(obtainTrackIconUrl(talkModel))
@@ -135,8 +149,13 @@ public class TalkItemView extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void withoutTrackName() {
+    public TalkItemView withoutTrackName() {
         track.setVisibility(View.INVISIBLE);
+        return this;
+    }
+
+    public void withTime() {
+        timeContainer.setVisibility(View.VISIBLE);
     }
 
     private void setupNormalBackground() {

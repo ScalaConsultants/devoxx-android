@@ -47,12 +47,6 @@ public class TalksMoreItemView extends LinearLayout {
     @DimensionPixelOffsetRes(R.dimen.activity_horizontal_margin)
     int paddingLr;
 
-    @StringRes(R.string.item_talk_more_talks_placeholder)
-    String talksPlaceholder;
-
-    @StringRes(R.string.item_talk_more_tracks_placeholder)
-    String tracksPlaceholder;
-
     @IntegerRes(android.R.integer.config_shortAnimTime)
     int toggleAnimTime;
 
@@ -72,8 +66,10 @@ public class TalksMoreItemView extends LinearLayout {
     public void setupMore(TalksScheduleItem talksScheduleItem, Runnable onOpenMoreAction) {
         openMore.setOnClickListener(v -> onOpenMoreAction.run());
         setOnClickListener(v -> onOpenMoreAction.run());
-        title.setText(String.format(talksPlaceholder, talksScheduleItem.talksCount()));
-        track.setText(String.format(tracksPlaceholder, talksScheduleItem.tracksCount()));
+        final int talksCount = talksScheduleItem.talksCount();
+        final int trackCount = talksScheduleItem.tracksCount();
+        title.setText(String.format(getResources().getQuantityString(R.plurals.item_talk_more_talk, talksCount), talksCount));
+        track.setText(String.format(getResources().getQuantityString(R.plurals.item_talk_more_track, trackCount), trackCount));
         openMoreIcon.setScaleY(talksScheduleItem.isOthersVisible() ? -1 : 1);
     }
 

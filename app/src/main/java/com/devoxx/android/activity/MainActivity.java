@@ -231,15 +231,15 @@ public class MainActivity extends BaseActivity {
     }
 
     public void replaceFragmentInGivenContainer(Fragment fragment, boolean addToBackStack, int fragmentTransition, int container) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(fragmentTransition);
         ft.replace(container, fragment, container == R.id.content_frame ? TAG_CONTENT_FRAGMENT : TAG_CONTENT_FRAGMENT_SECOND);
-        ft.attach(fragment);
+//        ft.attach(fragment);
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
-        ft.commitAllowingStateLoss();
+        ft.commit();
     }
 
     private void setupToolbar() {

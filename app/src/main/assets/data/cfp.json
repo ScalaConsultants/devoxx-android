@@ -99,10 +99,10 @@
     "latitude": "51.245781",
     "longitude": "4.416327",
     "floors": [
-       {"img": "todo provide image", "title": "First floor", "tabpos": "1", "target": "phone"},
-       {"img": "todo provide image", "title": "Second floor", "tabpos": "2", "target": "phone"},
-       {"img": "todo provide image", "title": "First floor", "tabpos": "1", "target": "tablet"},
-       {"img": "todo provide image", "title": "Second floor", "tabpos": "2", "target": "tablet"}
+       {"img": "http://www.brw.com.pl/gfx/webapi/katalogi/tapicerka_FL_2015_1080x1388/fl6_strona_007.webp", "title": "First floor", "tabpos": "1", "target": "phone"},
+       {"img": "http://www.brw.com.pl/gfx/webapi/katalogi/tapicerka_FL_2015_1080x1388/fl6_strona_010.webp", "title": "Second floor", "tabpos": "2", "target": "phone"},
+       {"img": "http://www.brw.com.pl/gfx/webapi/katalogi/tapicerka_FL_2015_2400x3086/fl6_strona_008.webp", "title": "First floor", "tabpos": "1", "target": "tablet"},
+       {"img": "http://www.brw.com.pl/gfx/webapi/katalogi/tapicerka_FL_2015_2400x3086/fl6_strona_010.webp", "title": "Second floor", "tabpos": "2", "target": "tablet"}
   	],    
     "capacity": "3500",
     "sessions": "250",

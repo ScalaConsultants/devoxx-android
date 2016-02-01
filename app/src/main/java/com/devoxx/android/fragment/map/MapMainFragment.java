@@ -18,6 +18,7 @@ import com.devoxx.android.view.NonSwipeableViewPager;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.model.RealmFloor;
+import com.devoxx.utils.DeviceUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -38,6 +39,9 @@ public class MapMainFragment extends BaseMenuFragment
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @Bean
+    DeviceUtil deviceUtil;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -62,7 +66,7 @@ public class MapMainFragment extends BaseMenuFragment
 
     @AfterViews
     @SuppressLint("DefaultLocale")
-    protected void afterViews() {
+    protected void afterViewsInner() {
         setHasOptionsMenu(true);
         final RealmConference conference = conferenceManager.getActiveConference();
         confTitle.setText(conference.getVenue());
@@ -122,7 +126,8 @@ public class MapMainFragment extends BaseMenuFragment
 
     private void setupPager(boolean withMap) {
         final RealmConference conference = conferenceManager.getActiveConference();
-        final List<RealmFloor> floors = RealmConference.extractFloors(conference);
+        final String res = deviceUtil.isTablet() ? "tablet" : "phone";
+        final List<RealmFloor> floors = RealmConference.extractFloors(conference, res);
         final int floorsCount = floors.size();
 
         final List<String> floorsImages = Stream.of(floors)

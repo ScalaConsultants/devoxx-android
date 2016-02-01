@@ -2,6 +2,10 @@ package com.devoxx.android.fragment.map;
 
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.devoxx.R;
 import com.devoxx.android.fragment.common.BaseFragment;
 
@@ -23,7 +27,23 @@ public class MapFloorFragment extends BaseFragment {
 
     @AfterViews
     void afterViews() {
-        imageView.setImageResource(R.drawable.campus_test);
-        new PhotoViewAttacher(imageView);
+        Glide.with(getMainActivity())
+                .load(imageUrl)
+                .dontTransform()
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        final PhotoViewAttacher pa = new PhotoViewAttacher(imageView);
+                        pa.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        pa.setScaleLevels(1f, 5f, 15f);
+                        return false;
+                    }
+                })
+                .into(imageView);
     }
 }

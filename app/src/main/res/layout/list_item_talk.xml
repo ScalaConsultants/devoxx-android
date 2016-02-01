@@ -33,19 +33,37 @@
             android:textSize="14dp"/>
 
         <LinearLayout
+            android:id="@+id/list_item_talk_time_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                style="@style/TalkItemSubIconStyle"
+                android:src="@drawable/ic_access_time_white_24dp"/>
+
+            <TextView
+                android:id="@+id/list_item_talk_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/primary_text_45"
+                android:textSize="12dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="@dimen/talk_item_sub_icon_size"
-                android:layout_height="@dimen/talk_item_sub_icon_size"
-                android:layout_marginLeft="-4dp"
-                android:layout_marginRight="4dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_place"
-                android:tint="@color/talk_item_sub_icon_color"/>
+                style="@style/TalkItemSubIconStyle"
+                android:src="@drawable/ic_place"/>
 
             <TextView
                 android:id="@+id/list_item_talk_place"
@@ -59,17 +77,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="@dimen/talk_item_sub_icon_size"
-                android:layout_height="@dimen/talk_item_sub_icon_size"
-                android:layout_marginLeft="-4dp"
-                android:layout_marginRight="4dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_microphone"
-                android:tint="@color/talk_item_sub_icon_color"/>
+                style="@style/TalkItemSubIconStyle"
+                android:src="@drawable/ic_microphone"/>
 
             <TextView
                 android:id="@+id/list_item_talk_speakers"

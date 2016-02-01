@@ -32,6 +32,7 @@ import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
 import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.InfoUtil;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -100,16 +101,17 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     LinearLayout talkSection;
 
     private RealmSpeaker realmSpeaker;
-    private TalkSpeakerApiModel speakerTalkModel;
     private boolean shouldHideToolbarHeader = false;
 
     @AfterViews
     void afterViews() {
+        Logger.l("SpeakerFragment.afterViews");
+
         setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
 
         setupMainLayout();
 
-        if (deviceUtil.isLandscapeTablet()&&speakerUuid != null) {
+        if (deviceUtil.isLandscapeTablet() && speakerUuid != null) {
             setupFragment(speakerUuid);
         }
     }
@@ -124,7 +126,33 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
         // TODO
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Logger.l("SpeakerFragment.onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Logger.l("SpeakerFragment.onPause");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Logger.l("SpeakerFragment.onDestroy");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Logger.l("SpeakerFragment.onDestroyView");
+    }
+
     public void setupFragment(final String uuid) {
+        Logger.l("SpeakerFragment.setupFragment");
+
         speakersDataManager.fetchSpeakerAsync(conferenceManager.getActiveConferenceId(), uuid,
                 new AbstractDataManager.IDataManagerListener<RealmSpeaker>() {
                     @Override
@@ -139,8 +167,10 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
                     @Override
                     public void onDataAvailable(RealmSpeaker item) {
-                        realmSpeaker = speakersDataManager.getByUuid(uuid);
-                        setupView();
+                        if (isAdded() && getActivity() != null && getContext() != null) {
+                            realmSpeaker = speakersDataManager.getByUuid(uuid);
+                            setupView();
+                        }
                     }
 
                     @Override
@@ -161,20 +191,20 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
         if (!realmSpeaker.getAcceptedTalks().isEmpty()) {
             for (final RealmTalk talkModel : realmSpeaker.getAcceptedTalks()) {
-                final SpeakerDetailsTalkItem item = SpeakerDetailsTalkItem_.build(getContext());
-                item.setupView(talkModel.getTrack(), talkModel.getTitle());
-                item.setOnClickListener(v -> {
-                    final Optional<SlotApiModel> slotModel = slotsDataManager.
-                            getSlotByTalkId(talkModel.getId());
-                    if (slotModel.isPresent()) {
+                final Optional<SlotApiModel> slotModelOpt = slotsDataManager.
+                        getSlotByTalkId(talkModel.getId());
+                if (slotModelOpt.isPresent()) {
+                    final SlotApiModel slotApiModel = slotModelOpt.get();
+                    final SpeakerDetailsTalkItem item = SpeakerDetailsTalkItem_.build(getActivity());
+                    item.setupView(talkModel.getTrack(), talkModel.getTitle(),
+                            slotApiModel.fromTimeMillis, slotApiModel.toTimeMillis, slotApiModel.roomName);
+                    item.setOnClickListener(v -> {
                         TalkDetailsHostActivity_.intent(this)
-                                .slotApiModel(slotModel.get())
+                                .slotApiModel(slotApiModel)
                                 .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
-                    } else {
-                        Toast.makeText(getContext(), "No talk.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                talkSection.addView(item);
+                    });
+                    talkSection.addView(item);
+                }
             }
         } else {
             talkSection.setVisibility(View.GONE);
@@ -182,8 +212,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     }
 
     private String determineName() {
-        return speakerTalkModel != null ? (speakerTalkModel.firstName + " " + speakerTalkModel.lastName) :
-                realmSpeaker != null ? (realmSpeaker.getFirstName() + " " + realmSpeaker.getLastName()) : null;
+        return realmSpeaker != null ? (realmSpeaker.getFirstName() + " " + realmSpeaker.getLastName()) : null;
     }
 
     private void setupMainLayout() {

@@ -79,7 +79,8 @@ public class ScheduleLineupSearchManager {
             if (model.isTalk()) {
                 result = model.talk.title.toLowerCase().contains(query)
                         || model.talk.track.toLowerCase().contains(query)
-                        || model.talk.summary.toLowerCase().contains(query);
+                        || model.talk.summary.toLowerCase().contains(query)
+                        || model.talk.getReadableSpeakers().toLowerCase().contains(query);
             } else if (model.isBreak()) {
                 result = model.slotBreak.nameEN.toLowerCase().contains(query);
             }

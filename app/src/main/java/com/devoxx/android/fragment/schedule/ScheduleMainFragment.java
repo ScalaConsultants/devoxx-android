@@ -1,7 +1,6 @@
 package com.devoxx.android.fragment.schedule;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -80,7 +79,7 @@ public class ScheduleMainFragment extends BaseMenuFragment
     private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
         final List<Fragment> fragments = getChildFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof ScheduleDayLinupFragment) {
+            if (fragment instanceof ScheduleLineupFragment) {
                 fragment.onActivityResult(requestCode, resultCode, data);
             }
         }

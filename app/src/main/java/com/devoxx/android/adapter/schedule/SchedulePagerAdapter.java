@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment_;
+import com.devoxx.android.fragment.schedule.ScheduleLineupFragment_;
 
 public class SchedulePagerAdapter extends FragmentStatePagerAdapter {
 
@@ -31,7 +31,7 @@ public class SchedulePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return ScheduleDayLinupFragment_.builder()
+        return ScheduleLineupFragment_.builder()
                 .lineupDayMs(conferenceDays.get(position).getDayMs())
                 .build();
     }

@@ -1,9 +1,13 @@
 package com.devoxx.android.fragment.talk;
 
 import com.devoxx.android.activity.BaseActivity;
+import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
-import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
+import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
+import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem;
+import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem_;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem;
+import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.data.manager.NotificationsManager;
 
 import org.androidannotations.annotations.AfterViews;
@@ -11,6 +15,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -23,7 +28,9 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,11 +43,13 @@ import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.R;
 import com.devoxx.utils.DeviceUtil;
 
+import java.util.List;
+
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
-    private static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014
-    private static final String TIME_TEXT_FORMAT = "HH:MM"; // 9:30
+    public static final String DATE_TEXT_FORMAT = "MMMM dd, yyyy"; // April 20, 2014
+    public static final String TIME_TEXT_FORMAT = "HH:MM"; // 9:30
     private static final float FULL_FACTOR = 1f;
 
     @Bean
@@ -48,6 +57,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     NotificationsManager notificationsManager;
+
+    @SystemService
+    LayoutInflater li;
 
     @FragmentArg
     SlotApiModel slotApiModel;
@@ -102,7 +114,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
         if (deviceUtil.isLandscapeTablet()) {
             // Notify ScheduleLineupFragment about change.
-            getActivity().sendBroadcast(ScheduleDayLinupFragment.getRefreshIntent());
+            getActivity().sendBroadcast(ScheduleLineupFragment.getRefreshIntent());
         } else {
             notifyHostActivityAboutChangeOccured();
         }
@@ -159,8 +171,6 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private void setupScheduleButton() {
-        // TODO Make proper icons.
-
         if (notificationsManager.isNotificationScheduled(slotModel.slotId)) {
             scheduleButton.setImageResource(R.drawable.ic_star);
         } else {
@@ -185,8 +195,27 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private View createPresenterSection(SlotApiModel slotModel) {
-        return createSection(R.drawable.ic_microphone_big, R.string.talk_details_section_presentor,
-                slotModel.talk.getReadableSpeakers());
+        final boolean manyGuys = slotModel.talk.speakers.size() > 1;
+        return createClickableSection(R.drawable.ic_microphone_big,
+                manyGuys ? R.string.talk_details_section_presentors : R.string.talk_details_section_presentor,
+                slotModel.talk.speakers);
+    }
+
+    private View createClickableSection(
+            @DrawableRes int icon, @StringRes int title, List<TalkSpeakerApiModel> readableSpeakers) {
+        final TalkDetailsSectionClickableItem result = TalkDetailsSectionClickableItem_.build(getContext());
+        result.setupView(icon, title);
+        final ViewGroup container = result.getSpeakersContainer();
+        for (TalkSpeakerApiModel speaker : readableSpeakers) {
+            final TextView speakerView = (TextView) li.inflate(
+                    R.layout.talk_details_section_speaker_item, container, false);
+            speakerView.setText(speaker.name);
+            final String speakeruuid = TalkSpeakerApiModel.getUuidFromLink(speaker.link);
+            speakerView.setOnClickListener(v ->
+                    SpeakerDetailsHostActivity_.intent(getContext()).speakerUuid(speakeruuid).start());
+            result.addSpeakerView(speakerView);
+        }
+        return result;
     }
 
     private View createDateTimeSection(SlotApiModel slotModel) {
@@ -195,7 +224,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         final String startDateString = startDate.toString(DateTimeFormat.forPattern(DATE_TEXT_FORMAT));
         final String startTimeString = startDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
         final String endTimeString = endDate.toString(DateTimeFormat.forPattern(TIME_TEXT_FORMAT));
-        return createSection(R.drawable.ic_star, R.string.talk_details_section_date_time,
+        return createSection(R.drawable.ic_access_time_white_48dp, R.string.talk_details_section_date_time,
                 String.format("%s, %s to %s", startDateString, startTimeString, endTimeString));
     }
 

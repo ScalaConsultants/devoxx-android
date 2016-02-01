@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 
 import com.devoxx.android.activity.MainActivity_;
-import com.devoxx.android.fragment.schedule.ScheduleDayLinupFragment;
+import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
 import com.devoxx.android.receiver.AlarmReceiver_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.RealmProvider;
@@ -212,7 +212,7 @@ public class NotificationsManager {
     }
 
     private void notifyListenerAboutTalkNotification() {
-        context.sendBroadcast(ScheduleDayLinupFragment.getRefreshIntent());
+        context.sendBroadcast(ScheduleLineupFragment.getRefreshIntent());
     }
 
     public boolean isNotificationAvailable(String slotId) {

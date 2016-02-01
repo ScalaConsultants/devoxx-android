@@ -20,4 +20,48 @@
         android:paddingRight="16dp"
         android:textColor="@color/primary_text_70"
         android:textSize="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="78dp"
+        android:paddingRight="16dp">
+
+        <ImageView
+            style="@style/TalkItemSubIconStyle"
+            android:src="@drawable/ic_access_time_white_24dp"/>
+
+        <TextView
+            android:id="@+id/speakerDetailsTalkSectionTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@color/primary_text_45"
+            android:textSize="12dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="78dp"
+        android:paddingRight="16dp">
+
+        <ImageView
+            style="@style/TalkItemSubIconStyle"
+            android:src="@drawable/ic_place"/>
+
+        <TextView
+            android:id="@+id/speakerDetailsTalkSectionPlace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@color/primary_text_45"
+            android:textSize="12dp"/>
+    </LinearLayout>
 </merge>

@@ -37,8 +37,17 @@
     <string name="filter">Filter</string>
     <string name="deselect_all">Deselect all</string>
     <string name="select_all">Select all</string>
-    <string name="item_talk_more_talks_placeholder">%d TALKS</string>
-    <string name="item_talk_more_tracks_placeholder">in %d tracks</string>
+
+    <plurals name="item_talk_more_talk">
+        <item quantity="one">%d TALK</item>
+        <item quantity="other">%d TALKS</item>
+    </plurals>
+
+    <plurals name="item_talk_more_track">
+        <item quantity="one">in %d track</item>
+        <item quantity="other">in %d tracks</item>
+    </plurals>
+
     <string name="days">Days</string>
     <string name="tracks">Tracks</string>
     <string name="filters">Filters</string>
@@ -48,6 +57,7 @@
     <string name="talk_details_section_format">Format</string>
     <string name="talk_details_section_room">Room</string>
     <string name="talk_details_section_presentor">Presentor</string>
+    <string name="talk_details_section_presentors">Presentors</string>
     <string name="talk_details_section_date_time">Date and time</string>
     <string name="talks">Talks</string>
     <string name="about">About</string>

@@ -103,11 +103,11 @@ public class TalksScheduleItem extends ScheduleItem {
 
     public int getStartIndexForHide(int globalIndex) {
         return globalIndex + EXTRA_TIMESPAN_ELEMENT_COUNT +
-                favouredSlots.size() + EXTRA_OPEN_MORE_ELEMENT_COUNT;
+                favouredSlots.size();
     }
 
-    public int getEndIndexForHide(int globalIndex) {
-        return getStartIndexForHide(globalIndex) + otherSlots.size();
+    public int getItemCountForHide() {
+        return otherSlots.size();
     }
 
     private SlotApiModel getSlotWithFavs(int localIndex) {

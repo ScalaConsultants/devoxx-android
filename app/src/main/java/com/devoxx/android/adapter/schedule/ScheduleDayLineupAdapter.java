@@ -1,6 +1,5 @@
 package com.devoxx.android.adapter.schedule;
 
-import com.annimon.stream.Stream;
 import com.devoxx.android.adapter.schedule.model.BreakScheduleItem;
 import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.adapter.schedule.model.TalksScheduleItem;
@@ -124,7 +123,7 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
             holder.toggleIndicator();
             scheduleLineupDataCreator.refreshIndexes(data);
             notifyItemRangeRemoved(item.getStartIndexForHide(position),
-                    item.getEndIndexForHide(position));
+                    item.getItemCountForHide());
         });
     }
 
