@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.devoxx.android.view.speaker.SpeakerDetailsHeader;
 import com.devoxx.R;
+import com.devoxx.utils.DeviceUtil_;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -29,9 +30,11 @@ public class SpeakerDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior
     private int mMarginRight;
     private int mStartMarginBottom;
     private boolean isHide;
+    private DeviceUtil_ deviceUtil;
 
     public SpeakerDetailsHeaderViewBehavior(Context context, AttributeSet attrs) {
         mContext = context;
+        deviceUtil = DeviceUtil_.getInstance_(context);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class SpeakerDetailsHeaderViewBehavior extends CoordinatorLayout.Behavior
         calculatedChildPosition = calculatedChildPosition - mStartMarginBottom * inverseFactor;
 
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        lp.leftMargin = (int) (factor * mEndMargintLeft) + mStartMarginLeft;
+        lp.leftMargin = deviceUtil.isLandscapeTablet() ? mStartMarginLeft : (int) (factor * mEndMargintLeft) + mStartMarginLeft;
         lp.rightMargin = mMarginRight;
         child.setLayoutParams(lp);
 

@@ -42,20 +42,8 @@
                     android:background="@drawable/speaker_foreground_gradient"/>
             </FrameLayout>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/main.toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            <include layout="@layout/speaker_details_toolbar_include"/>
 
-                <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
-                    android:id="@+id/toolbar_header_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"/>
-
-            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -145,10 +133,6 @@
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|right|end"/>
 
-    <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
-        android:id="@+id/float_header_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="com.devoxx.android.view.behaviour.SpeakerDetailsHeaderViewBehavior"/>
+    <include layout="@layout/speaker_details_title_include"/>
 
 </android.support.design.widget.CoordinatorLayout>

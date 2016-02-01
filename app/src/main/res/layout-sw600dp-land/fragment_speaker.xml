@@ -42,11 +42,7 @@
                     android:background="@drawable/speaker_foreground_gradient"/>
             </FrameLayout>
 
-            <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
-                android:id="@+id/toolbar_header_view"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:visibility="gone"/>
+            <include layout="@layout/speaker_details_toolbar_include"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -137,10 +133,6 @@
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|right|end"/>
 
-    <com.devoxx.android.view.speaker.SpeakerDetailsHeader_
-        android:id="@+id/float_header_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="com.devoxx.android.view.behaviour.SpeakerDetailsHeaderViewBehavior"/>
+    <include layout="@layout/speaker_details_title_include"/>
 
 </android.support.design.widget.CoordinatorLayout>

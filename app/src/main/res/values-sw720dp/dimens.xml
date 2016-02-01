@@ -7,7 +7,7 @@
     -->
     <dimen name="activity_horizontal_margin">24dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
-    <dimen name="elevation_tab_layout">4dp</dimen>
+    <dimen name="elevation_tab_layout">2dp</dimen>
     <dimen name="elevation_main_frame">2dp</dimen>
     <dimen name="elevation_menu">4dp</dimen>
     <dimen name="toolbar_logo_height">28dp</dimen>

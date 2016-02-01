@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.devoxx.android.view.speaker.SpeakerDetailsHeader_
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/float_header_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/header_view_start_margin_left"
+    app:layout_behavior="com.devoxx.android.view.behaviour.SpeakerDetailsHeaderViewBehavior"
+    tools:showIn="@layout/fragment_speaker"/>

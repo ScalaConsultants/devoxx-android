@@ -40,11 +40,7 @@
                     android:background="@drawable/talk_foreground_gradient"/>
             </FrameLayout>
 
-            <com.devoxx.android.view.talk.TalkDetailsHeader_
-                android:id="@+id/toolbar_header_view"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:visibility="gone"/>
+            <include layout="@layout/talk_details_toolbar_include"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -151,12 +147,6 @@
             android:layout_height="6dp"/>
     </LinearLayout>
 
-    <com.devoxx.android.view.talk.TalkDetailsHeader_
-        android:id="@+id/float_header_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/header_view_start_margin_left"
-        android:layout_marginStart="@dimen/header_view_start_margin_left"
-        app:layout_behavior="com.devoxx.android.view.behaviour.TalkDetailsHeaderViewBehavior"/>
+    <include layout="@layout/talk_details_title_section_include"/>
 
 </android.support.design.widget.CoordinatorLayout>

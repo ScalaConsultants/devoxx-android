@@ -219,11 +219,13 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     private void setupMainLayout() {
         collapsingToolbarLayout.setTitle(" ");
         final BaseActivity baseActivity = ((BaseActivity) getActivity());
-        if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+
+        if (!deviceUtil.isLandscapeTablet()) {
             baseActivity.setSupportActionBar(toolbar);
             baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
         appBarLayout.addOnOffsetChangedListener(this);
     }
 

@@ -1,25 +1,5 @@
 package com.devoxx.android.fragment.talk;
 
-import com.devoxx.android.activity.BaseActivity;
-import com.devoxx.android.activity.SpeakerDetailsHostActivity_;
-import com.devoxx.android.activity.TalkDetailsHostActivity;
-import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
-import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem;
-import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem_;
-import com.devoxx.android.view.talk.TalkDetailsSectionItem;
-import com.devoxx.connection.model.TalkSpeakerApiModel;
-import com.devoxx.data.manager.NotificationsManager;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.SystemService;
-import org.androidannotations.annotations.ViewById;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-
 import android.app.Activity;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -37,15 +17,30 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.devoxx.R;
+import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.fragment.common.BaseFragment;
+import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
 import com.devoxx.android.view.talk.TalkDetailsHeader;
-
+import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem;
+import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem_;
+import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.model.SlotApiModel;
-
-import com.devoxx.R;
+import com.devoxx.connection.model.TalkSpeakerApiModel;
+import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.ViewById;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.List;
 
@@ -103,7 +98,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @AfterViews
     void afterViews() {
-        setHasOptionsMenu(!deviceUtil.isLandscapeTablet());
+        setHasOptionsMenu(!deviceUtil.isTablet());
         setupMainLayout();
 
         if (deviceUtil.isLandscapeTablet() && slotApiModel != null) {
@@ -246,8 +241,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     private void setupMainLayout() {
         collapsingToolbarLayout.setTitle(" ");
         final AppCompatActivity baseActivity = ((AppCompatActivity) getActivity());
-        if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+        toolbar.setNavigationOnClickListener(v -> baseActivity.finish());
+
+        if (!deviceUtil.isLandscapeTablet()) {
             baseActivity.setSupportActionBar(toolbar);
             baseActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
