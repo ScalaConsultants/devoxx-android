@@ -5,9 +5,12 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.devoxx.R;
 import com.devoxx.utils.FontUtils;
 
@@ -15,6 +18,9 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.ViewsById;
+
+import java.util.List;
 
 @EViewGroup(R.layout.selector_values)
 public class SelectorValues extends LinearLayout {
@@ -25,14 +31,11 @@ public class SelectorValues extends LinearLayout {
     @ViewById(R.id.selectorValueLabel)
     TextView label;
 
-    @ViewById(R.id.selectorValueFirstNumber)
-    TextView first;
-
-    @ViewById(R.id.selectorValueSecondNumber)
-    TextView second;
-
-    @ViewById(R.id.selectorValueThirdNumber)
-    TextView third;
+    @ViewsById({R.id.selectorValueFirstNumber,
+            R.id.selectorValueSecondNumber,
+            R.id.selectorValueThirdNumber,
+            R.id.selectorValueFourthNumber})
+    List<TextView> numbers;
 
     @AfterViews
     void afterViews() {
@@ -42,17 +45,15 @@ public class SelectorValues extends LinearLayout {
     }
 
     public void setupView(String labelVal, int numberVal) {
-        final String numberAsString = String.format("%03d", numberVal);
+        final String numberAsString = String.format("%04d", numberVal);
         label.setText(labelVal);
         final String[] letters = numberAsString.split("");
-        for (int i = letters.length - 1; i >= 1; i--) {
-            if (i == 3) {
-                third.setText(letters[i]);
-            } else if (i == 2) {
-                second.setText(letters[i]);
-            } else if (i == 1) {
-                first.setText(letters[i]);
-            }
+        final List<String> lettersFiltered = Stream.of(letters)
+                .filter(value -> !value.isEmpty()).collect(Collectors.toList());
+        for (int i = lettersFiltered.size() - 1; i >= 0; i--) {
+            final TextView textView = numbers.get(i);
+            textView.setText(lettersFiltered.get(i));
+            textView.setVisibility(View.VISIBLE);
         }
     }
 
