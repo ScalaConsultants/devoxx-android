@@ -123,8 +123,14 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
             item.switchTalksVisibility();
             holder.toggleIndicator();
             scheduleLineupDataCreator.refreshIndexes(data);
-            notifyItemRangeRemoved(item.getStartIndexForHide(position),
-                    item.getItemCountForHide());
+
+            final int start = item.getStartIndexForHide();
+            final int count = item.getItemCountForHide();
+            if (item.isOthersVisible()) {
+                notifyItemRangeInserted(start, count);
+            } else {
+                notifyItemRangeRemoved(start, count);
+            }
         });
     }
 

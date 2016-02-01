@@ -102,9 +102,9 @@ public class TalksScheduleItem extends ScheduleItem {
         isOthersVisible ^= true;
     }
 
-    public int getStartIndexForHide(int globalIndex) {
-        return globalIndex + EXTRA_TIMESPAN_ELEMENT_COUNT +
-                favouredSlots.size();
+    public int getStartIndexForHide() {
+        return getStartIndex() + EXTRA_TIMESPAN_ELEMENT_COUNT
+                + EXTRA_OPEN_MORE_ELEMENT_COUNT + favouredSlots.size();
     }
 
     public int getItemCountForHide() {
