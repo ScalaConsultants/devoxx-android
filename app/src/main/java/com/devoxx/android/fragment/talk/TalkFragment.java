@@ -1,6 +1,9 @@
 package com.devoxx.android.fragment.talk;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
@@ -28,7 +31,9 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
+import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
 
@@ -59,6 +64,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     Navigator navigator;
+
+    @Bean
+    ConferenceManager conferenceManager;
 
     @SystemService
     LayoutInflater li;
@@ -131,7 +139,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsTweetBtn)
     void onTweetClick() {
-        // TODO
+        final RealmConference conference = conferenceManager.getActiveConference();
+        final String twitterMessage = String.format("%s\n%s %s", slotModel.talk.title,
+                slotModel.talk.getReadableSpeakers(), conference.getHashtag());
+        final String tweetUrl = "https://twitter.com/intent/tweet?text=" + Uri.encode(twitterMessage);
+        final Uri uri = Uri.parse(tweetUrl);
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
     @Click(R.id.talkDetailsLikeBtn)

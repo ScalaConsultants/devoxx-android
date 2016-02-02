@@ -217,7 +217,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     public void onWheelItemSelected(ConferenceApiModel data) {
         Glide.with(this)
                 .load(data.splashImgURL)
-                .bitmapTransform(new BlurTransformation(this, 3))
+                .bitmapTransform(new BlurTransformation(this, 5))
                 .crossFade()
                 .into(mainImage);
 
