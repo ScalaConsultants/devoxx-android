@@ -14,7 +14,7 @@ public class TalkTrackHolder extends BaseTrackHolder {
 
     @Override
     public void setupView(SlotApiModel slotModel, boolean isRunning) {
-        talkItemView.setupTalk(slotModel, isRunning)
+        talkItemView.setupTalk(slotModel)
                 .withoutTrackName()
                 .withTime();
     }

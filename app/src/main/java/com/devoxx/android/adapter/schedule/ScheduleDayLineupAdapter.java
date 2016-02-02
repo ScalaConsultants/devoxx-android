@@ -146,10 +146,12 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
     }
 
     private void setupTalkItemHolder(BaseItemHolder holder, ScheduleItem scheduleItem, int position) {
-        final TalksScheduleItem talksScheduleItem = (TalksScheduleItem) scheduleItem;
-        final Optional<SlotApiModel> slotModel = talksScheduleItem.getItem(position);
+        final TalksScheduleItem item = (TalksScheduleItem) scheduleItem;
+        final Optional<SlotApiModel> slotModel = item.getItem(position);
         if (slotModel.isPresent()) {
-            ((TalkItemHolder) holder).setupTalk(slotModel.get(), talksScheduleItem.isRunning());
+            // Show running indicator for last talk in the item.
+            final boolean withRunningIndicator = item.isRunning() && position == item.getStopIndex();
+            ((TalkItemHolder) holder).setupTalk(slotModel.get(), withRunningIndicator);
             setupOnItemClickListener(holder, position);
         }
     }

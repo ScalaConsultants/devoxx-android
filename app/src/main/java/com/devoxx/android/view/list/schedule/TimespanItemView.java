@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,9 @@ public class TimespanItemView extends LinearLayout {
 
     @ViewById(R.id.list_item_timespan)
     TextView label;
+
+    @ViewById(R.id.list_item_timespan_running_indicator)
+    View runningIndicator;
 
     @ColorRes(R.color.primary)
     int notRunningTimespanColor;
@@ -61,6 +65,8 @@ public class TimespanItemView extends LinearLayout {
             label.setText(String.format(TIMESPAN_PLACEHOLDER, startString, endString));
             label.setTextColor(notRunningTimespanColor);
         }
+
+        runningIndicator.setVisibility(running ? View.VISIBLE : GONE);
     }
 
     public static String formatTime(long time) {

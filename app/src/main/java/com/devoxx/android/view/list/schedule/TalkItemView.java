@@ -58,20 +58,17 @@ public class TalkItemView extends LinearLayout {
     @ViewById(R.id.list_item_talk_track_schedule)
     ImageView scheduleIcon;
 
+    @ViewById(R.id.list_item_timespan_running_indicator)
+    View runningIndicator;
+
     @ViewById(R.id.list_item_talk_time_container)
     View timeContainer;
 
     @ViewById(R.id.list_item_talk_time)
     TextView time;
 
-    @DimensionPixelOffsetRes(R.dimen.activity_horizontal_margin)
-    int paddingLr;
-
     @ColorRes(R.color.primary)
     int scheduledIndicatorColor;
-
-    @ColorRes(R.color.active_slot)
-    int activeSlotColor;
 
     @Bean
     TracksDownloader tracksDownloader;
@@ -81,14 +78,14 @@ public class TalkItemView extends LinearLayout {
 
     @AfterViews
     void afterViews() {
-        setOrientation(HORIZONTAL);
-        setPadding(paddingLr, 0, paddingLr, paddingLr);
+        setOrientation(VERTICAL);
         setGravity(Gravity.CENTER_VERTICAL);
-        setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
-    public TalkItemView setupTalk(SlotApiModel slotModel, boolean isRunning) {
+    public TalkItemView setupTalk(SlotApiModel slotModel) {
         if (slotModel.notAllocated) {
             // TODO Handle somehow free slots.
             title.setText("Free slot...");
@@ -119,13 +116,13 @@ public class TalkItemView extends LinearLayout {
             scheduleIcon.setVisibility(View.GONE);
         }
 
-        if (isRunning) {
-            setupRunningBackground();
-        } else {
-            setupNormalBackground();
-        }
+        setupNormalBackground();
 
         return this;
+    }
+
+    public void showRunningIndicator(boolean show) {
+        runningIndicator.setVisibility(show ? VISIBLE : GONE);
     }
 
     private String obtainTrackIconUrl(TalkBaseApiModel slotModel) {
@@ -164,9 +161,5 @@ public class TalkItemView extends LinearLayout {
         Drawable drawableFromTheme = ta.getDrawable(0);
         ta.recycle();
         setBackground(drawableFromTheme);
-    }
-
-    private void setupRunningBackground() {
-        setBackground(new ColorDrawable(activeSlotColor));
     }
 }
