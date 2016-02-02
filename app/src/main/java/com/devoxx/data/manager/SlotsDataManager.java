@@ -43,6 +43,7 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         talks.clear();
         talks.addAll(Stream.of(allSlots)
                 .filter(value -> value.isTalk() && !value.isBreak())
+                .filter(value1 -> !value1.notAllocated)
                 .collect(Collectors.<SlotApiModel>toList()));
     }
 
@@ -72,8 +73,10 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         final DateTime tmpDate = new DateTime();
         final DateTimeComparator dateComparator = DateTimeComparator.getDateOnlyInstance();
 
-        return Stream.of(allSlots).filter(value -> dateComparator.compare(requestedDate,
-                tmpDate.withMillis(value.fromTimeMillis)) == 0).collect(Collectors.<SlotApiModel>toList());
+        return Stream.of(allSlots)
+                .filter(value -> dateComparator.compare(requestedDate, tmpDate.withMillis(value.fromTimeMillis)) == 0)
+                .filter(value1 -> !value1.notAllocated)
+                .collect(Collectors.<SlotApiModel>toList());
     }
 
     @Override

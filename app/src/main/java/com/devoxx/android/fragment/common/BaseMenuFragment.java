@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.devoxx.R;
@@ -86,14 +88,17 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     private Drawable buildCounterDrawable(int count, int backgroundImageId) {
         final LayoutInflater inflater = LayoutInflater.from(getContext());
-        final View view = inflater.inflate(R.layout.toolbar_menu_item_with_badge_view, null);
+        final RelativeLayout rl = new RelativeLayout(getContext());
+        rl.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        final RelativeLayout view = (RelativeLayout) inflater.inflate(
+                R.layout.toolbar_menu_item_with_badge_view, rl, true);
         view.setBackgroundResource(backgroundImageId);
 
+        final TextView textView = (TextView) view.findViewById(R.id.count);
         if (count == 0) {
-            View counterTextPanel = view.findViewById(R.id.count);
-            counterTextPanel.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
         } else {
-            TextView textView = (TextView) view.findViewById(R.id.count);
             textView.setText(String.valueOf(count));
         }
 

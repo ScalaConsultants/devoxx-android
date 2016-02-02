@@ -122,7 +122,7 @@ public class TalkItemView extends LinearLayout {
     }
 
     public void showRunningIndicator(boolean show) {
-        runningFirstIndicator.setVisibility(show ? VISIBLE : INVISIBLE);
+        runningSecondIndicator.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
     public TalkItemView showRunningDoubleIndicator(boolean runningItem, boolean isPreviousRunning) {

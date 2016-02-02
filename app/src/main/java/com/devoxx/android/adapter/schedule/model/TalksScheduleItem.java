@@ -120,7 +120,7 @@ public class TalksScheduleItem extends ScheduleItem {
         } else {
             final int slotIndex = localIndex - (favsEndIndex +
                     EXTRA_OPEN_MORE_ELEMENT_COUNT + EXTRA_TIMESPAN_ELEMENT_COUNT);
-            return Optional.ofNullable(otherSlots.get(slotIndex));
+            return Optional.ofNullable(slotIndex < 0 ? null : otherSlots.get(slotIndex));
         }
     }
 
