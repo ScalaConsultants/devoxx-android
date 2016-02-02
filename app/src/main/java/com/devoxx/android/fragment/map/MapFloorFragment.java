@@ -37,10 +37,12 @@ public class MapFloorFragment extends BaseFragment {
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(
+                            GlideDrawable resource, String model,
+                            Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         final PhotoViewAttacher pa = new PhotoViewAttacher(imageView);
                         pa.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        pa.setScaleLevels(1f, 5f, 15f);
+                        pa.setScaleLevels(1f, 2f, 4f);
                         return false;
                     }
                 })
