@@ -1,10 +1,13 @@
 package com.devoxx.android.fragment.speaker;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,6 +45,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -186,7 +190,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
     private void setupView() {
         final String name = determineName();
-        final String company = "Company Name"; // TODO Waiting for api company info.
+        final String company = realmSpeaker.getCompany();
         toolbarHeaderView.setupHeader(name, company);
         floatHeaderView.setupHeader(realmSpeaker.getAvatarURL(), name, company);
 
@@ -209,6 +213,33 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
             }
         } else {
             talkSection.setVisibility(View.GONE);
+        }
+
+        setupTwitterButton(realmSpeaker);
+        setupWebsite(realmSpeaker);
+    }
+
+    private void setupTwitterButton(RealmSpeaker realmSpeaker) {
+        final String twitterName = realmSpeaker.getTwitter();
+        if (!TextUtils.isEmpty(twitterName)) {
+            secondButton.setVisibility(View.VISIBLE);
+            secondButton.setOnClickListener(v -> {
+                String formattedTwitterAddress = "http://twitter.com/" + twitterName.replace("@", "");
+                Intent browseTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse(formattedTwitterAddress));
+                startActivity(browseTwitter);
+            });
+        } else {
+            secondButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupWebsite(RealmSpeaker realmSpeaker) {
+        final String www = realmSpeaker.getBlog();
+        if (!TextUtils.isEmpty(www)) {
+            firstButton.setVisibility(View.VISIBLE);
+            firstButton.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(www))));
+        } else {
+            firstButton.setVisibility(View.GONE);
         }
     }
 

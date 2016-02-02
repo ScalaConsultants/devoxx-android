@@ -200,6 +200,12 @@ public class ConferenceManager {
         return parseConfDate(test).getMillis();
     }
 
+    public boolean isFutureConference(ConferenceApiModel conference) {
+//        return parseConfDate(conference.fromDate).getMillis() > System.currentTimeMillis();
+        // TODO Tests!
+        return !conference.country.toLowerCase().contains("belg");
+    }
+
     private void clearFiltersDefinitions() {
         scheduleFilterManager.removeAllFilters();
     }

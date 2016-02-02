@@ -129,9 +129,13 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Click(R.id.selectorGo)
     void onGoClick() {
         if (connection.isOnline()) {
-            setupRequiredApis(lastSelectedConference.cfpURL,
-                    lastSelectedConference.votingURL);
-            conferenceManager.fetchConferenceData(lastSelectedConference, this);
+            if (conferenceManager.isFutureConference(lastSelectedConference)) {
+                infoUtil.showToast("No data yet available");
+            } else {
+                setupRequiredApis(lastSelectedConference.cfpURL,
+                        lastSelectedConference.votingURL);
+                conferenceManager.fetchConferenceData(lastSelectedConference, this);
+            }
         } else {
             infoUtil.showToast("No internet connection...");
         }
