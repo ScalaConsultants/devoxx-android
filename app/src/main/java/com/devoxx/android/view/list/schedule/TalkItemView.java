@@ -11,16 +11,13 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.ColorRes;
-import org.androidannotations.annotations.res.DimensionPixelOffsetRes;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -58,8 +55,11 @@ public class TalkItemView extends LinearLayout {
     @ViewById(R.id.list_item_talk_track_schedule)
     ImageView scheduleIcon;
 
-    @ViewById(R.id.list_item_timespan_running_indicator)
-    View runningIndicator;
+    @ViewById(R.id.list_item_timespan_running_first_indicator)
+    View runningFirstIndicator;
+
+    @ViewById(R.id.list_item_timespan_running_second_indicator)
+    View runningSecondIndicator;
 
     @ViewById(R.id.list_item_talk_time_container)
     View timeContainer;
@@ -122,7 +122,14 @@ public class TalkItemView extends LinearLayout {
     }
 
     public void showRunningIndicator(boolean show) {
-        runningIndicator.setVisibility(show ? VISIBLE : GONE);
+        runningFirstIndicator.setVisibility(show ? VISIBLE : INVISIBLE);
+    }
+
+    public TalkItemView showRunningDoubleIndicator(boolean runningItem, boolean isPreviousRunning) {
+        runningFirstIndicator.setVisibility(runningItem ?
+                (isPreviousRunning ? INVISIBLE : VISIBLE) : INVISIBLE);
+        runningSecondIndicator.setVisibility(runningItem ? VISIBLE : INVISIBLE);
+        return this;
     }
 
     private String obtainTrackIconUrl(TalkBaseApiModel slotModel) {
@@ -147,7 +154,7 @@ public class TalkItemView extends LinearLayout {
     }
 
     public TalkItemView withoutTrackName() {
-        track.setVisibility(View.INVISIBLE);
+        track.setVisibility(View.GONE);
         return this;
     }
 

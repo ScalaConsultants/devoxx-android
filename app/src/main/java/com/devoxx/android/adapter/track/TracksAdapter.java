@@ -49,7 +49,12 @@ public class TracksAdapter extends RecyclerView.Adapter<BaseTrackHolder> {
     @Override
     public void onBindViewHolder(BaseTrackHolder holder, int position) {
         final SlotApiModel slot = data.get(position);
-        holder.setupView(slot, isRunningItem(slot));
+        boolean isPreviousAlsoRunning = false;
+        if (position > 0) {
+            isPreviousAlsoRunning = isRunningItem(data.get(position - 1));
+        }
+
+        holder.setupView(slot, isRunningItem(slot), isPreviousAlsoRunning);
     }
 
     @Override

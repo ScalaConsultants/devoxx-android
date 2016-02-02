@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <include
+        android:id="@+id/list_item_timespan_running_first_indicator"
+        layout="@layout/list_item_now_running_indicator"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:orientation="horizontal"
         android:paddingBottom="8dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -14,6 +19,7 @@
             android:id="@+id/list_item_talk_track_icon"
             android:layout_width="@dimen/track_icon_size"
             android:layout_height="@dimen/track_icon_size"
+            android:layout_marginRight="16dp"
             android:contentDescription="@null"/>
 
         <LinearLayout
@@ -111,10 +117,7 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/list_item_timespan_running_indicator"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/running_timespan"
-        android:visibility="gone"/>
+    <include
+        android:id="@+id/list_item_timespan_running_second_indicator"
+        layout="@layout/list_item_now_running_indicator"/>
 </merge>

@@ -119,6 +119,8 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
 
     private void setupMoreItemHolder(TalksMoreItemHolder holder, int position) {
         final TalksScheduleItem item = (TalksScheduleItem) getItem(position);
+        holder.setRunIndicatorVisibility(item);
+
         holder.setupMore(item, () -> {
             item.switchTalksVisibility();
             holder.toggleIndicator();
@@ -131,6 +133,8 @@ public class ScheduleDayLineupAdapter extends RecyclerView.Adapter<BaseItemHolde
             } else {
                 notifyItemRangeRemoved(start, count);
             }
+
+            holder.setRunIndicatorVisibility(item);
         });
     }
 

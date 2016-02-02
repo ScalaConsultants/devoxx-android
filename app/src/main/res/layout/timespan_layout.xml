@@ -6,12 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/list_item_timespan_running_indicator"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/running_timespan"
-        android:visibility="invisible"/>
+    <include layout="@layout/list_item_now_running_indicator"/>
 
     <TextView
         android:id="@+id/list_item_timespan"
