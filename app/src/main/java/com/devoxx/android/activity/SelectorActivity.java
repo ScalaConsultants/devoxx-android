@@ -129,15 +129,11 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Click(R.id.selectorGo)
     void onGoClick() {
         if (connection.isOnline()) {
-            if (conferenceManager.isFutureConference(lastSelectedConference)) {
-                infoUtil.showToast("No data yet available");
-            } else {
-                setupRequiredApis(lastSelectedConference.cfpURL,
-                        lastSelectedConference.votingURL);
-                conferenceManager.fetchConferenceData(lastSelectedConference, this);
-            }
+            setupRequiredApis(lastSelectedConference.cfpURL,
+                    lastSelectedConference.votingURL);
+            conferenceManager.fetchConferenceData(lastSelectedConference, this);
         } else {
-            infoUtil.showToast("No internet connection...");
+            infoUtil.showToast(R.string.no_internet_connection);
         }
     }
 
@@ -165,8 +161,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
 
     private void navigateToHome() {
-        Logger.l("SelectorActivity.navigateToHome");
-
         MainActivity_.intent(this).start();
         finish();
     }
@@ -198,11 +192,18 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     }
 
     @Override
-    public void onConferenceDataAvailable() {
+    public void onConferenceDataAvailable(boolean isAnyTalks) {
         Logger.l("SelectorActivity.onConferenceDataAvailable");
 
         if (activityUtils.isAppForeground(this)) {
-            navigateToHome();
+            if (isAnyTalks) {
+                navigateToHome();
+            } else {
+                showGoButton();
+                selectorView.hideProgress();
+                selectorView.showIcons();
+                infoUtil.showToast(R.string.no_data_available);
+            }
         }
     }
 
@@ -211,6 +212,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         showGoButton();
         selectorView.hideProgress();
         selectorView.showIcons();
+        infoUtil.showToast(R.string.something_went_wrong);
     }
 
     @Override

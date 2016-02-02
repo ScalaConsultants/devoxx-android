@@ -56,7 +56,7 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         return talks;
     }
 
-    public void fetchTalksSync(final String confCode) throws IOException {
+    public boolean fetchTalksSync(final String confCode) throws IOException {
         allSlots.clear();
         allSlots = slotsDownloader.downloadTalks(confCode);
         slotDao.saveSlots(allSlots);
@@ -66,6 +66,9 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
                 .collect(Collectors.<SlotApiModel>toList());
         this.talks.clear();
         this.talks.addAll(talks);
+
+        return !Stream.of(allSlots).filter(SlotApiModel::isTalk)
+                .collect(Collectors.toList()).isEmpty();
     }
 
     public List<SlotApiModel> getSlotsForDay(final long timeMs) {

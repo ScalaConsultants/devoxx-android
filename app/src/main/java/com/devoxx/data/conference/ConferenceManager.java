@@ -50,7 +50,7 @@ public class ConferenceManager {
     public interface IConferenceDataListener {
         void onConferenceDataStart();
 
-        void onConferenceDataAvailable();
+        void onConferenceDataAvailable(boolean isAnyTalks);
 
         void onConferenceDataError();
     }
@@ -121,12 +121,16 @@ public class ConferenceManager {
         try {
             notifyConferenceListenerStart(listener);
             tracksDownloader.downloadTracksDescriptions(confCode);
-            slotsDataManager.fetchTalksSync(confCode);
+            final boolean isAnyTalks = slotsDataManager.fetchTalksSync(confCode);
             speakersDataManager.fetchSpeakersSync(confCode);
             final List<ConferenceDay> conferenceDays = getConferenceDays();
             scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
-            saveActiveConference(conferenceApiModel);
-            notifyConferenceListenerSuccess(listener);
+
+            if (isAnyTalks) {
+                saveActiveConference(conferenceApiModel);
+            }
+
+            notifyConferenceListenerSuccess(listener, isAnyTalks);
         } catch (IOException e) {
             clearCurrentConferenceData();
             notifyConferenceListenerError(listener);
@@ -139,8 +143,8 @@ public class ConferenceManager {
     }
 
     @UiThread
-    void notifyConferenceListenerSuccess(IConferenceDataListener listener) {
-        listener.onConferenceDataAvailable();
+    void notifyConferenceListenerSuccess(IConferenceDataListener listener, boolean isAnyTalks) {
+        listener.onConferenceDataAvailable(isAnyTalks);
     }
 
     @UiThread

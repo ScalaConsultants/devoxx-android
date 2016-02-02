@@ -1,32 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">33rd Degree</string>
-    <string name="app_name_devox">Devoxx App</string>
-    <string name="feedback_link">mailto:apps@scalac.io?subject=Feedback: %1$s %2$s (%3$s) Android %4$s (API %5$s) %6$s %7$s</string>
-    <string name="add_to_my_schedule">Add to\nMy Schedule</string>
-    <string name="remove_to_my_schedule">Remove from\nMy Schedule</string>
-    <string name="toast_feedback_activity_not_found">Email app not found</string>
+    <string name="app_name">Devoxx App</string>
     <string name="toast_notification_set_at">Notification set at</string>
     <string name="toast_notification_not_set">Can\'t set notification for a past or current event</string>
-    <string name="action_by_scalac">by Scalac</string>
-    <string name="action_settings">Settings</string>
-    <string name="and">and</string>
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
-    <string name="title_talks_list">Talk(s):</string>
-    <string name="navigation_drawer_open">Open</string>
-    <string name="navigation_drawer_close">Close</string>
 
     <string name="menu_schedule_label">Schedule</string>
-    <string name="menu_talks_label">Talks</string>
     <string name="menu_tracks_label">Tracks</string>
     <string name="menu_speakers_label">Speakers</string>
     <string name="menu_map_label">Map</string>
 
-    <string name="drawer_menu_other_feedback_label">FEEDBACK</string>
-    <string name="drawer_menu_other_register_label">REGISTER</string>
-    <string name="vote_not_legged_message">Musisz być zalogowany aby głosować!</string>
     <string name="drive_map">DRIVE MAP</string>
     <string name="conf_map">CONF MAP</string>
     <string name="go">GO</string>
@@ -73,6 +56,9 @@
     <string name="selector_conf_info_format" formatted="false">From %d to %s\n%s</string>
     <string name="credits">Credits</string>
     <string name="report_issue">Report Issue</string>
+    <string name="no_data_available">No data yet available</string>
+    <string name="no_internet_connection">No internet connection…</string>
+    <string name="something_went_wrong">Something went wrong…</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>

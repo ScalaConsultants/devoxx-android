@@ -10,7 +10,7 @@ import org.androidannotations.annotations.EBean;
 public class FakeVoter extends AbstractVoter {
 
     @Override
-    public void voteForTalk(String confCode, String talkId, IOnVoteForTalkListener listener) {
+    public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {
         if (System.currentTimeMillis() % 3 == 0) {
             listener.onVoteForTalkSucceed();
         } else {

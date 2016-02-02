@@ -31,11 +31,17 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
+import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.model.RealmConference;
+import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
+import com.devoxx.data.vote.interfaces.ITalkVoter;
+import com.devoxx.data.vote.voters.FakeVoter;
+import com.devoxx.data.vote.voters.TalkVoter;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
+import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -67,6 +73,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @Bean
+    InfoUtil infoUtil;
+
+    @Bean(FakeVoter.class)
+    ITalkVoter talkVoter;
 
     @SystemService
     LayoutInflater li;
@@ -134,7 +146,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsNotesBtn)
     void onNotesClick() {
-        // TODO
+        infoUtil.showToast("Notes TBD.");
     }
 
     @Click(R.id.talkDetailsTweetBtn)
@@ -149,7 +161,17 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsLikeBtn)
     void onLikeClick() {
-        // TODO
+        talkVoter.voteForTalk(slotModel.talk.id, new IOnVoteForTalkListener() {
+            @Override
+            public void onVoteForTalkSucceed() {
+                infoUtil.showToast("View succeed, TBD.");
+            }
+
+            @Override
+            public void onVoteForTalkFailed() {
+                infoUtil.showToast("View failed, TBD.");
+            }
+        });
     }
 
     @Override

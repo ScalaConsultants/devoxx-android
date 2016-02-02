@@ -58,7 +58,7 @@ android {
             versionNameSuffix "@devoxx"
             buildConfigField "boolean", "LOGGING", "true"
             signingConfig signingConfigs.debug
-            manifestPlaceholders = [applicationLabel: "@string/app_name_devox"]
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
         }
     }
     packagingOptions {

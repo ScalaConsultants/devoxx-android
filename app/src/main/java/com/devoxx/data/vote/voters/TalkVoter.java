@@ -11,6 +11,7 @@ import com.devoxx.connection.vote.VoteApi;
 import com.devoxx.connection.vote.VoteConnection;
 
 import com.devoxx.R;
+
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -23,8 +24,9 @@ public class TalkVoter extends AbstractVoter {
     VoteConnection voteConnection;
 
     @Override
-    public void voteForTalk(String confCode, String talkId, IOnVoteForTalkListener listener) {
-        // TODO Connect to voting service. Handle user_id somehow (Huntly).
+    public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {
+        // TODO Connect to service.
+        listener.onVoteForTalkSucceed();
     }
 
     @Override

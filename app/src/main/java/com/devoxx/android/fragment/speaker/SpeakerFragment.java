@@ -183,7 +183,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
 
                     @Override
                     public void onDataError() {
-                        infoUtil.showToast("Something went wrong...");
+                        infoUtil.showToast(R.string.something_went_wrong);
                     }
                 });
     }
