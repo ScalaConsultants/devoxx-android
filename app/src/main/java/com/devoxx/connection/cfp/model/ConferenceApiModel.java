@@ -16,8 +16,7 @@ public class ConferenceApiModel implements Serializable {
     public List<FloorApiModel> floors;
     public String capacity;
     public String sessions;
-    public String splashPhoneImgURL;
-    public String splashTabletImgURL;
+    public String splashImgURL;
     public String fromDate;
     public String toDate;
     public String wwwURL;
@@ -28,6 +27,7 @@ public class ConferenceApiModel implements Serializable {
     public String cfpEndpoint;
     public String cfpVersion;
     public String youTubeId;
+    public String hashtag;
 
     @Override
     public String toString() {
@@ -43,6 +43,7 @@ public class ConferenceApiModel implements Serializable {
                 ", id='" + id + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", longitude='" + longitude + '\'' +
+                ", splashImgURL='" + splashImgURL + '\'' +
                 ", regURL='" + regURL + '\'' +
                 ", toDate='" + toDate + '\'' +
                 ", venue='" + venue + '\'' +
@@ -50,6 +51,7 @@ public class ConferenceApiModel implements Serializable {
                 ", votingURL='" + votingURL + '\'' +
                 ", wwwURL='" + wwwURL + '\'' +
                 ", youTubeId='" + youTubeId + '\'' +
+                ", hashtag='" + hashtag + '\'' +
                 '}';
     }
 }

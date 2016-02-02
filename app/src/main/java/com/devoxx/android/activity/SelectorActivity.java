@@ -178,6 +178,9 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferencesAvailable(List<ConferenceApiModel> conferences) {
+        for (ConferenceApiModel conference : conferences) {
+            Glide.with(this).load(conference.splashImgURL).preload();
+        }
         selectorView.prepareForConferences(conferences);
         // TODO
     }
@@ -213,7 +216,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Override
     public void onWheelItemSelected(ConferenceApiModel data) {
         Glide.with(this)
-                .load(R.drawable.devoxx_photo)
+                .load(data.splashImgURL)
                 .bitmapTransform(new BlurTransformation(this, 3))
                 .crossFade()
                 .into(mainImage);

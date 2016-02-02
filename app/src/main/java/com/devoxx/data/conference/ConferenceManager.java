@@ -1,6 +1,9 @@
 package com.devoxx.data.conference;
 
+import android.content.Context;
+
 import com.annimon.stream.Stream;
+import com.bumptech.glide.Glide;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.cache.BaseCache;
@@ -15,6 +18,7 @@ import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -50,6 +54,9 @@ public class ConferenceManager {
 
         void onConferenceDataError();
     }
+
+    @RootContext
+    Context context;
 
     @Bean
     ConferenceDownloader conferenceDownloader;

@@ -25,11 +25,9 @@ public class RealmConference extends RealmObject {
     private String latitude;
     private String longitude;
     private String fromDate;
-    private RealmList<RealmFloor> floors;
     private String capacity;
     private String sessions;
-    private String splashPhoneImgURL;
-    private String splashTabletImgURL;
+    private String splashImgURL;
     private String toDate;
     private String wwwURL;
     private String regURL;
@@ -39,6 +37,8 @@ public class RealmConference extends RealmObject {
     private String cfpEndpoint;
     private String cfpVersion;
     private String youTubeId;
+    private String hashtag;
+    private RealmList<RealmFloor> floors;
 
     public RealmConference() {
         // Default one.
@@ -65,8 +65,8 @@ public class RealmConference extends RealmObject {
         youTubeId = model.youTubeId;
         capacity = model.capacity;
         sessions = model.sessions;
-        splashPhoneImgURL = model.splashPhoneImgURL;
-        splashTabletImgURL = model.splashTabletImgURL;
+        hashtag = model.hashtag;
+        splashImgURL = model.splashImgURL;
         floors = new RealmList<>();
         for (FloorApiModel floor : model.floors) {
             floors.add(new RealmFloor(floor));
@@ -252,19 +252,19 @@ public class RealmConference extends RealmObject {
         this.sessions = sessions;
     }
 
-    public String getSplashPhoneImgURL() {
-        return splashPhoneImgURL;
+    public String getHashtag() {
+        return hashtag;
     }
 
-    public void setSplashPhoneImgURL(String splashPhoneImgURL) {
-        this.splashPhoneImgURL = splashPhoneImgURL;
+    public void setHashtag(String hashtag) {
+        this.hashtag = hashtag;
     }
 
-    public String getSplashTabletImgURL() {
-        return splashTabletImgURL;
+    public String getSplashImgURL() {
+        return splashImgURL;
     }
 
-    public void setSplashTabletImgURL(String splashTabletImgURL) {
-        this.splashTabletImgURL = splashTabletImgURL;
+    public void setSplashImgURL(String splashImgURL) {
+        this.splashImgURL = splashImgURL;
     }
 }
