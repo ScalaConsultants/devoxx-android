@@ -11,12 +11,12 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
 import com.devoxx.R;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
-import com.devoxx.connection.model.ConferencesApiModel;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -34,6 +34,9 @@ import static java.lang.Math.toRadians;
 
 @EViewGroup
 public class SelectorView extends FrameLayout implements View.OnClickListener {
+
+    private static final float ACTIVE_ICON_SCALE = 1.75f;
+    private static final long ANIMATE_CLICKED_VIEW_MS = 220;
 
     public interface IWheelItemActionListener {
         void onWheelItemSelected(ConferenceApiModel data);
@@ -92,6 +95,50 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
     public void setListener(IWheelItemActionListener listener) {
         this.listener = listener;
+    }
+
+    public void hideIcons() {
+        final int delayMs = 50;
+        final int size = getChildCount();
+        for (int i = 0; i < size; i++) {
+            final View child = getChildAt(i);
+            child.clearAnimation();
+            child.animate().scaleX(0f).scaleY(0f).setDuration(150)
+                    .setStartDelay(delayMs * i).start();
+        }
+    }
+
+    public void showIcons() {
+        final int delayMs = 50;
+        final int size = getChildCount();
+        for (int i = 0; i < size; i++) {
+            final View child = getChildAt(i);
+            final ItemViewInfo info = (ItemViewInfo) child.getTag();
+            child.clearAnimation();
+            child.animate().scaleX(info.isActive() ? ACTIVE_ICON_SCALE : 1f)
+                    .scaleY(info.isActive() ? ACTIVE_ICON_SCALE : 1f).setDuration(150)
+                    .setStartDelay(delayMs * i).start();
+        }
+    }
+
+    public void showProgress() {
+        clearAnimation();
+        postDelayed(() -> startAnimation(AnimationUtils.loadAnimation(getContext(),
+                R.anim.selector_progress_animation)), 200);
+    }
+
+    public void hideProgress() {
+        clearAnimation();
+
+        final int size = getChildCount();
+        for (int i = 0; i < size; i++) {
+            final View child = getChildAt(i);
+            final ItemViewInfo info = (ItemViewInfo) child.getTag();
+            if (info.isActive()) {
+                onClick(child);
+                break;
+            }
+        }
     }
 
     @Override
@@ -166,23 +213,6 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         addView(view, createLayoutParams());
     }
 
-    public SelectorView(Context context) {
-        super(context);
-    }
-
-    public SelectorView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public SelectorView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public SelectorView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
     @Override
     public void onClick(View clickedView) {
         final ItemViewInfo clickedViewInfo = (ItemViewInfo) clickedView.getTag();
@@ -240,9 +270,9 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
         if (clickedView.getScaleX() == 1f) {
             clickedView.animate()
-                    .scaleY(1.75f).scaleX(1.75f)
+                    .scaleY(ACTIVE_ICON_SCALE).scaleX(ACTIVE_ICON_SCALE)
                     .setInterpolator(new OvershootInterpolator(1.5f))
-                    .setDuration(300)
+                    .setDuration(ANIMATE_CLICKED_VIEW_MS)
                     .start();
         }
     }
@@ -325,6 +355,23 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         } else {
             return R.drawable.splash_btn_paris;
         }
+    }
+
+    public SelectorView(Context context) {
+        super(context);
+    }
+
+    public SelectorView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public SelectorView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public SelectorView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     private static class ItemViewInfo {

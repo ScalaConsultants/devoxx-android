@@ -1,6 +1,8 @@
 package com.devoxx.connection;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.devoxx.Configuration;
 import com.devoxx.connection.cfp.CfpApi;
@@ -13,6 +15,7 @@ import com.squareup.okhttp.Response;
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
+import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.IOException;
@@ -25,6 +28,9 @@ public class Connection {
 
     @RootContext
     Context context;
+
+    @SystemService
+    ConnectivityManager cm;
 
     @Pref
     ConnectionConfigurationStore_ connectionConfigurationStore;
@@ -73,6 +79,11 @@ public class Connection {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         cfpApi = retrofit.create(CfpApi.class);
+    }
+
+    public boolean isOnline() {
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     class LoggingInterceptor implements Interceptor {

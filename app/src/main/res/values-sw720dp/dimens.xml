@@ -11,4 +11,6 @@
     <dimen name="elevation_main_frame">2dp</dimen>
     <dimen name="elevation_menu">4dp</dimen>
     <dimen name="toolbar_logo_height">28dp</dimen>
+    <dimen name="selector_values_text_size">22dp</dimen>
+    <dimen name="selector_view_size">320dp</dimen>
 </resources>

@@ -4,6 +4,8 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.view.View;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -62,9 +64,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @ViewById(R.id.selectorMainContainerImage)
     ImageView mainImage;
-
-    @ViewById(R.id.homeProgressBar)
-    ProgressBar progressBar;
 
     @ViewById(R.id.selectorWheel)
     SelectorView selectorView;
@@ -129,9 +128,27 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Click(R.id.selectorGo)
     void onGoClick() {
-        setupRequiredApis(lastSelectedConference.cfpURL,
-                lastSelectedConference.votingURL);
-        conferenceManager.fetchConferenceData(lastSelectedConference, this);
+        if (connection.isOnline()) {
+            setupRequiredApis(lastSelectedConference.cfpURL,
+                    lastSelectedConference.votingURL);
+            conferenceManager.fetchConferenceData(lastSelectedConference, this);
+        } else {
+            infoUtil.showToast("No internet connection...");
+        }
+    }
+
+    private void hideGoButton() {
+        goButton.clearAnimation();
+        goButton.animate().scaleY(0f).scaleX(0f)
+                .setInterpolator(new AnticipateInterpolator(1.5f))
+                .setDuration(150).start();
+    }
+
+    private void showGoButton() {
+        goButton.clearAnimation();
+        goButton.animate().scaleY(1f).scaleX(1f)
+                .setInterpolator(new OvershootInterpolator(1.5f))
+                .setDuration(150).start();
     }
 
     @Bean
@@ -142,13 +159,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         infoUtil.showToast("Go to registration...");
     }
 
-    public void showLoader() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    public void hideLoader() {
-        progressBar.setVisibility(View.INVISIBLE);
-    }
 
     private void navigateToHome() {
         Logger.l("SelectorActivity.navigateToHome");
@@ -159,23 +169,25 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferencesDataStart() {
-        showLoader();
+        // TODO
     }
 
     @Override
     public void onConferencesAvailable(List<ConferenceApiModel> conferences) {
         selectorView.prepareForConferences(conferences);
-        hideLoader();
+        // TODO
     }
 
     @Override
     public void onConferencesError() {
-        hideLoader();
+        // TODO
     }
 
     @Override
     public void onConferenceDataStart() {
-        showLoader();
+        selectorView.hideIcons();
+        selectorView.showProgress();
+        hideGoButton();
     }
 
     @Override
@@ -183,14 +195,15 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         Logger.l("SelectorActivity.onConferenceDataAvailable");
 
         if (activityUtils.isAppForeground(this)) {
-            hideLoader();
             navigateToHome();
         }
     }
 
     @Override
     public void onConferenceDataError() {
-        hideLoader();
+        showGoButton();
+        selectorView.hideProgress();
+        selectorView.showIcons();
     }
 
     @Override

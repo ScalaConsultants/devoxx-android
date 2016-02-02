@@ -16,7 +16,7 @@
             android:padding="2dp"
             android:text="1"
             android:textColor="@android:color/white"
-            android:textSize="16dp"
+            android:textSize="@dimen/selector_values_text_size"
             android:visibility="gone"/>
 
         <Space
@@ -33,7 +33,7 @@
             android:padding="2dp"
             android:text="0"
             android:textColor="@android:color/white"
-            android:textSize="16dp"
+            android:textSize="@dimen/selector_values_text_size"
             android:visibility="gone"/>
 
         <Space
@@ -50,7 +50,7 @@
             android:padding="2dp"
             android:text="0"
             android:textColor="@android:color/white"
-            android:textSize="16dp"
+            android:textSize="@dimen/selector_values_text_size"
             android:visibility="gone"/>
 
         <Space
@@ -67,7 +67,7 @@
             android:padding="2dp"
             android:text="0"
             android:textColor="@android:color/white"
-            android:textSize="16dp"
+            android:textSize="@dimen/selector_values_text_size"
             android:visibility="gone"/>
     </LinearLayout>
 

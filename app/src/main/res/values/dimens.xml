@@ -30,4 +30,6 @@
     <dimen name="elevation_menu">0dp</dimen>
     <dimen name="talk_item_sub_icon_size">20dp</dimen>
     <dimen name="toolbar_logo_height">18dp</dimen>
+    <dimen name="selector_values_text_size">16dp</dimen>
+    <dimen name="selector_view_size">280dp</dimen>
 </resources>
