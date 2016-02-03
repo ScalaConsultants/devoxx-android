@@ -83,13 +83,13 @@ public class ConferenceManager {
     private List<ConferenceDay> conferenceDays;
 
     @Background
-    public void fetchAvailableConferences(IConferencesListener listener) {
+    public void fetchAvailableConferences() {
         try {
-            notifyConferencesListenerAboutStart(listener);
+            notifyConferencesListenerAboutStart(allConferencesDataListener);
             final List<ConferenceApiModel> conferences = conferenceDownloader.fetchAllConferences();
-            notifyConferencesListenerSuccess(listener, conferences);
+            notifyConferencesListenerSuccess(allConferencesDataListener, conferences);
         } catch (IOException e) {
-            notifyConferencesListenerError(listener);
+            notifyConferencesListenerError(allConferencesDataListener);
         }
     }
 
@@ -98,20 +98,45 @@ public class ConferenceManager {
     }
 
     @UiThread
-    void notifyConferencesListenerAboutStart(IConferencesListener listener) {
-        listener.onConferencesDataStart();
+    void notifyConferencesListenerAboutStart(WeakReference<IConferencesListener> listener) {
+        isDownloadingAllConferencesData = true;
+        final IConferencesListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferencesDataStart();
+        }
     }
 
     @UiThread
     void notifyConferencesListenerSuccess(
-            IConferencesListener listener, List<ConferenceApiModel> list) {
-        listener.onConferencesAvailable(list);
+            WeakReference<IConferencesListener> listener, List<ConferenceApiModel> list) {
+        isDownloadingAllConferencesData = false;
+        final IConferencesListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferencesAvailable(list);
+        }
     }
 
     @UiThread
     void notifyConferencesListenerError(
-            IConferencesListener listener) {
-        listener.onConferencesError();
+            WeakReference<IConferencesListener> listener) {
+        isDownloadingAllConferencesData = false;
+        final IConferencesListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferencesError();
+        }
+    }
+
+    private boolean isDownloadingAllConferencesData = false;
+
+    private WeakReference<IConferencesListener> allConferencesDataListener;
+
+    public boolean registerAllConferencesDataListener(IConferencesListener listener) {
+        allConferencesDataListener = new WeakReference<>(listener);
+        return isDownloadingAllConferencesData;
+    }
+
+    public void unregisterAllConferencesDataListener() {
+        allConferencesDataListener.clear();
     }
 
     private boolean isDownloadingConferenceData = false;

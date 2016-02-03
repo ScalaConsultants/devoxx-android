@@ -44,6 +44,8 @@ import java.util.Locale;
 public class SelectorActivity extends BaseActivity implements ConferenceManager.IConferencesListener,
         ConferenceManager.IConferenceDataListener, SelectorView.IWheelItemActionListener {
 
+    private static final String LAST_CONFERENCE_KEY = "last_clicked_conference";
+
     @Bean
     ConferenceManager conferenceManager;
 
@@ -110,9 +112,12 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     protected void onResume() {
+        Logger.l("Selector.onResume");
+
         super.onResume();
 
         final boolean isLoadingData = conferenceManager.registerConferenceDataListener(this);
+        conferenceManager.registerAllConferencesDataListener(this);
 
         if (conferenceManager.isConferenceChoosen()) {
             final RealmConference conference = conferenceManager.getActiveConference();
@@ -125,7 +130,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
             hideGoButtonForce();
             loadBackgroundImage(lastSelectedConference.splashImgURL);
         } else {
-            conferenceManager.fetchAvailableConferences(this);
+            conferenceManager.fetchAvailableConferences();
             selectorView.setListener(this);
         }
     }
@@ -133,31 +138,30 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Override
     protected void onStop() {
         conferenceManager.unregisterConferenceDataListener();
+        conferenceManager.unregisterAllConferencesDataListener();
 
         super.onStop();
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Logger.l("Selector.onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
-
         lastSelectedConference = (ConferenceApiModel) savedInstanceState
-                .getSerializable("last_clicked_conference");
+                .getSerializable(LAST_CONFERENCE_KEY);
         setupConfInfo(lastSelectedConference);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("last_clicked_conference", lastSelectedConference);
-
+        outState.putSerializable(LAST_CONFERENCE_KEY, lastSelectedConference);
         super.onSaveInstanceState(outState);
     }
 
     @Click(R.id.selectorGo)
     void onGoClick() {
         if (connection.isOnline()) {
-            setupRequiredApis(lastSelectedConference.cfpURL,
-                    lastSelectedConference.votingURL);
+            setupRequiredApis(lastSelectedConference.cfpURL, lastSelectedConference.votingURL);
             conferenceManager.fetchConferenceData(lastSelectedConference);
         } else {
             infoUtil.showToast(R.string.no_internet_connection);
