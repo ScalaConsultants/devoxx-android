@@ -22,6 +22,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.devoxx.R;
 import com.devoxx.android.fragment.common.BaseMenuFragment;
+import com.devoxx.connection.Connection;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.manager.SpeakersDataManager;
@@ -52,6 +53,9 @@ public class SpeakersFragment extends BaseMenuFragment {
 
     @Bean
     Navigator navigator;
+
+    @Bean
+    Connection connection;
 
     @Bean
     DeviceUtil deviceUtil;
@@ -115,7 +119,7 @@ public class SpeakersFragment extends BaseMenuFragment {
     }
 
     private void handleSpeakerClick(String speakeruuid) {
-        if (speakersDataManager.isExists(speakeruuid)) {
+        if (speakersDataManager.isExists(speakeruuid) || connection.isOnline()) {
             navigator.openSpeakerDetails(getActivity(), speakeruuid);
         } else {
             infoUtil.showToast(R.string.internet_connection_is_needed);

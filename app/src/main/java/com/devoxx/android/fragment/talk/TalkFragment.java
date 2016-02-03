@@ -29,6 +29,7 @@ import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionClickableItem_;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
+import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.connection.vote.VoteConnection;
@@ -71,6 +72,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     Navigator navigator;
+
+    @Bean
+    Connection connection;
 
     @Bean
     ConferenceManager conferenceManager;
@@ -156,12 +160,17 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     @Click(R.id.talkDetailsTweetBtn)
     void onTweetClick() {
         final RealmConference conference = conferenceManager.getActiveConference();
-        final String twitterMessage = String.format("%s\n%s %s", slotModel.talk.title,
+        final String twitterMessage = String.format("%s\n%s %s %s", slotModel.talk.title,
                 slotModel.talk.getReadableSpeakers(),
+                createWebLink(conference, slotModel),
                 conference.getHashtag());
         final String tweetUrl = "https://twitter.com/intent/tweet?text=" + Uri.encode(twitterMessage);
         final Uri uri = Uri.parse(tweetUrl);
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
+    }
+
+    private String createWebLink(RealmConference conference, SlotApiModel slot) {
+        return String.format("%s/%s", conference.getTalkURL(), slot.talk.id);
     }
 
     @Click(R.id.talkDetailsLikeBtn)
@@ -262,7 +271,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private void handleSpeakerClick(String speakeruuid) {
-        if (speakersDataManager.isExists(speakeruuid)) {
+        if (speakersDataManager.isExists(speakeruuid) || connection.isOnline()) {
             navigator.openSpeakerDetails(getActivity(), speakeruuid);
         } else {
             infoUtil.showToast(R.string.internet_connection_is_needed);

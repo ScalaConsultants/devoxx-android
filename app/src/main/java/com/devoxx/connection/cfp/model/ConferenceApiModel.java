@@ -22,6 +22,7 @@ public class ConferenceApiModel implements Serializable {
     public String wwwURL;
     public String regURL;
     public String cfpURL;
+    public String talkURL;
     public String votingURL;
     public String votingEnabled;
     public String cfpEndpoint;

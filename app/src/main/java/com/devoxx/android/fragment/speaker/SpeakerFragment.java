@@ -238,7 +238,12 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
         final String www = realmSpeaker.getBlog();
         if (!TextUtils.isEmpty(www)) {
             firstButton.setVisibility(View.VISIBLE);
-            firstButton.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(www))));
+            firstButton.setOnClickListener(v -> {
+                final String finalUrl =
+                        (!www.startsWith("http://") && !www.startsWith("https://"))
+                                ? "http://" + www : www;
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(finalUrl)));
+            });
         } else {
             firstButton.setVisibility(View.GONE);
         }

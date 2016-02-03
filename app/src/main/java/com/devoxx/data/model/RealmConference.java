@@ -33,6 +33,7 @@ public class RealmConference extends RealmObject {
     private String regURL;
     private String cfpURL;
     private String votingURL;
+    private String talkURL;
     private String votingEnabled;
     private String cfpEndpoint;
     private String cfpVersion;
@@ -266,5 +267,13 @@ public class RealmConference extends RealmObject {
 
     public void setSplashImgURL(String splashImgURL) {
         this.splashImgURL = splashImgURL;
+    }
+
+    public String getTalkURL() {
+        return talkURL;
+    }
+
+    public void setTalkURL(String talkURL) {
+        this.talkURL = talkURL;
     }
 }
