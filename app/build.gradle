@@ -46,17 +46,28 @@ android {
             debuggable false
             minifyEnabled false
             buildConfigField "boolean", "LOGGING", "false"
+            buildConfigField "boolean", "DEV_ROTATION_ALL", "false"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
         }
         debug {
             debuggable true
             buildConfigField "boolean", "LOGGING", "true"
+            buildConfigField "boolean", "DEV_ROTATION_ALL", "false"
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
         }
         devoxx {
             debuggable true
             versionNameSuffix "@devoxx"
             buildConfigField "boolean", "LOGGING", "true"
+            buildConfigField "boolean", "DEV_ROTATION_ALL", "false"
+            signingConfig signingConfigs.debug
+            manifestPlaceholders = [applicationLabel: "@string/app_name"]
+        }
+        devoxxDev {
+            debuggable true
+            versionNameSuffix "@devoxx"
+            buildConfigField "boolean", "LOGGING", "true"
+            buildConfigField "boolean", "DEV_ROTATION_ALL", "true"
             signingConfig signingConfigs.debug
             manifestPlaceholders = [applicationLabel: "@string/app_name"]
         }

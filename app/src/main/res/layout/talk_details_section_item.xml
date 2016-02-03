@@ -3,8 +3,8 @@
 
     <ImageView
         android:id="@+id/talkDetailsSectionIcon"
-        android:layout_width="@dimen/track_icon_size"
-        android:layout_height="@dimen/track_icon_size"
+        android:layout_width="@dimen/talk_details_icon_size"
+        android:layout_height="@dimen/talk_details_icon_size"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="20dp"
         android:contentDescription="@null"

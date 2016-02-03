@@ -67,6 +67,7 @@ public class RealmConference extends RealmObject {
         capacity = model.capacity;
         sessions = model.sessions;
         hashtag = model.hashtag;
+        talkURL = model.talkURL;
         splashImgURL = model.splashImgURL;
         floors = new RealmList<>();
         for (FloorApiModel floor : model.floors) {

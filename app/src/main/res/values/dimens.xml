@@ -6,6 +6,7 @@
     <dimen name="width_speaker_photo">64dp</dimen>
     <dimen name="rounded_image_border">2dp</dimen>
     <dimen name="track_icon_size">42dp</dimen>
+    <dimen name="talk_details_icon_size">28dp</dimen>
     <dimen name="menu_height">56dp</dimen>
     <dimen name="speaker_list_image_size">48dp</dimen>
     <dimen name="progressbar_size">32dp</dimen>

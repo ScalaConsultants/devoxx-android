@@ -170,7 +170,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private String createWebLink(RealmConference conference, SlotApiModel slot) {
-        return String.format("%s/%s", conference.getTalkURL(), slot.talk.id);
+        return String.format("%s%s", conference.getTalkURL(), slot.talk.id);
     }
 
     @Click(R.id.talkDetailsLikeBtn)
@@ -178,12 +178,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         talkVoter.voteForTalk(slotModel.talk.id, new IOnVoteForTalkListener() {
             @Override
             public void onVoteForTalkSucceed() {
-                infoUtil.showToast("View succeed, TBD.");
+                infoUtil.showToast("Vote succeed, TBD.");
             }
 
             @Override
             public void onVoteForTalkFailed() {
-                infoUtil.showToast("View failed, TBD.");
+                infoUtil.showToast("Vote failed, TBD.");
             }
         });
     }

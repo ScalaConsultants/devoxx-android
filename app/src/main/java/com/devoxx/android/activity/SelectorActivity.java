@@ -3,11 +3,11 @@ package com.devoxx.android.activity;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -20,11 +20,11 @@ import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
-import com.devoxx.utils.ActivityUtils;
 import com.devoxx.utils.BlurTransformation;
 import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
 import com.devoxx.utils.Logger;
+import com.devoxx.utils.ViewUtils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -54,10 +54,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     VoteConnection voteConnection;
 
     @Bean
-    ActivityUtils activityUtils;
+    FontUtils fontUtils;
 
     @Bean
-    FontUtils fontUtils;
+    ViewUtils viewUtils;
 
     @Pref
     Settings_ settings;
@@ -96,7 +96,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         conferenceManager.warmUp();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            final int statusBarHeight = getStatusBarHeight();
+            final int statusBarHeight = viewUtils.getStatusBarHeight();
             mainContainer.setPadding(mainContainer.getPaddingLeft(), statusBarHeight,
                     mainContainer.getPaddingRight(), mainContainer.getPaddingBottom());
         }
@@ -104,26 +104,53 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         fontUtils.applyTypeface(currentConferenceLabel, FontUtils.Font.REGULAR);
         fontUtils.applyTypeface(goButton, FontUtils.Font.REGULAR);
         fontUtils.applyTypeface(confInfo, FontUtils.Font.REGULAR);
+
+        setupImageColorFilter();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        final ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        final ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        mainImage.setColorFilter(filter);
+        final boolean isLoadingData = conferenceManager.registerConferenceDataListener(this);
 
         if (conferenceManager.isConferenceChoosen()) {
             final RealmConference conference = conferenceManager.getActiveConference();
             setupRequiredApis(conference.getCfpURL(), conference.getVotingURL());
             navigateToHome();
             finish();
+        } else if (isLoadingData) {
+            selectorView.hideIcons();
+            selectorView.showProgress();
+            hideGoButtonForce();
+            loadBackgroundImage(lastSelectedConference.splashImgURL);
         } else {
             conferenceManager.fetchAvailableConferences(this);
             selectorView.setListener(this);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        conferenceManager.unregisterConferenceDataListener();
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        lastSelectedConference = (ConferenceApiModel) savedInstanceState
+                .getSerializable("last_clicked_conference");
+        setupConfInfo(lastSelectedConference);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("last_clicked_conference", lastSelectedConference);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Click(R.id.selectorGo)
@@ -131,10 +158,16 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         if (connection.isOnline()) {
             setupRequiredApis(lastSelectedConference.cfpURL,
                     lastSelectedConference.votingURL);
-            conferenceManager.fetchConferenceData(lastSelectedConference, this);
+            conferenceManager.fetchConferenceData(lastSelectedConference);
         } else {
             infoUtil.showToast(R.string.no_internet_connection);
         }
+    }
+
+    private void hideGoButtonForce() {
+        goButton.clearAnimation();
+        goButton.setScaleY(0f);
+        goButton.setScaleX(0f);
     }
 
     private void hideGoButton() {
@@ -159,7 +192,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         infoUtil.showToast("Go to registration...");
     }
 
-
     private void navigateToHome() {
         MainActivity_.intent(this).start();
         finish();
@@ -175,6 +207,7 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         for (ConferenceApiModel conference : conferences) {
             Glide.with(this).load(conference.splashImgURL).preload();
         }
+
         selectorView.prepareForConferences(conferences);
         // TODO
     }
@@ -194,16 +227,13 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Override
     public void onConferenceDataAvailable(boolean isAnyTalks) {
         Logger.l("SelectorActivity.onConferenceDataAvailable");
-
-        if (activityUtils.isAppForeground(this)) {
-            if (isAnyTalks) {
-                navigateToHome();
-            } else {
-                showGoButton();
-                selectorView.hideProgress();
-                selectorView.showIcons();
-                infoUtil.showToast(R.string.no_data_available);
-            }
+        if (isAnyTalks) {
+            navigateToHome();
+        } else {
+            showGoButton();
+            selectorView.hideProgress();
+            selectorView.showIcons();
+            infoUtil.showToast(R.string.no_data_available);
         }
     }
 
@@ -217,15 +247,17 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onWheelItemSelected(ConferenceApiModel data) {
+        loadBackgroundImage(data.splashImgURL);
+        setupConfInfo(data);
+        lastSelectedConference = data;
+    }
+
+    private void loadBackgroundImage(String url) {
         Glide.with(this)
-                .load(data.splashImgURL)
+                .load(url)
                 .bitmapTransform(new BlurTransformation(this, 5))
                 .crossFade()
                 .into(mainImage);
-
-
-        setupConfInfo(data);
-        lastSelectedConference = data;
     }
 
     @Override
@@ -257,12 +289,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         capacity.setupView(getString(R.string.selector_capacity), Integer.decode(data.capacity));
     }
 
-    public int getStatusBarHeight() {
-        int result = 0;
-        final int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
+    private void setupImageColorFilter() {
+        final ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        final ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        mainImage.setColorFilter(filter);
     }
 }

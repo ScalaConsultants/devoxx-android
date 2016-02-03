@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.devoxx.BuildConfig;
 import com.devoxx.utils.DeviceUtil;
 
 import org.androidannotations.annotations.Bean;
@@ -18,7 +19,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (!deviceUtil.isTablet()) {
+        if (!BuildConfig.DEV_ROTATION_ALL && !deviceUtil.isTablet()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         }
         super.onCreate(savedInstanceState);

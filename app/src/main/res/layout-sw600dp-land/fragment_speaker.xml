@@ -111,27 +111,7 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/speakerDetailsFirstButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="72dp"
-        android:src="@drawable/ic_web"
-        app:backgroundTint="@color/primary"
-        app:fabSize="mini"
-        app:layout_anchor="@id/main.appbar"
-        app:layout_anchorGravity="bottom|right|end"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/speakerDetailsSecondButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_twitter"
-        app:backgroundTint="@color/primary"
-        app:fabSize="mini"
-        app:layout_anchor="@id/main.appbar"
-        app:layout_anchorGravity="bottom|right|end"/>
+    <include layout="@layout/speaker_details_fabs_include"/>
 
     <include layout="@layout/speaker_details_title_include"/>
 

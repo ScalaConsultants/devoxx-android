@@ -27,6 +27,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -113,13 +114,25 @@ public class ConferenceManager {
         listener.onConferencesError();
     }
 
+    private boolean isDownloadingConferenceData = false;
+
+    private WeakReference<IConferenceDataListener> confDataListener;
+
+    public boolean registerConferenceDataListener(IConferenceDataListener listener) {
+        confDataListener = new WeakReference<>(listener);
+        return isDownloadingConferenceData;
+    }
+
+    public void unregisterConferenceDataListener() {
+        confDataListener.clear();
+    }
+
     @Background
     public void fetchConferenceData(
-            ConferenceApiModel conferenceApiModel,
-            IConferenceDataListener listener) {
+            ConferenceApiModel conferenceApiModel) {
         final String confCode = conferenceApiModel.id;
         try {
-            notifyConferenceListenerStart(listener);
+            notifyConferenceListenerStart(confDataListener);
             tracksDownloader.downloadTracksDescriptions(confCode);
             final boolean isAnyTalks = slotsDataManager.fetchTalksSync(confCode);
             speakersDataManager.fetchSpeakersSync(confCode);
@@ -130,26 +143,38 @@ public class ConferenceManager {
                 saveActiveConference(conferenceApiModel);
             }
 
-            notifyConferenceListenerSuccess(listener, isAnyTalks);
+            notifyConferenceListenerSuccess(confDataListener, isAnyTalks);
         } catch (IOException e) {
             clearCurrentConferenceData();
-            notifyConferenceListenerError(listener);
+            notifyConferenceListenerError(confDataListener);
         }
     }
 
     @UiThread
-    void notifyConferenceListenerStart(IConferenceDataListener listener) {
-        listener.onConferenceDataStart();
+    void notifyConferenceListenerStart(WeakReference<IConferenceDataListener> listener) {
+        isDownloadingConferenceData = true;
+        final IConferenceDataListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferenceDataStart();
+        }
     }
 
     @UiThread
-    void notifyConferenceListenerSuccess(IConferenceDataListener listener, boolean isAnyTalks) {
-        listener.onConferenceDataAvailable(isAnyTalks);
+    void notifyConferenceListenerSuccess(WeakReference<IConferenceDataListener> listener, boolean isAnyTalks) {
+        isDownloadingConferenceData = false;
+        final IConferenceDataListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferenceDataAvailable(isAnyTalks);
+        }
     }
 
     @UiThread
-    void notifyConferenceListenerError(IConferenceDataListener listener) {
-        listener.onConferenceDataError();
+    void notifyConferenceListenerError(WeakReference<IConferenceDataListener> listener) {
+        isDownloadingConferenceData = false;
+        final IConferenceDataListener internalListener = listener.get();
+        if (internalListener != null) {
+            internalListener.onConferenceDataError();
+        }
     }
 
     public List<ConferenceDay> getConferenceDays() {

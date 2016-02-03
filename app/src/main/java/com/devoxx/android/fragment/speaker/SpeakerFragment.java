@@ -223,21 +223,21 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     private void setupTwitterButton(RealmSpeaker realmSpeaker) {
         final String twitterName = realmSpeaker.getTwitter();
         if (!TextUtils.isEmpty(twitterName)) {
-            secondButton.setVisibility(View.VISIBLE);
+            secondButton.setAlpha(1f);
             secondButton.setOnClickListener(v -> {
                 String formattedTwitterAddress = "http://twitter.com/" + twitterName.replace("@", "");
                 Intent browseTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse(formattedTwitterAddress));
                 startActivity(browseTwitter);
             });
         } else {
-            secondButton.setVisibility(View.GONE);
+            secondButton.setAlpha(0f);
         }
     }
 
     private void setupWebsite(RealmSpeaker realmSpeaker) {
         final String www = realmSpeaker.getBlog();
         if (!TextUtils.isEmpty(www)) {
-            firstButton.setVisibility(View.VISIBLE);
+            firstButton.setAlpha(1f);
             firstButton.setOnClickListener(v -> {
                 final String finalUrl =
                         (!www.startsWith("http://") && !www.startsWith("https://"))
@@ -245,7 +245,7 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(finalUrl)));
             });
         } else {
-            firstButton.setVisibility(View.GONE);
+            firstButton.setAlpha(0f);
         }
     }
 
