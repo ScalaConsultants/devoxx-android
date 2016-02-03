@@ -92,8 +92,7 @@ public class SpeakersFragment extends BaseMenuFragment {
         }
 
         listView.setOnItemClickListener((parent, view, position, id) ->
-                navigator.openSpeakerDetails(getActivity(),
-                        itemAdapter.getClickedItem(position).getUuid()));
+                handleSpeakerClick(itemAdapter.getClickedItem(position).getUuid()));
 
         listView.setOnTouchListener((v, event) -> {
             if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
@@ -113,6 +112,14 @@ public class SpeakersFragment extends BaseMenuFragment {
         final List<RealmSpeakerShort> speakers = speakersDataManager.
                 getAllShortSpeakersWithFilter(query);
         populateList(speakers);
+    }
+
+    private void handleSpeakerClick(String speakeruuid) {
+        if (speakersDataManager.isExists(speakeruuid)) {
+            navigator.openSpeakerDetails(getActivity(), speakeruuid);
+        } else {
+            infoUtil.showToast(R.string.internet_connection_is_needed);
+        }
     }
 
     private void populateList(List<RealmSpeakerShort> speakers) {

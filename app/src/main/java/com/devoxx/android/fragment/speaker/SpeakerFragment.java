@@ -13,19 +13,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.activity.BaseActivity;
-import com.devoxx.android.activity.TalkDetailsHostActivity;
-import com.devoxx.android.activity.TalkDetailsHostActivity_;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.android.view.speaker.SpeakerDetailsHeader;
 import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem;
 import com.devoxx.android.view.speaker.SpeakerDetailsTalkItem_;
 import com.devoxx.connection.model.SlotApiModel;
-import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.AbstractDataManager;
@@ -45,8 +41,9 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.sharedpreferences.Pref;
-import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 @EFragment(R.layout.fragment_speaker)
@@ -182,8 +179,12 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                     }
 
                     @Override
-                    public void onDataError() {
-                        infoUtil.showToast(R.string.something_went_wrong);
+                    public void onDataError(IOException e) {
+                        if (e instanceof UnknownHostException) {
+                            infoUtil.showToast(R.string.connection_error);
+                        } else {
+                            infoUtil.showToast(R.string.something_went_wrong);
+                        }
                     }
                 });
     }

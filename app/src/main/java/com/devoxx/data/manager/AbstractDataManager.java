@@ -1,11 +1,11 @@
 package com.devoxx.data.manager;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.UiThread;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public abstract class AbstractDataManager<T> {
 
         void onDataAvailable(T item);
 
-        void onDataError();
+        void onDataError(IOException e);
     }
 
     public abstract void clearData();
@@ -46,9 +46,9 @@ public abstract class AbstractDataManager<T> {
     }
 
     @UiThread
-    void notifyAboutFailed(IDataManagerListener<T> listener) {
+    void notifyAboutFailed(IDataManagerListener<T> listener, IOException e) {
         if (listener != null) {
-            listener.onDataError();
+            listener.onDataError(e);
         }
     }
 
@@ -84,9 +84,9 @@ public abstract class AbstractDataManager<T> {
         }
 
         @Override
-        public final void onDataError() {
+        public final void onDataError(IOException e) {
             if (isLive()) {
-                listenerWeakReference.get().onDataError();
+                listenerWeakReference.get().onDataError(e);
             }
         }
 

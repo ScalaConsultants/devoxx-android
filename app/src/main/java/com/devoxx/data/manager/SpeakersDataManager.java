@@ -34,12 +34,20 @@ public class SpeakersDataManager extends AbstractDataManager<RealmSpeaker> {
             final IDataManagerListener<RealmSpeaker> listener) {
         try {
             notifyAboutStart(listener);
-            final RealmSpeaker speaker = speakersDownloader
-                    .downloadSpeakerSync(confCode, uuid);
-            notifyAboutSuccess(listener, speaker);
+            final RealmSpeaker result;
+            if (isExists(uuid)) {
+                result = getByUuid(uuid);
+            } else {
+                result = speakersDownloader.downloadSpeakerSync(confCode, uuid);
+            }
+            notifyAboutSuccess(listener, result);
         } catch (IOException e) {
-            notifyAboutFailed(listener);
+            notifyAboutFailed(listener, e);
         }
+    }
+
+    public boolean isExists(String uuid) {
+        return getByUuid(uuid) != null;
     }
 
     public RealmSpeaker getByUuid(String uuid) {

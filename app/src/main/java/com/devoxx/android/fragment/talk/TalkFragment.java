@@ -34,6 +34,7 @@ import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
+import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
 import com.devoxx.data.vote.interfaces.ITalkVoter;
@@ -73,6 +74,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @Bean
+    SpeakersDataManager speakersDataManager;
 
     @Bean
     InfoUtil infoUtil;
@@ -153,7 +157,8 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     void onTweetClick() {
         final RealmConference conference = conferenceManager.getActiveConference();
         final String twitterMessage = String.format("%s\n%s %s", slotModel.talk.title,
-                slotModel.talk.getReadableSpeakers(), conference.getHashtag());
+                slotModel.talk.getReadableSpeakers(),
+                conference.getHashtag());
         final String tweetUrl = "https://twitter.com/intent/tweet?text=" + Uri.encode(twitterMessage);
         final Uri uri = Uri.parse(tweetUrl);
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
@@ -250,11 +255,18 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
             content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
             speakerView.setText(content);
             final String speakeruuid = TalkSpeakerApiModel.getUuidFromLink(speaker.link);
-            speakerView.setOnClickListener(v ->
-                    navigator.openSpeakerDetails(getActivity(), speakeruuid));
+            speakerView.setOnClickListener(v -> handleSpeakerClick(speakeruuid));
             result.addSpeakerView(speakerView);
         }
         return result;
+    }
+
+    private void handleSpeakerClick(String speakeruuid) {
+        if (speakersDataManager.isExists(speakeruuid)) {
+            navigator.openSpeakerDetails(getActivity(), speakeruuid);
+        } else {
+            infoUtil.showToast(R.string.internet_connection_is_needed);
+        }
     }
 
     private View createDateTimeSection(SlotApiModel slotModel) {
