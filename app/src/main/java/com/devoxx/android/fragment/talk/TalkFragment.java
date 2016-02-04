@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.devoxx.R;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.fragment.common.BaseFragment;
@@ -37,7 +36,6 @@ import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.user.UserManager;
 import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
 import com.devoxx.data.vote.interfaces.ITalkVoter;
-import com.devoxx.data.vote.voters.FakeVoter;
 import com.devoxx.data.vote.voters.TalkVoter;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
@@ -53,6 +51,7 @@ import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.io.IOException;
 import java.util.List;
 
 @EFragment(R.layout.fragment_talk)
@@ -100,6 +99,9 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @ViewById(R.id.talkDetailsScheduleBtn)
     FloatingActionButton scheduleButton;
+
+    @ViewById(R.id.talkDetailsLikeBtn)
+    FloatingActionButton voteButton;
 
     @ViewById(R.id.fragment_talk_toolbar)
     Toolbar toolbar;
@@ -176,18 +178,34 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     void onVoteClick() {
         if (userManager.isFirstTimeUser()) {
             userManager.openUserScanBadge();
-        } else {
+        } else if (talkVoter.canVoteOnTalk(slotModel.talk.id)) {
             talkVoter.showVoteDialog(getActivity(), slotModel.talk.id, new IOnVoteForTalkListener() {
                 @Override
                 public void onVoteForTalkSucceed() {
-                    infoUtil.showToast("onVoteForTalkSucceed");
+                    infoUtil.showToast("Voted...");
                 }
 
                 @Override
-                public void onVoteForTalkFailed() {
-                    infoUtil.showToast("onVoteForTalkFailed");
+                public void onVoteForTalkFailed(Exception e) {
+                    if (e instanceof IOException) {
+                        infoUtil.showToast(R.string.connection_error);
+                    } else {
+                        infoUtil.showToast(R.string.something_went_wrong);
+                    }
+                }
+
+                @Override
+                public void onCantVoteOnTalkYet() {
+                    infoUtil.showToast("Cannot vote on talk yet");
+                }
+
+                @Override
+                public void onCantVoteMoreThanOnce() {
+                    infoUtil.showToast("Cannot vote more than once");
                 }
             });
+        } else {
+            infoUtil.showToast("You've already voted on this talk!");
         }
     }
 
@@ -216,6 +234,12 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
         if (notifyParentAboutChange) {
             notifyHostActivityAboutChangeOccured();
+        }
+
+        if (talkVoter.canVoteOnTalk(slotModel.talk.id)) {
+            voteButton.setImageResource(R.drawable.ic_heart_outline);
+        } else {
+            voteButton.setImageResource(R.drawable.ic_heart);
         }
     }
 

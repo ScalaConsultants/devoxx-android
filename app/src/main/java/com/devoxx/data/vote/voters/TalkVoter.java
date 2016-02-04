@@ -2,62 +2,51 @@ package com.devoxx.data.vote.voters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.widget.RatingBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.devoxx.connection.vote.model.VoteTalkModel;
-import com.devoxx.data.vote.interfaces.IOnGetTalkVotesListener;
-import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
-
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EBean;
-
+import com.devoxx.R;
 import com.devoxx.connection.vote.VoteApi;
 import com.devoxx.connection.vote.VoteConnection;
+import com.devoxx.connection.vote.model.VoteApiModel;
+import com.devoxx.data.RealmProvider;
+import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.user.UserManager;
+import com.devoxx.data.vote.VotedTalkModel;
+import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
+import com.devoxx.data.vote.interfaces.ITalkVoter;
+import com.devoxx.utils.Logger;
 
-import com.devoxx.R;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.UiThread;
 
+import java.io.IOException;
+
+import io.realm.Realm;
 import retrofit.Call;
-import retrofit.Callback;
 import retrofit.Response;
-import retrofit.Retrofit;
 
 @EBean
-public class TalkVoter extends AbstractVoter {
+public class TalkVoter implements ITalkVoter {
 
+    private static final int NOT_READY_VOTE_CODE = 500;
+    private static final int ALREADY_VOTED_CODE = 409;
     @Bean
     VoteConnection voteConnection;
 
-    @Override
-    public void voteForTalk(String talkId, IOnVoteForTalkListener listener) {
-        // TODO Connect to service.
-        listener.onVoteForTalkSucceed();
-    }
+    @Bean
+    RealmProvider realmProvider;
 
-    @Override
-    public void getVotesCountForTalk(String confCode, String talkId, final IOnGetTalkVotesListener listener) {
-        final VoteApi voteApi = voteConnection.getVoteApi();
-        final Call<VoteTalkModel> voteTalkModelCall = voteApi.talk(confCode, talkId);
-        voteTalkModelCall.enqueue(new Callback<VoteTalkModel>() {
-            @Override
-            public void onResponse(Response<VoteTalkModel> response, Retrofit retrofit) {
-                if (listener != null) {
-                    listener.onTalkVotesAvailable(response.body());
-                }
-            }
+    @Bean
+    ConferenceManager conferenceManager;
 
-            @Override
-            public void onFailure(Throwable t) {
-                if (listener != null) {
-                    listener.onTalkVotesError();
-                }
-            }
-        });
-    }
+    @Bean
+    UserManager userManager;
 
     @Override
     public void showVoteDialog(Context context, String talkId, IOnVoteForTalkListener listener) {
@@ -73,7 +62,7 @@ public class TalkVoter extends AbstractVoter {
                         final View customView = dialog.getCustomView();
                         final RatingBar ratingBar = (RatingBar) customView.findViewById(R.id.talkRatingBar);
                         final int rating = (int) ratingBar.getRating();
-                        voteForTalk(talkId, listener);
+                        voteForTalk(rating, talkId, listener);
                     }
                 })
                 .build();
@@ -84,5 +73,89 @@ public class TalkVoter extends AbstractVoter {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             DrawableCompat.setTint(ratingBar.getProgressDrawable(), Color.parseColor("#E3B505"));
         }
+    }
+
+    @Override
+    public boolean isVotingEnabled() {
+        return Boolean.parseBoolean(conferenceManager.getActiveConference().getVotingEnabled());
+    }
+
+    @Override
+    public boolean canVoteOnTalk(String talkId) {
+        final Realm realm = realmProvider.getRealm();
+        final VotedTalkModel model = realm.where(VotedTalkModel.class)
+                .equalTo("talkId", talkId).findFirst();
+        realm.close();
+        return model == null;
+    }
+
+    private String getConfCode() {
+        return conferenceManager.getActiveConferenceId();
+    }
+
+    @Background
+    protected void voteForTalk(int rating, String talkId, IOnVoteForTalkListener listener) {
+        final Realm realm = realmProvider.getRealm();
+        try {
+            final VoteApi voteApi = voteConnection.getVoteApi();
+            final Call<VoteApiModel> call = voteApi.vote(getConfCode(), prepareVoteModel(talkId, rating));
+            final Response<VoteApiModel> response = call.execute();
+
+            if (response.isSuccess()) {
+                rememberVote(realm, talkId);
+                notifyAboutSuccess(listener);
+            } else if (response.code() == NOT_READY_VOTE_CODE) {
+                notifyAboutCantVote(listener);
+            } else if (response.code() == ALREADY_VOTED_CODE) {
+                rememberVote(realm, talkId);
+                notifyAboutCantVoteMore(listener);
+            } else {
+                notifyAboutError(listener, new IOException("Error: " + response.code()));
+            }
+        } catch (IOException e) {
+            Logger.exc(e);
+            notifyAboutError(listener, e);
+        } finally {
+            realm.close();
+        }
+    }
+
+    private void rememberVote(Realm realm, String talkId) {
+        realm.beginTransaction();
+        realm.copyToRealm(new VotedTalkModel(talkId));
+        realm.commitTransaction();
+    }
+
+    @UiThread
+    void notifyAboutSuccess(IOnVoteForTalkListener listener) {
+        if (listener != null) {
+            listener.onVoteForTalkSucceed();
+        }
+    }
+
+    @UiThread
+    void notifyAboutError(IOnVoteForTalkListener listener, Exception e) {
+        if (listener != null) {
+            listener.onVoteForTalkFailed(e);
+        }
+    }
+
+    @UiThread
+    void notifyAboutCantVote(IOnVoteForTalkListener listener) {
+        if (listener != null) {
+            listener.onCantVoteOnTalkYet();
+        }
+    }
+
+    @UiThread
+    void notifyAboutCantVoteMore(IOnVoteForTalkListener listener) {
+        if (listener != null) {
+            listener.onCantVoteMoreThanOnce();
+        }
+    }
+
+    private VoteApiModel prepareVoteModel(String talkId, int rating) {
+        final String userId = userManager.getUserCode();
+        return new VoteApiModel(talkId, rating, userId);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.devoxx.BuildConfig;
 import com.devoxx.Configuration;
 import com.devoxx.connection.cfp.CfpApi;
 import com.devoxx.utils.Logger;
@@ -48,7 +49,10 @@ public class Connection {
                 .put(conferenceEndpoint).apply();
 
         final OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(new LoggingInterceptor());
+
+        if (BuildConfig.LOGGING) {
+            client.interceptors().add(new LoggingInterceptor());
+        }
 
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(conferenceEndpoint)
@@ -72,7 +76,10 @@ public class Connection {
 
     private void initiCfpApi() {
         final OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(new LoggingInterceptor());
+        if (BuildConfig.LOGGING) {
+            client.interceptors().add(new LoggingInterceptor());
+        }
+
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Configuration.CFP_API_URL)
                 .client(client)

@@ -11,6 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:max="5"
         android:numStars="5"
+        android:progress="1"
         android:stepSize="1"/>
 
 </LinearLayout>

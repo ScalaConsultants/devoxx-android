@@ -1,12 +1,10 @@
 package com.devoxx.connection.vote;
 
-import com.devoxx.connection.vote.model.VoteTalkModel;
-import com.devoxx.connection.vote.model.VoteTalkSimpleModel;
-
-import java.util.List;
+import com.devoxx.connection.vote.model.VoteApiModel;
 
 import retrofit.Call;
-import retrofit.http.GET;
+import retrofit.http.Body;
+import retrofit.http.POST;
 import retrofit.http.Path;
 
 /**
@@ -15,14 +13,9 @@ import retrofit.http.Path;
  */
 public interface VoteApi {
 
-    @GET("/{confCode}/top/talks")
-    Call<List<VoteTalkSimpleModel>> topTalks(
-            @Path("confCode") String confCode
-    );
-
-    @GET("/{confCode}/talk/{talkId}")
-    Call<VoteTalkModel> talk(
+    @POST("/{confCode}/vote")
+    Call<VoteApiModel> vote(
             @Path("confCode") String confCode,
-            @Path("talkId") String talkId
+            @Body VoteApiModel model
     );
 }

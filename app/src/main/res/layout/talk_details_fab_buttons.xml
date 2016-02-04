@@ -18,7 +18,7 @@
         android:id="@+id/talkDetailsLikeBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_heart"
+        android:src="@drawable/ic_heart_outline"
         app:backgroundTint="@color/primary"
         app:fabSize="mini"/>
 
