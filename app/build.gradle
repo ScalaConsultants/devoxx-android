@@ -16,7 +16,8 @@ apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 def PACKAGE_NAME = "com.devoxx"
-def VERSION_NAME = "1.0.6"
+def VERSION_CODE = 7
+def VERSION_NAME = "1.0.${VERSION_CODE}"
 def SUPPORT_VERSION = "23.1.1"
 
 android {
@@ -27,7 +28,7 @@ android {
         applicationId PACKAGE_NAME
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 6
+        versionCode VERSION_CODE
         versionName VERSION_NAME
         manifestPlaceholders = [applicationLabel: "@string/app_name"]
 
