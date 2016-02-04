@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
@@ -119,9 +120,9 @@ public class ScheduleMainFragment extends BaseMenuFragment
 
         tabLayout.setupWithViewPager(viewPager);
 
-        final ConferenceDay activeDay = conferenceManager.getCurrentConfDay();
-        if (days.contains(activeDay)) {
-            final int index = days.indexOf(activeDay);
+        final Optional<ConferenceDay> opt = conferenceManager.getCurrentConfDay();
+        if (opt.isPresent() && days.contains(opt.get())) {
+            final int index = days.indexOf(opt.get());
             viewPager.setCurrentItem(index);
         }
     }

@@ -128,7 +128,8 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
             selectorView.hideIcons();
             selectorView.showProgress();
             hideGoButtonForce();
-            loadBackgroundImage(lastSelectedConference.splashImgURL);
+//            TODO Load image properly from model!
+//            loadBackgroundImage(lastSelectedConference.splashImgURL);
         } else {
             conferenceManager.fetchAvailableConferences();
             selectorView.setListener(this);

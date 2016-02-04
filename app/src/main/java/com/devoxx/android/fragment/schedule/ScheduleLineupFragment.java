@@ -1,6 +1,7 @@
 package com.devoxx.android.fragment.schedule;
 
 import android.content.Intent;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,18 +14,22 @@ import com.devoxx.android.adapter.schedule.model.ScheduleItem;
 import com.devoxx.android.adapter.schedule.model.creator.ScheduleLineupDataCreator;
 import com.devoxx.android.fragment.common.BaseListFragment;
 import com.devoxx.connection.model.SlotApiModel;
+import com.devoxx.data.DataInformation_;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.InfoUtil;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.Receiver;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @EFragment(R.layout.fragment_list)
 public class ScheduleLineupFragment extends BaseListFragment {
@@ -32,6 +37,7 @@ public class ScheduleLineupFragment extends BaseListFragment {
     public static final String REFRESH_ACTION = "com.devoxx.android.intent.REFRESH_ACTION";
 
     private static final long UNKNOWN_LINEUP_TIME = -1;
+    private static final long CHECK_RUNNING_SESSIONS_INTERVAL_MS = TimeUnit.SECONDS.toMillis(10);
 
     @FragmentArg
     long lineupDayMs = UNKNOWN_LINEUP_TIME;
@@ -54,6 +60,9 @@ public class ScheduleLineupFragment extends BaseListFragment {
     @Bean
     ScheduleLineupDataCreator scheduleLineupDataCreator;
 
+    @Pref
+    DataInformation_ dataInformation;
+
     @AfterInject
     void afterInject() {
         if (lineupDayMs == UNKNOWN_LINEUP_TIME) {
@@ -68,15 +77,40 @@ public class ScheduleLineupFragment extends BaseListFragment {
         initAdapterWithLastQuery();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkNowRunningSessions();
+    }
+
+    private void checkNowRunningSessions() {
+        final int runningIndex = scheduleDayLineupAdapter.getRunningFirstPosition();
+        final boolean hasRunningSession = runningIndex != ScheduleDayLineupAdapter.INVALID_RUNNING_SLOT_INDEX;
+        if (!hasRunningSession) {
+            return;
+        }
+        
+        final long lastCheck = dataInformation.lastRunningSessionCheckTime().get();
+        final long now = System.currentTimeMillis();
+        final long diffMs = now - lastCheck;
+        final boolean shouldForceCheck = Math.signum(diffMs) == -1; // User changed time in system.
+
+        if (shouldForceCheck || diffMs > CHECK_RUNNING_SESSIONS_INTERVAL_MS) {
+            dataInformation.edit().lastRunningSessionCheckTime().put(now).apply();
+            initAdapterWithLastQuery();
+        }
+    }
+
     @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION,
             ScheduleFilterManager.FILTERS_CHANGED_ACTION})
     void onRefreshData() {
         final String lastQuery = scheduleLineupSearchManager.getLastQuery();
-        List<ScheduleItem> items = scheduleLineupSearchManager
-                .handleSearchQuery(lineupDayMs, lastQuery);
+        List<ScheduleItem> items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
         items = scheduleFilterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
         scheduleDayLineupAdapter.notifyDataSetChanged();
+
+        scrollToCurrentRunningSlot();
     }
 
     @Override
@@ -122,10 +156,23 @@ public class ScheduleLineupFragment extends BaseListFragment {
         }
         items = scheduleFilterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
+        scheduleDayLineupAdapter.notifyDataSetChanged();
 
+        scrollToCurrentRunningSlot();
+    }
+
+    private void scrollToCurrentRunningSlot() {
         final int runningIndex = scheduleDayLineupAdapter.getRunningFirstPosition();
         if (runningIndex != ScheduleDayLineupAdapter.INVALID_RUNNING_SLOT_INDEX) {
-            recyclerView.scrollToPosition(runningIndex);
+            Logger.l("scrollToCurrentRunningSlot: " + runningIndex);
+            final LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            final int lastVisiblePosition = lm.findLastCompletelyVisibleItemPosition();
+            if (lastVisiblePosition != -1 && lastVisiblePosition < runningIndex) {
+                lm.scrollToPosition(runningIndex + 3); // Correct scroll position.
+            } else {
+                lm.scrollToPosition(runningIndex);
+            }
         }
     }
 }

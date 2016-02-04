@@ -2,8 +2,8 @@ package com.devoxx.data.conference;
 
 import android.content.Context;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
-import com.bumptech.glide.Glide;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.cache.BaseCache;
@@ -158,15 +158,14 @@ public class ConferenceManager {
         final String confCode = conferenceApiModel.id;
         try {
             notifyConferenceListenerStart(confDataListener);
+
             tracksDownloader.downloadTracksDescriptions(confCode);
             final boolean isAnyTalks = slotsDataManager.fetchTalksSync(confCode);
             speakersDataManager.fetchSpeakersSync(confCode);
+
+            saveActiveConference(conferenceApiModel);
             final List<ConferenceDay> conferenceDays = getConferenceDays();
             scheduleFilterManager.createDayFiltersDefinition(conferenceDays);
-
-            if (isAnyTalks) {
-                saveActiveConference(conferenceApiModel);
-            }
 
             notifyConferenceListenerSuccess(confDataListener, isAnyTalks);
         } catch (IOException e) {
@@ -208,6 +207,8 @@ public class ConferenceManager {
         // TODO Take dates from model!
         final String fromDate = "2015-11-09T01:00:00.000Z";
         final String toDate = "2015-11-13T23:00:00.000Z";
+//        final String fromDate = realmConference.getFromDate();
+//        final String toDate = realmConference.getToDate();
         final DateTime fromConfDate = parseConfDate(fromDate);
         final DateTime toConfDate = parseConfDate(toDate);
         final DateTime now = new DateTime(getNow());
@@ -251,14 +252,20 @@ public class ConferenceManager {
         clearCache();
     }
 
-    public ConferenceDay getCurrentConfDay() {
-        return Stream.of(conferenceDays).filter(ConferenceDay::isRunning).findFirst().get();
+    public Optional<ConferenceDay> getCurrentConfDay() {
+        return Stream.of(conferenceDays).filter(ConferenceDay::isRunning).findFirst();
     }
 
     public long getNow() {
         //TODO Tests!
         final String test = "2015-11-10T10:00:00.000Z";
-        return parseConfDate(test).getMillis();
+
+        final DateTime now = new DateTime();
+        final DateTime result = parseConfDate(test).withMinuteOfHour(now.getMinuteOfHour())
+                .withHourOfDay(now.getHourOfDay());
+
+        return result.getMillis();
+//        return System.currentTimeMillis();
     }
 
     public boolean isFutureConference(ConferenceApiModel conference) {

@@ -7,4 +7,7 @@ import org.androidannotations.annotations.sharedpreferences.SharedPref;
 public interface DataInformation {
 
     @DefaultLong(0L) long lastSpeakersCall();
+
+    @DefaultLong(0L) long lastRunningSessionCheckTime();
+
 }
