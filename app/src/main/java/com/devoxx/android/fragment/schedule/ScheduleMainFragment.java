@@ -157,7 +157,10 @@ public class ScheduleMainFragment extends BaseMenuFragment
 
     @Override
     public void onPageSelected(int position) {
-        schedulePagerAdapter.getFragment(position).triggerRunningSessionCheck();
+        final ScheduleLineupFragment fragment = schedulePagerAdapter.getFragment(position);
+        if (fragment != null) {
+            fragment.triggerRunningSessionCheck();
+        }
     }
 
     @Override

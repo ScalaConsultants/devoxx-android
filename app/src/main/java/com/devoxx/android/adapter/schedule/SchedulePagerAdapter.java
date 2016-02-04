@@ -3,6 +3,7 @@ package com.devoxx.android.adapter.schedule;
 import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
 import com.devoxx.data.conference.model.ConferenceDay;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -35,6 +36,7 @@ public class SchedulePagerAdapter extends FragmentStatePagerAdapter {
         fragmentHashMap = new HashMap<>();
     }
 
+    @Nullable
     public ScheduleLineupFragment getFragment(int position) {
         return fragmentHashMap.get(position);
     }

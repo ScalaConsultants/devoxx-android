@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -89,8 +90,25 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
         for (ConferenceApiModel conference : conferences) {
             addNewItem(conference);
         }
-        // By default first button is selected.
+    }
+
+    public void defaultSelection() {
         onClick(getChildAt(0));
+    }
+
+    public void restorePreviousStateIfAny(@Nullable ConferenceApiModel model) {
+        if (model != null) {
+            clearAnimation();
+            final int size = getChildCount();
+            for (int i = 0; i < size; i++) {
+                final View child = getChildAt(i);
+                final ItemViewInfo info = (ItemViewInfo) child.getTag();
+                if (info.getData().id.equalsIgnoreCase(model.id)) {
+                    onClick(child);
+                    break;
+                }
+            }
+        }
     }
 
     public void setListener(IWheelItemActionListener listener) {

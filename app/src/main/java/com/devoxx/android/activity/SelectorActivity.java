@@ -214,7 +214,12 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         }
 
         selectorView.prepareForConferences(conferences);
-        // TODO
+
+        if (lastSelectedConference != null) {
+            selectorView.restorePreviousStateIfAny(lastSelectedConference);
+        } else {
+            selectorView.defaultSelection();
+        }
     }
 
     @Override
