@@ -75,7 +75,7 @@ public class VoteConnection {
             final long sentMillis = Long.parseLong(response.header("OkHttp-Sent-Millis"));
             final long receivedMillis = Long.parseLong(response.header("OkHttp-Received-Millis"));
 
-            Logger.l(String.format("[VOTE_API] Received response for %s in %.1dms%n%s",
+            Logger.l(String.format("[VOTE_API] Received response for %s in %dms%n%s",
                     response.request().url(), (receivedMillis - sentMillis), response.headers()));
 
             return response;

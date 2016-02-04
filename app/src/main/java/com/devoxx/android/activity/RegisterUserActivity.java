@@ -49,7 +49,7 @@ public class RegisterUserActivity extends BaseActivity {
 
         if (validateInput(input)) {
             userManager.saveUserCode(input);
-            message = "Saved code!";
+            message = "Saved code! Now you can vote for a talk.";
             finishScreen = true;
         } else {
             message = "Code can't be empty!";
