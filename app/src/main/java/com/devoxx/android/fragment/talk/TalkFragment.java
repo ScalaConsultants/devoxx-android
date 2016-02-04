@@ -1,9 +1,6 @@
 package com.devoxx.android.fragment.talk;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
@@ -32,7 +29,6 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
-import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SpeakersDataManager;
@@ -40,7 +36,6 @@ import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
 import com.devoxx.data.vote.interfaces.ITalkVoter;
 import com.devoxx.data.vote.voters.FakeVoter;
-import com.devoxx.data.vote.voters.TalkVoter;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.InfoUtil;
@@ -164,9 +159,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
                 slotModel.talk.getReadableSpeakers(),
                 createWebLink(conference, slotModel),
                 conference.getHashtag());
-        final String tweetUrl = "https://twitter.com/intent/tweet?text=" + Uri.encode(twitterMessage);
-        final Uri uri = Uri.parse(tweetUrl);
-        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        navigator.tweetMessage(getActivity(), twitterMessage);
     }
 
     private String createWebLink(RealmConference conference, SlotApiModel slot) {
@@ -238,7 +231,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private View createFormatSection(SlotApiModel slotModel) {
-        return createSection(R.drawable.ic_star, R.string.talk_details_section_format, slotModel.talk.talkType);
+        return createSection(R.drawable.ic_format, R.string.talk_details_section_format, slotModel.talk.talkType);
     }
 
     private View createRoomSection(SlotApiModel slotModel) {

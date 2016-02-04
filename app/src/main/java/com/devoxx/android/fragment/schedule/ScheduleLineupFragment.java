@@ -77,6 +77,12 @@ public class ScheduleLineupFragment extends BaseListFragment {
         initAdapterWithLastQuery();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        triggerRunningSessionCheck();
+    }
+
     public void triggerRunningSessionCheck() {
         checkNowRunningSessions();
     }
@@ -162,7 +168,6 @@ public class ScheduleLineupFragment extends BaseListFragment {
     private void scrollToCurrentRunningSlot() {
         final int runningIndex = scheduleDayLineupAdapter.getRunningFirstPosition();
         if (runningIndex != ScheduleDayLineupAdapter.INVALID_RUNNING_SLOT_INDEX) {
-            Logger.l("scrollToCurrentRunningSlot: " + runningIndex);
             final LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
 
             final int lastVisiblePosition = lm.findLastCompletelyVisibleItemPosition();

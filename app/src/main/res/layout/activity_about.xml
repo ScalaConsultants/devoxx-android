@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/background_light"
-    android:fitsSystemWindows="true">
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:background="@android:color/background_light"
+                                                 android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/main.appbar"
@@ -33,12 +33,12 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@null"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/talk_background_image" />
+                    android:src="@drawable/talk_background_image"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/speaker_foreground_gradient" />
+                    android:background="@drawable/speaker_foreground_gradient"/>
             </FrameLayout>
 
             <android.support.v7.widget.Toolbar
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -58,44 +58,69 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/aboutDescription"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:lineSpacingExtra="1.2dp"
-            android:lineSpacingMultiplier="1.2"
-            android:linksClickable="true"
-            android:paddingLeft="78dp"
-            android:paddingRight="16dp"
-            android:text="@string/lorem_ipsum"
-            android:textColor="@color/primary_text_70"
-            android:textColorLink="@color/degree_link"
-            android:textIsSelectable="true"
-            android:textSize="14dp" />
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/aboutDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:lineSpacingExtra="1.2dp"
+                android:lineSpacingMultiplier="1.2"
+                android:linksClickable="true"
+                android:paddingLeft="78dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/primary_text_70"
+                android:textColorLink="@color/degree_link"
+                android:textIsSelectable="true"
+                android:textSize="14dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="78dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/primary_text_45"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="1.2dp"
+                android:lineSpacingMultiplier="1.2"
+                android:paddingLeft="78dp"
+                android:paddingRight="16dp"
+                android:text="@string/credits"
+                android:textAllCaps="true"
+                android:textColor="@color/primary_dark"
+                android:textSize="22dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/aboutFirstButton"
+        android:id="@+id/aboutWebButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="72dp"
-        android:src="@drawable/ic_star"
+        android:src="@drawable/ic_web"
         app:backgroundTint="@color/primary"
         app:fabSize="mini"
         app:layout_anchor="@id/main.appbar"
-        app:layout_anchorGravity="bottom|right|end" />
+        app:layout_anchorGravity="bottom|right|end"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/aboutSecondButton"
+        android:id="@+id/aboutTwitterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        android:src="@drawable/ic_star"
+        android:src="@drawable/ic_twitter"
         app:backgroundTint="@color/primary"
         app:fabSize="mini"
         app:layout_anchor="@id/main.appbar"
-        app:layout_anchorGravity="bottom|right|end" />
+        app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>
