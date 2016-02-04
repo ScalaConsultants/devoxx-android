@@ -53,9 +53,11 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(getMenuRes(), menu);
-        setupFilterMenuIfNeeded(menu);
-        setupSearchViewIfNeeded(menu);
+        if (isAdded()) {
+            inflater.inflate(getMenuRes(), menu);
+            setupFilterMenuIfNeeded(menu);
+            setupSearchViewIfNeeded(menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
