@@ -77,9 +77,7 @@ public class ScheduleLineupFragment extends BaseListFragment {
         initAdapterWithLastQuery();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    public void triggerRunningSessionCheck() {
         checkNowRunningSessions();
     }
 
@@ -89,7 +87,7 @@ public class ScheduleLineupFragment extends BaseListFragment {
         if (!hasRunningSession) {
             return;
         }
-        
+
         final long lastCheck = dataInformation.lastRunningSessionCheckTime().get();
         final long now = System.currentTimeMillis();
         final long diffMs = now - lastCheck;

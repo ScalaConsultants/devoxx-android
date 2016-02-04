@@ -28,7 +28,7 @@ import java.util.List;
 
 @EFragment(R.layout.fragment_schedules)
 public class ScheduleMainFragment extends BaseMenuFragment
-        implements FiltersDialog.IFiltersChangedListener {
+        implements FiltersDialog.IFiltersChangedListener, ViewPager.OnPageChangeListener {
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -54,6 +54,8 @@ public class ScheduleMainFragment extends BaseMenuFragment
     @ColorRes(R.color.primary_text)
     int tabStripColor;
 
+    private SchedulePagerAdapter schedulePagerAdapter;
+
     @AfterViews
     void afterViewsInner() {
         super.afterViews();
@@ -62,6 +64,8 @@ public class ScheduleMainFragment extends BaseMenuFragment
         tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorColor(tabStripColor);
+
+        viewPager.addOnPageChangeListener(this);
     }
 
     @Override
@@ -88,6 +92,7 @@ public class ScheduleMainFragment extends BaseMenuFragment
 
     @Override
     public void onDestroy() {
+        viewPager.removeOnPageChangeListener(this);
         scheduleLineupSearchManager.clearLastQuery();
         super.onDestroy();
     }
@@ -112,8 +117,7 @@ public class ScheduleMainFragment extends BaseMenuFragment
 
     private void invalidateViewPager() {
         final List<ConferenceDay> days = combineDaysWithFilters();
-        final SchedulePagerAdapter schedulePagerAdapter
-                = new SchedulePagerAdapter(getChildFragmentManager(), days);
+        schedulePagerAdapter = new SchedulePagerAdapter(getChildFragmentManager(), days);
 
         viewPager.setAdapter(schedulePagerAdapter);
         schedulePagerAdapter.notifyDataSetChanged();
@@ -147,5 +151,20 @@ public class ScheduleMainFragment extends BaseMenuFragment
             }
         }
         return result;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // Nothing.
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        schedulePagerAdapter.getFragment(position).triggerRunningSessionCheck();
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        // Nothing.
     }
 }
