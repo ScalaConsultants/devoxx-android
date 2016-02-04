@@ -28,9 +28,6 @@ import java.util.List;
 public class MapMenuLandscapeFragment extends BaseMenuFragment {
 
     @Bean
-    ConferenceManager conferenceManager;
-
-    @Bean
     DeviceUtil deviceUtil;
 
     @SystemService

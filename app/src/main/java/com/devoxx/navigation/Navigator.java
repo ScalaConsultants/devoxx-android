@@ -91,4 +91,9 @@ public class Navigator {
         final Uri uri = Uri.parse(tweetUrl);
         activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
+
+    public void openRegister(Activity activity, String regURL) {
+        final Uri uri = Uri.parse(regURL);
+        activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+    }
 }

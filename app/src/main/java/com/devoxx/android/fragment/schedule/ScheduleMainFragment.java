@@ -36,9 +36,6 @@ public class ScheduleMainFragment extends BaseMenuFragment
     @Bean
     ScheduleLineupSearchManager scheduleLineupSearchManager;
 
-    @Bean
-    ConferenceManager conferenceManager;
-
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
 

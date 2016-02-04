@@ -19,9 +19,12 @@ import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
 import com.devoxx.android.activity.SettingsActivity_;
 import com.devoxx.android.dialog.FiltersDialog;
+import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
+import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterViews;
@@ -40,6 +43,12 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @Bean
     protected InfoUtil infoUtil;
+
+    @Bean
+    protected Navigator navigator;
+
+    @Bean
+    protected ConferenceManager conferenceManager;
 
     @AfterViews
     protected void afterViews() {
@@ -185,7 +194,8 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @OptionsItem(R.id.action_purchase_ticket)
     protected void onRegisterClick() {
-        infoUtil.showToast("Go to purchase ticket..");
+        final RealmConference conference = conferenceManager.getActiveConference();
+        navigator.openRegister(getActivity(), conference.getRegURL());
     }
 
     @OptionsItem(R.id.action_credits)

@@ -38,9 +38,6 @@ public class MapMainFragment extends BaseMenuFragment
             Manifest.permission.ACCESS_COARSE_LOCATION};
 
     @Bean
-    ConferenceManager conferenceManager;
-
-    @Bean
     DeviceUtil deviceUtil;
 
     @ViewById(R.id.tab_layout)

@@ -52,9 +52,6 @@ public class SpeakersFragment extends BaseMenuFragment {
     RealmProvider realmProvider;
 
     @Bean
-    Navigator navigator;
-
-    @Bean
     Connection connection;
 
     @Bean

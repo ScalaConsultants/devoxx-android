@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.devoxx.R;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.fragment.common.BaseFragment;
@@ -33,9 +34,11 @@ import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
+import com.devoxx.data.user.UserManager;
 import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
 import com.devoxx.data.vote.interfaces.ITalkVoter;
 import com.devoxx.data.vote.voters.FakeVoter;
+import com.devoxx.data.vote.voters.TalkVoter;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DeviceUtil;
 import com.devoxx.utils.InfoUtil;
@@ -80,7 +83,10 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     @Bean
     InfoUtil infoUtil;
 
-    @Bean(FakeVoter.class)
+    @Bean
+    UserManager userManager;
+
+    @Bean(TalkVoter.class)
     ITalkVoter talkVoter;
 
     @SystemService
@@ -167,18 +173,22 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     @Click(R.id.talkDetailsLikeBtn)
-    void onLikeClick() {
-        talkVoter.voteForTalk(slotModel.talk.id, new IOnVoteForTalkListener() {
-            @Override
-            public void onVoteForTalkSucceed() {
-                infoUtil.showToast("Vote succeed, TBD.");
-            }
+    void onVoteClick() {
+        if (userManager.isFirstTimeUser()) {
+            userManager.openUserScanBadge();
+        } else {
+            talkVoter.showVoteDialog(getActivity(), slotModel.talk.id, new IOnVoteForTalkListener() {
+                @Override
+                public void onVoteForTalkSucceed() {
+                    infoUtil.showToast("onVoteForTalkSucceed");
+                }
 
-            @Override
-            public void onVoteForTalkFailed() {
-                infoUtil.showToast("Vote failed, TBD.");
-            }
-        });
+                @Override
+                public void onVoteForTalkFailed() {
+                    infoUtil.showToast("onVoteForTalkFailed");
+                }
+            });
+        }
     }
 
     @Override
