@@ -18,9 +18,6 @@
     <dimen name="header_view_start_margin_bottom">36dp</dimen>
     <dimen name="header_view_end_margin_left">40dp</dimen>
     <dimen name="header_view_end_margin_right">40dp</dimen>
-
-    <dimen name="selector_circle_padding">56dp</dimen>
-    <dimen name="selector_circle_item_size">64dp</dimen>
     <dimen name="value_16dp">16dp</dimen>
     <dimen name="value_12dp">12dp</dimen>
     <dimen name="talk_header_height">300dp</dimen>
@@ -31,6 +28,14 @@
     <dimen name="elevation_menu">0dp</dimen>
     <dimen name="talk_item_sub_icon_size">20dp</dimen>
     <dimen name="toolbar_logo_height">18dp</dimen>
+
+    <dimen name="selector_circle_padding">56dp</dimen>
+    <dimen name="selector_circle_item_size">64dp</dimen>
     <dimen name="selector_values_text_size">16dp</dimen>
     <dimen name="selector_view_size">280dp</dimen>
+    <dimen name="selector_conf_label_size">28dp</dimen>
+    <dimen name="selector_go_text_size">20dp</dimen>
+    <dimen name="selector_info_label_size">14dp</dimen>
+    <dimen name="selector_main_circle_margin_top">16dp</dimen>
+    <dimen name="selector_devox_logo_margin_top">0dp</dimen>
 </resources>

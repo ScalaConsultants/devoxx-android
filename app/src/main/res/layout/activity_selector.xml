@@ -25,6 +25,7 @@
             android:layout_marginLeft="64dp"
             android:layout_marginRight="64dp"
             android:contentDescription="@null"
+            android:layout_marginTop="@dimen/selector_devox_logo_margin_top"
             android:scaleType="fitCenter"
             android:src="@drawable/devoxx_logo"/>
 
@@ -39,7 +40,7 @@
             android:shadowDy="1"
             android:shadowRadius="2"
             android:textColor="#F8B911"
-            android:textSize="28dp"
+            android:textSize="@dimen/selector_conf_label_size"
             tools:text="Poland"/>
 
         <include layout="@layout/selector_wheel_layout"/>
@@ -58,7 +59,7 @@
             android:shadowDy="1"
             android:shadowRadius="2"
             android:textColor="@android:color/white"
-            android:textSize="14dp"/>
+            android:textSize="@dimen/selector_info_label_size"/>
 
         <TextView
             android:id="@+id/selectorGo"
@@ -77,7 +78,7 @@
             android:shadowRadius="2"
             android:text="GO!"
             android:textColor="@android:color/white"
-            android:textSize="20dp"/>
+            android:textSize="@dimen/selector_go_text_size"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="@dimen/selector_main_circle_margin_top"
     tools:showIn="@layout/activity_selector">
 
     <com.devoxx.android.view.selector.SelectorView_
