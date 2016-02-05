@@ -9,16 +9,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import com.devoxx.android.fragment.track.TracksListFragment_;
 import com.devoxx.connection.model.SlotApiModel;
+import com.devoxx.utils.tuple.Tuple;
 
 public class TracksPagerAdapter extends FragmentStatePagerAdapter {
 
-    private Map<String, List<SlotApiModel>> tracksMap;
+    private Map<Tuple<String, String>, List<SlotApiModel>> tracksMap;
     private List<String> tracksNames;
+    private HashMap<String, String> nameIdMap;
 
     public TracksPagerAdapter(FragmentManager fm, List<SlotApiModel> slots) {
         super(fm);
@@ -27,7 +32,9 @@ public class TracksPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return TracksListFragment_.builder().trackName(tracksNames.get(position)).build();
+        final String trackname = tracksNames.get(position);
+        final String trackId = nameIdMap.get(trackname);
+        return TracksListFragment_.builder().trackId(trackId).build();
     }
 
     @Override
@@ -42,14 +49,20 @@ public class TracksPagerAdapter extends FragmentStatePagerAdapter {
 
     public void setData(List<SlotApiModel> slotApiModels) {
         tracksMap = Stream.of(slotApiModels).filter(slot -> slot.talk != null)
-                .collect(Collectors.groupingBy(new Function<SlotApiModel, String>() {
+                .collect(Collectors.groupingBy(new Function<SlotApiModel, Tuple<String, String>>() {
                     @Override
-                    public String apply(SlotApiModel value) {
-                        return value.talk.track;
+                    public Tuple<String, String> apply(SlotApiModel value) {
+                        return new Tuple<>(value.talk.track, value.talk.trackId);
                     }
                 }));
 
-        tracksNames = Stream.of(tracksMap.keySet()).
-                sorted().collect(Collectors.<String>toList());
+        final List<Tuple<String, String>> nameIdMapping = new ArrayList<>(tracksMap.keySet());
+        nameIdMap = new HashMap<>();
+        for (Tuple<String, String> tuple : nameIdMapping) {
+            nameIdMap.put(tuple.first, tuple.second);
+        }
+
+        tracksNames = Stream.of(nameIdMap.keySet())
+                .sorted().collect(Collectors.<String>toList());
     }
 }

@@ -25,7 +25,6 @@ import android.view.View;
 
 import java.util.List;
 
-import com.devoxx.android.activity.TalkDetailsHostActivity_;
 import com.devoxx.R;
 
 @EFragment(R.layout.fragment_list)
@@ -44,7 +43,7 @@ public class TracksListFragment extends BaseListFragment {
     TracksAdapter tracksAdapter;
 
     @FragmentArg
-    String trackName;
+    String trackId;
 
     @AfterInject
     void afterInject() {
@@ -98,7 +97,7 @@ public class TracksListFragment extends BaseListFragment {
         final List<SlotApiModel> slots =
                 Stream.of(slotsDataManager.getLastTalks())
                         .filter(slot -> slot.talk != null &&
-                                slot.talk.track.equalsIgnoreCase(trackName))
+                                slot.talk.trackId.equalsIgnoreCase(trackId))
                         .collect(Collectors.<SlotApiModel>toList());
 
         final List<RealmScheduleDayItemFilter> dayFilters

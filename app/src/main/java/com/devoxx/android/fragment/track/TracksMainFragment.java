@@ -138,10 +138,11 @@ public class TracksMainFragment extends BaseMenuFragment
         return Stream.of(resultList)
                 .filter(value -> {
                     for (RealmScheduleTrackItemFilter trackFilter : trackFilters) {
-                        if (value.isTalk() && (value.talk.track
-                                .equalsIgnoreCase(trackFilter.getTrackName()))
-                                || value.talk.track
-                                .equalsIgnoreCase(trackFilter.getLabel())) {
+                        if (value.isTalk() && (value.talk.track.toLowerCase().equalsIgnoreCase(trackFilter.getTrackName()))
+                                || value.talk.track.toLowerCase().equalsIgnoreCase(trackFilter.getLabel())
+                                || value.talk.trackId.toLowerCase().equalsIgnoreCase(trackFilter.getTrackName())
+                                || value.talk.trackId.toLowerCase().equalsIgnoreCase(trackFilter.getLabel())
+                                ) {
                             return true;
                         }
                     }

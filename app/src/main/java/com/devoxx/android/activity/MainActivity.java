@@ -231,6 +231,7 @@ public class MainActivity extends BaseActivity {
             if (fr == null) {
                 navigator.openTalkDetails(this, optModel.get(), true);
             } else {
+                handleMenuClick(R.id.menu_schedule);
                 navigator.openTalkDetails(this, optModel.get(), fr, true);
             }
         } else {

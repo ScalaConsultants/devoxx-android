@@ -31,7 +31,37 @@ public class SettingsFragment extends PreferenceFragment {
     @AfterViews
     void afterViews() {
         addPreferencesFromResource(R.xml.preferences);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupUserCodePreference();
+    }
+
+    @PreferenceClick(R.string.settings_user_code)
+    void onClearUserCodeClick() {
+        if (userManager.isFirstTimeUser()) {
+            userManager.openUserScanBadge();
+        } else {
+            userManager.clearCode();
+            infoUtil.showToast("Code has been cleared!");
+        }
+        setupUserCodePreference();
+    }
+
+    @PreferenceClick(R.string.settings_change_conf_key)
+    void onChangeConferenceClick() {
+        conferenceManager.clearCurrentConferenceData();
+
+        ActivityCompat.finishAffinity(getActivity());
+
+        SelectorActivity_.intent(this)
+                .flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .start();
+    }
+
+    private void setupUserCodePreference() {
         final Preference preference = getPreferenceManager().findPreference(
                 getString(R.string.settings_user_code));
         final String title;
@@ -45,26 +75,5 @@ public class SettingsFragment extends PreferenceFragment {
         }
         preference.setTitle(title);
         preference.setSummary(summary);
-    }
-
-    @PreferenceClick(R.string.settings_user_code)
-    void onClearUserCodeClick() {
-        if (userManager.isFirstTimeUser()) {
-            userManager.openUserScanBadge();
-        } else {
-            userManager.clearCode();
-            infoUtil.showToast("Code has been cleared!");
-        }
-    }
-
-    @PreferenceClick(R.string.settings_change_conf_key)
-    void onChangeConferenceClick() {
-        conferenceManager.clearCurrentConferenceData();
-
-        ActivityCompat.finishAffinity(getActivity());
-
-        SelectorActivity_.intent(this)
-                .flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .start();
     }
 }
