@@ -41,6 +41,12 @@ public class RegisterUserActivity extends BaseActivity {
         startActivityForResult(intent, RC_BARCODE_CAPTURE);
     }
 
+    @Click(R.id.registerUserResetCode)
+    void onResetCodeClick() {
+        userManager.clearCode();
+        infoUtil.showToast("Code has been cleared!");
+    }
+
     @Click(R.id.registerUserSaveCode)
     void onSaveClick() {
         final String input = codeInput.getText().toString();
@@ -71,7 +77,7 @@ public class RegisterUserActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data.hasExtra(BarcodeCaptureActivity.BarcodeObject)) {
+        if (data != null && data.hasExtra(BarcodeCaptureActivity.BarcodeObject)) {
             final Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
             final String code = barcode.displayValue;
             codeInput.setText(code);

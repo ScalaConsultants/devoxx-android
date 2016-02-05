@@ -1,17 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
+
+    <View
+        android:layout_width="@dimen/value_12dp"
+        android:layout_height="1dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <TextView
+        android:id="@+id/talkRatingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/primary_text_70"
+        android:textSize="14dp"
+        tools:text="Agile Android Development!"/>
+
+    <TextView
+        android:id="@+id/talkRatingSpeakers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:textColor="@color/primary_text_90"
+        android:textSize="12dp"
+        tools:text="Jacek Modrakowski"/>
 
     <RatingBar
         android:id="@+id/talkRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="26dp"
         android:max="5"
         android:numStars="5"
         android:progress="1"
         android:stepSize="1"/>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:hintAnimationEnabled="true">
+
+        <EditText
+            android:id="@+id/talkRatingContentFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Content feedback"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:hintAnimationEnabled="true">
+
+        <EditText
+            android:id="@+id/talkRatingDeliveryRemarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Delivery remarks"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:hintAnimationEnabled="true">
+
+        <EditText
+            android:id="@+id/talkRatingOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Other"/>
+    </android.support.design.widget.TextInputLayout>
 </LinearLayout>

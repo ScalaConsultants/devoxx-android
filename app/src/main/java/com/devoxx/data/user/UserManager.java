@@ -34,4 +34,8 @@ public class UserManager {
     public String getUserCode() {
         return settings.userId().get();
     }
+
+    public void clearCode() {
+        settings.edit().userId().put("").apply();
+    }
 }

@@ -179,7 +179,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
         if (userManager.isFirstTimeUser()) {
             userManager.openUserScanBadge();
         } else if (talkVoter.canVoteOnTalk(slotModel.talk.id)) {
-            talkVoter.showVoteDialog(getActivity(), slotModel.talk.id, new IOnVoteForTalkListener() {
+            talkVoter.showVoteDialog(getActivity(), slotModel, new IOnVoteForTalkListener() {
                 @Override
                 public void onVoteForTalkSucceed() {
                     infoUtil.showToast("Voted...");

@@ -14,6 +14,7 @@ import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
+import com.devoxx.data.user.UserManager;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
@@ -79,6 +80,9 @@ public class ConferenceManager {
 
     @Bean
     BaseCache baseCache;
+
+    @Bean
+    UserManager userManager;
 
     private List<ConferenceDay> conferenceDays;
 
@@ -250,6 +254,7 @@ public class ConferenceManager {
         clearSpeakersData();
         clearFiltersDefinitions();
         clearCache();
+        userManager.clearCode();
     }
 
     public Optional<ConferenceDay> getCurrentConfDay() {

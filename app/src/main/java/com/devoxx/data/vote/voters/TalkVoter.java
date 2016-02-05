@@ -6,9 +6,11 @@ import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.devoxx.R;
+import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.vote.VoteApi;
 import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.connection.vote.model.VoteApiModel;
@@ -49,11 +51,10 @@ public class TalkVoter implements ITalkVoter {
     UserManager userManager;
 
     @Override
-    public void showVoteDialog(Context context, String talkId, IOnVoteForTalkListener listener) {
+    public void showVoteDialog(Context context, SlotApiModel slot, IOnVoteForTalkListener listener) {
         final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         final MaterialDialog dialog = builder
                 .customView(R.layout.talk_rating_layout, true)
-                .title("Talk voting")
                 .positiveText("Vote!")
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
@@ -62,7 +63,7 @@ public class TalkVoter implements ITalkVoter {
                         final View customView = dialog.getCustomView();
                         final RatingBar ratingBar = (RatingBar) customView.findViewById(R.id.talkRatingBar);
                         final int rating = (int) ratingBar.getRating();
-                        voteForTalk(rating, talkId, listener);
+                        voteForTalk(rating, slot.talk.id, listener);
                     }
                 })
                 .build();
@@ -73,6 +74,12 @@ public class TalkVoter implements ITalkVoter {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             DrawableCompat.setTint(ratingBar.getProgressDrawable(), Color.parseColor("#E3B505"));
         }
+
+        final TextView title = (TextView) customView.findViewById(R.id.talkRatingTitle);
+        title.setText(slot.talk.title);
+
+        final TextView speakers = (TextView) customView.findViewById(R.id.talkRatingSpeakers);
+        speakers.setText(slot.talk.getReadableSpeakers());
     }
 
     @Override
