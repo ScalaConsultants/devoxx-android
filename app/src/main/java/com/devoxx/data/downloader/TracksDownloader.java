@@ -38,7 +38,13 @@ public class TracksDownloader {
 
     @AfterInject
     void afterInject() {
-        activeConferenceApiUrl = connection.getActiveConferenceApiUrl();
+        final String url = connection.getActiveConferenceApiUrl();
+        final int length = url.length();
+        if (url.charAt(length - 1) == '/') {
+            activeConferenceApiUrl = url.substring(0, length - 1);
+        } else {
+            activeConferenceApiUrl = url;
+        }
     }
 
     public void downloadTracksDescriptions(String confCode) throws IOException {
