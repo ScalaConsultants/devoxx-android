@@ -13,6 +13,7 @@ public class TalkShortApiModel extends TalkBaseApiModel {
         result.title = dbModel.getTitle();
         result.talkType = dbModel.getTalkType();
         result.track = dbModel.getTrack();
+        result.trackId = dbModel.getTrackId();
         return result;
     }
 }

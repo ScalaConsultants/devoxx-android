@@ -1,5 +1,7 @@
 package com.devoxx.data.downloader;
 
+import android.text.TextUtils;
+
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.TracksApiModel;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
@@ -39,11 +41,13 @@ public class TracksDownloader {
     @AfterInject
     void afterInject() {
         final String url = connection.getActiveConferenceApiUrl();
-        final int length = url.length();
-        if (url.charAt(length - 1) == '/') {
-            activeConferenceApiUrl = url.substring(0, length - 1);
-        } else {
-            activeConferenceApiUrl = url;
+        if (!TextUtils.isEmpty(url)) {
+            final int length = url.length();
+            if (url.charAt(length - 1) == '/') {
+                activeConferenceApiUrl = url.substring(0, length - 1);
+            } else {
+                activeConferenceApiUrl = url;
+            }
         }
     }
 
@@ -67,7 +71,7 @@ public class TracksDownloader {
     public String getTrackIconUrl(String trackId) {
         final Realm realm = realmProvider.getRealm();
         final RealmTrack realmTrack = realm.where(RealmTrack.class).
-                equalTo(RealmTrack.Contract.TITLE, trackId.toLowerCase(), false).findFirst();
+                equalTo(RealmTrack.Contract.ID, trackId.toLowerCase(), false).findFirst();
 
         String result = UNKNOWN_TRACK_ICON_URL;
         if (realmTrack != null) {

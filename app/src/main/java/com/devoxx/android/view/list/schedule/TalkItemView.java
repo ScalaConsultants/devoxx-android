@@ -133,7 +133,7 @@ public class TalkItemView extends LinearLayout {
     }
 
     private String obtainTrackIconUrl(TalkBaseApiModel slotModel) {
-        return tracksDownloader.getTrackIconUrl(slotModel.track);
+        return tracksDownloader.getTrackIconUrl(slotModel.trackId);
     }
 
     public TalkItemView(Context context) {

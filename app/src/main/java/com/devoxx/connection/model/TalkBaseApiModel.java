@@ -6,5 +6,6 @@ public class TalkBaseApiModel implements Serializable {
     public String title;
     public String talkType;
     public String track;
+    public String trackId;
     public String id;
 }

@@ -6,6 +6,7 @@ public class RealmTalk extends RealmObject {
     private String title;
     private String talkType;
     private String track;
+    private String trackId;
     private String id;
 
     public String getTitle() {
@@ -38,5 +39,13 @@ public class RealmTalk extends RealmObject {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTrackId() {
+        return trackId;
+    }
+
+    public void setTrackId(String trackId) {
+        this.trackId = trackId;
     }
 }
