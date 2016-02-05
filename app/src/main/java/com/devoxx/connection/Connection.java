@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import com.devoxx.BuildConfig;
 import com.devoxx.Configuration;
 import com.devoxx.connection.cfp.CfpApi;
+import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.Logger;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -14,6 +16,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.SystemService;
@@ -35,6 +38,9 @@ public class Connection {
 
     @Pref
     ConnectionConfigurationStore_ connectionConfigurationStore;
+
+    @Bean
+    ConferenceManager conferenceManager;
 
     private DevoxxApi devoxxApi;
     private CfpApi cfpApi;
@@ -63,6 +69,10 @@ public class Connection {
     }
 
     public DevoxxApi getDevoxxApi() {
+        if (devoxxApi == null) {
+            final RealmConference conference = conferenceManager.getActiveConference();
+            setupConferenceApi(conference.getCfpURL());
+        }
         return devoxxApi;
     }
 

@@ -105,7 +105,6 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     @ViewById(R.id.speakerDetailsTalkSection)
     LinearLayout talkSection;
 
-    private RealmSpeaker realmSpeaker;
     private boolean shouldHideToolbarHeader = false;
 
     @AfterViews
@@ -173,8 +172,8 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                     @Override
                     public void onDataAvailable(RealmSpeaker item) {
                         if (isAdded() && getActivity() != null && getContext() != null) {
-                            realmSpeaker = speakersDataManager.getByUuid(uuid);
-                            setupView();
+                            final RealmSpeaker speaker = speakersDataManager.getByUuid(uuid);
+                            setupView(speaker);
                         }
                     }
 
@@ -189,17 +188,17 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
                 });
     }
 
-    private void setupView() {
-        final String name = determineName();
-        final String company = realmSpeaker.getCompany();
+    private void setupView(RealmSpeaker speaker) {
+        final String name = speaker.getFirstName() + " " + speaker.getLastName();
+        final String company = speaker.getCompany();
         toolbarHeaderView.setupHeader(name, company);
-        floatHeaderView.setupHeader(realmSpeaker.getAvatarURL(), name, company);
+        floatHeaderView.setupHeader(speaker.getAvatarURL(), name, company);
 
-        textBio.setText(Html.fromHtml(realmSpeaker.getBioAsHtml().trim()));
+        textBio.setText(Html.fromHtml(speaker.getBioAsHtml().trim()));
         textBio.setMovementMethod(LinkMovementMethod.getInstance());
 
-        if (!realmSpeaker.getAcceptedTalks().isEmpty()) {
-            for (final RealmTalk talkModel : realmSpeaker.getAcceptedTalks()) {
+        if (!speaker.getAcceptedTalks().isEmpty()) {
+            for (final RealmTalk talkModel : speaker.getAcceptedTalks()) {
                 final Optional<SlotApiModel> slotModelOpt = slotsDataManager.
                         getSlotByTalkId(talkModel.getId());
                 if (slotModelOpt.isPresent()) {
@@ -216,15 +215,15 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
             talkSection.setVisibility(View.GONE);
         }
 
-        setupTwitterButton(realmSpeaker);
-        setupWebsite(realmSpeaker);
+        setupTwitterButton(speaker);
+        setupWebsite(speaker);
     }
 
     private void setupTwitterButton(RealmSpeaker realmSpeaker) {
         final String twitterName = realmSpeaker.getTwitter();
         if (!TextUtils.isEmpty(twitterName)) {
             secondButton.setAlpha(1f);
-            secondButton.setOnClickListener(v -> navigator.openTwitterUser(getActivity(),twitterName));
+            secondButton.setOnClickListener(v -> navigator.openTwitterUser(getActivity(), twitterName));
         } else {
             secondButton.setAlpha(0f);
         }
@@ -238,10 +237,6 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
         } else {
             firstButton.setAlpha(0f);
         }
-    }
-
-    private String determineName() {
-        return realmSpeaker != null ? (realmSpeaker.getFirstName() + " " + realmSpeaker.getLastName()) : null;
     }
 
     private void setupMainLayout() {
