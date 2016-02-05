@@ -41,12 +41,6 @@ public class RegisterUserActivity extends BaseActivity {
         startActivityForResult(intent, RC_BARCODE_CAPTURE);
     }
 
-    @Click(R.id.registerUserResetCode)
-    void onResetCodeClick() {
-        userManager.clearCode();
-        infoUtil.showToast("Code has been cleared!");
-    }
-
     @Click(R.id.registerUserSaveCode)
     void onSaveClick() {
         final String input = codeInput.getText().toString();
@@ -55,7 +49,7 @@ public class RegisterUserActivity extends BaseActivity {
 
         if (validateInput(input)) {
             userManager.saveUserCode(input);
-            message = "Saved code! Now you can vote for a talk.";
+            message = "Code saved! Now you can vote for a talk.";
             finishScreen = true;
         } else {
             message = "Code can't be empty!";
