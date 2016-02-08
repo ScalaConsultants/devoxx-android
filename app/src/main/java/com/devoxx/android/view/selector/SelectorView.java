@@ -224,7 +224,7 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
 
         final SelectorItemView view = SelectorItemView_.build(getContext());
         view.setupLabel(conferenceApiModel.country);
-        view.setupIcon(getConferenceIcon(conferenceApiModel));
+        view.setupIcon(conferenceApiModel.confIcon);
         view.setOnClickListener(this);
         view.setTag(new ItemViewInfo(index, index == 0, conferenceApiModel));
 
@@ -356,23 +356,6 @@ public class SelectorView extends FrameLayout implements View.OnClickListener {
     private void clearView() {
         removeAllViews();
         setRotation(0);
-    }
-
-    @android.support.annotation.DrawableRes
-    private static int getConferenceIcon(ConferenceApiModel conf) {
-        if (conf.country.toLowerCase().contains("france")) {
-            return R.drawable.splash_btn_paris;
-        } else if (conf.country.toLowerCase().contains("uk")) {
-            return R.drawable.splash_btn_uk;
-        } else if (conf.country.toLowerCase().contains("poland")) {
-            return R.drawable.splash_btn_krakow;
-        } else if (conf.country.toLowerCase().contains("belgium")) {
-            return R.drawable.splash_btn_brussels;
-        } else if (conf.country.toLowerCase().contains("morocco")) {
-            return R.drawable.splash_btn_ma;
-        } else {
-            return R.drawable.splash_btn_paris;
-        }
     }
 
     public SelectorView(Context context) {

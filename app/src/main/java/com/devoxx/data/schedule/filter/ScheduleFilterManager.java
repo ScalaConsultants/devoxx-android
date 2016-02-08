@@ -90,8 +90,8 @@ public class ScheduleFilterManager {
             final RealmScheduleTrackItemFilter item = realm
                     .createObject(RealmScheduleTrackItemFilter.class);
             item.setActive(true);
-            item.setLabel(track.getTitle());
-            item.setTrackName(track.getId());
+            item.setTrackName(track.getTitle());
+            item.setTrackId(track.getId());
         }
         realm.commitTransaction();
 
@@ -153,9 +153,9 @@ public class ScheduleFilterManager {
                         if (value.isTalk()) {
                             for (RealmScheduleTrackItemFilter filter : activeFilters) {
                                 if (value.talk.track.toLowerCase()
-                                        .equalsIgnoreCase(filter.getTrackName().toLowerCase())
+                                        .equalsIgnoreCase(filter.getTrackId().toLowerCase())
                                         || value.talk.track.toLowerCase()
-                                        .equalsIgnoreCase(filter.getLabel().toLowerCase())) {
+                                        .equalsIgnoreCase(filter.getTrackName().toLowerCase())) {
                                     return true;
                                 }
                             }

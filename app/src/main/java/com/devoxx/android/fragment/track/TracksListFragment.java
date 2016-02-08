@@ -9,6 +9,7 @@ import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
+import com.devoxx.data.schedule.search.SearchManager;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.DateUtils;
 
@@ -17,6 +18,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.Receiver;
 import org.joda.time.DateTime;
 
 import android.content.Intent;
@@ -34,9 +36,6 @@ public class TracksListFragment extends BaseListFragment {
     SlotsDataManager slotsDataManager;
 
     @Bean
-    ScheduleFilterManager scheduleFilterManager;
-
-    @Bean
     Navigator navigator;
 
     @Bean
@@ -47,7 +46,8 @@ public class TracksListFragment extends BaseListFragment {
 
     @AfterInject
     void afterInject() {
-        final List<SlotApiModel> tracks = filterSlotsByDay();
+        final String lastQuery = searchManager.getLastQuery();
+        final List<SlotApiModel> tracks = filterSlotsByDayWithLastQuery(lastQuery);
         tracksAdapter.setData(tracks);
     }
 
@@ -86,22 +86,25 @@ public class TracksListFragment extends BaseListFragment {
         }
     }
 
-    private void onRefreshData() {
-        final List<SlotApiModel> tracks = filterSlotsByDay();
+    @Receiver(actions = {SearchManager.SEARCH_INTENT_ACTION})
+    void onRefreshData() {
+        final String lastQuery = searchManager.getLastQuery();
+        final List<SlotApiModel> tracks = filterSlotsByDayWithLastQuery(lastQuery);
         tracksAdapter.setData(tracks);
         tracksAdapter.notifyDataSetChanged();
         scrollToFirstActiveItem();
     }
 
-    private List<SlotApiModel> filterSlotsByDay() {
+    private List<SlotApiModel> filterSlotsByDayWithLastQuery(String lastQuery) {
         final List<SlotApiModel> slots =
                 Stream.of(slotsDataManager.getLastTalks())
                         .filter(slot -> slot.talk != null &&
                                 slot.talk.trackId.equalsIgnoreCase(trackId))
+                        .filter(new SlotApiModel.FilterPredicate(lastQuery))
                         .collect(Collectors.<SlotApiModel>toList());
 
         final List<RealmScheduleDayItemFilter> dayFilters
-                = scheduleFilterManager.getActiveDayFilters();
+                = filterManager.getActiveDayFilters();
         final DateTime filterTime = new DateTime();
         final DateTime slotDate = new DateTime();
 

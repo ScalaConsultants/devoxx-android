@@ -11,11 +11,10 @@ import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.schedule.SchedulePagerAdapter;
 import com.devoxx.android.dialog.FiltersDialog;
 import com.devoxx.android.fragment.common.BaseMenuFragment;
-import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
-import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
+import com.devoxx.data.schedule.search.SearchManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -34,7 +33,7 @@ public class ScheduleMainFragment extends BaseMenuFragment
     SlotsDataManager slotsDataManager;
 
     @Bean
-    ScheduleLineupSearchManager scheduleLineupSearchManager;
+    SearchManager searchManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -90,7 +89,7 @@ public class ScheduleMainFragment extends BaseMenuFragment
     @Override
     public void onDestroy() {
         viewPager.removeOnPageChangeListener(this);
-        scheduleLineupSearchManager.clearLastQuery();
+        searchManager.clearLastQuery();
         super.onDestroy();
     }
 
@@ -130,9 +129,9 @@ public class ScheduleMainFragment extends BaseMenuFragment
 
     @Override
     protected void onSearchQuery(String query) {
-        scheduleLineupSearchManager.saveLastQuery(query);
+        searchManager.saveLastQuery(query);
         getMainActivity().sendBroadcast(new Intent(
-                ScheduleLineupSearchManager.SEARCH_INTENT_ACTION));
+                SearchManager.SEARCH_INTENT_ACTION));
     }
 
     private List<ConferenceDay> combineDaysWithFilters() {

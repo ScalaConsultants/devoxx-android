@@ -34,6 +34,10 @@ public class SlotsDownloader {
     @Bean
     SlotsCache slotsCache;
 
+    public boolean isDataUpdateNeeded(String confCode) {
+        return !slotsCache.isValid(confCode);
+    }
+
     public List<SlotApiModel> downloadTalks(String confCode) throws IOException {
         final List<SlotApiModel> result;
 

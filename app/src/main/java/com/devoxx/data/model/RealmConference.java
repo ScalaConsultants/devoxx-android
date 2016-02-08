@@ -2,7 +2,6 @@ package com.devoxx.data.model;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.Predicate;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
 import com.devoxx.connection.cfp.model.FloorApiModel;
 import com.google.android.gms.maps.model.LatLng;
@@ -18,6 +17,7 @@ public class RealmConference extends RealmObject {
     @PrimaryKey
     private String id;
     private String confType;
+    private String confIcon;
     private String description;
     private String venue;
     private String address;
@@ -48,7 +48,8 @@ public class RealmConference extends RealmObject {
     public RealmConference(ConferenceApiModel model) {
         id = model.id;
         confType = model.confType;
-        description = model.description;
+        description = model.confDescription;
+        confIcon = model.confIcon;
         venue = model.venue;
         address = model.address;
         country = model.country;
@@ -276,5 +277,13 @@ public class RealmConference extends RealmObject {
 
     public void setTalkURL(String talkURL) {
         this.talkURL = talkURL;
+    }
+
+    public String getConfIcon() {
+        return confIcon;
+    }
+
+    public void setConfIcon(String confIcon) {
+        this.confIcon = confIcon;
     }
 }

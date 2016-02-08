@@ -5,16 +5,16 @@ import io.realm.annotations.PrimaryKey;
 
 public class RealmScheduleTrackItemFilter extends RealmObject {
     @PrimaryKey
-    private String label;
     private String trackName;
+    private String trackId;
     private boolean isActive;
 
-    public String getLabel() {
-        return label;
+    public String getTrackName() {
+        return trackName;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setTrackName(String name) {
+        this.trackName = name;
     }
 
     public boolean isActive() {
@@ -25,11 +25,11 @@ public class RealmScheduleTrackItemFilter extends RealmObject {
         isActive = active;
     }
 
-    public String getTrackName() {
-        return trackName;
+    public String getTrackId() {
+        return trackId;
     }
 
-    public void setTrackName(String trackName) {
-        this.trackName = trackName;
+    public void setTrackId(String trackName) {
+        this.trackId = trackName;
     }
 }

@@ -27,6 +27,7 @@ import com.devoxx.data.manager.NotificationsManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
+import com.devoxx.data.schedule.search.SearchManager;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
@@ -65,6 +66,9 @@ public class MainActivity extends BaseActivity {
 
     @Bean
     InfoUtil infoUtil;
+
+    @Bean
+    SearchManager searchManager;
 
     @Pref
     Settings_ settings;
@@ -150,6 +154,12 @@ public class MainActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(LAST_CLICKED_ITEM_ID, lastClickedMenuId);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        searchManager.clearLastQuery();
+        super.onDestroy();
     }
 
     private void openMaps() {

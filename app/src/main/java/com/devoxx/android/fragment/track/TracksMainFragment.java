@@ -16,6 +16,7 @@ import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
+import com.devoxx.data.schedule.search.SearchManager;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -32,6 +33,9 @@ public class TracksMainFragment extends BaseMenuFragment
 
     @Bean
     SlotsDataManager slotsDataManager;
+
+    @Bean
+    SearchManager searchManager;
 
     @ViewById(R.id.tab_layout)
     TabLayout tabLayout;
@@ -82,7 +86,15 @@ public class TracksMainFragment extends BaseMenuFragment
     }
 
     @Override
+    public void onDestroy() {
+        searchManager.clearLastQuery();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onSearchQuery(String query) {
+        searchManager.saveLastQuery(query);
+
         final List<SlotApiModel> resultList = filterByTrack(doQuery(query));
         tracksPagerAdapter.setData(resultList);
         viewPager.setAdapter(tracksPagerAdapter);
@@ -112,15 +124,8 @@ public class TracksMainFragment extends BaseMenuFragment
     private List<SlotApiModel> doQuery(String query) {
         final List<SlotApiModel> slotApiModelList = slotsDataManager.getLastTalks();
         return Stream.of(slotApiModelList)
-                .filter(createFilter(query))
+                .filter(new SlotApiModel.FilterPredicate(query))
                 .collect(Collectors.toList());
-    }
-
-    private Predicate<? super SlotApiModel> createFilter(String query) {
-        return value -> value.isTalk() && (value.talk.track.toLowerCase().contains(query)
-                || value.talk.title.toLowerCase().contains(query)
-                || value.talk.getReadableSpeakers().contains(query)
-                || value.talk.summary.contains(query));
     }
 
     private void invalidateAdapterOnFiltersChange() {
@@ -138,11 +143,14 @@ public class TracksMainFragment extends BaseMenuFragment
         return Stream.of(resultList)
                 .filter(value -> {
                     for (RealmScheduleTrackItemFilter trackFilter : trackFilters) {
-                        if (value.isTalk() && (value.talk.track.toLowerCase().equalsIgnoreCase(trackFilter.getTrackName()))
-                                || value.talk.track.toLowerCase().equalsIgnoreCase(trackFilter.getLabel())
-                                || value.talk.trackId.toLowerCase().equalsIgnoreCase(trackFilter.getTrackName())
-                                || value.talk.trackId.toLowerCase().equalsIgnoreCase(trackFilter.getLabel())
-                                ) {
+                        final String trackName = trackFilter.getTrackName();
+                        final String trackId = trackFilter.getTrackId();
+                        final String slotTrack = value.talk.track.toLowerCase();
+                        final String slotTrackId = value.talk.trackId.toLowerCase();
+                        if (value.isTalk() && (slotTrack.equalsIgnoreCase(trackId))
+                                || slotTrack.equalsIgnoreCase(trackName)
+                                || slotTrackId.equalsIgnoreCase(trackId)
+                                || slotTrackId.equalsIgnoreCase(trackName)) {
                             return true;
                         }
                     }

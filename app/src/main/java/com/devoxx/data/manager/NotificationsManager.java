@@ -13,16 +13,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.SystemService;
 
 import java.text.DateFormat;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import com.devoxx.android.activity.MainActivity_;
 import com.devoxx.android.fragment.schedule.ScheduleLineupFragment;
@@ -34,7 +38,7 @@ import com.devoxx.data.model.RealmNotification;
 import com.devoxx.BuildConfig;
 import com.devoxx.R;
 
-@EBean
+@EBean(scope = EBean.Scope.Singleton)
 public class NotificationsManager {
 
     public static final String EXTRA_TALK_ID = "com.devoxx.android.intent.extra.TALK_ID";
@@ -49,8 +53,8 @@ public class NotificationsManager {
     private static final long PROD_BEFORE_TALK_NOTIFICATION_SPAN_MS = TimeUnit.HOURS.toMillis(1);
 
     @RootContext
-
     Context context;
+
     @Bean
     RealmProvider realmProvider;
 
@@ -62,6 +66,11 @@ public class NotificationsManager {
 
     @SystemService
     PowerManager powerManager;
+
+    @AfterInject
+    void afterInject() {
+        warmUpScheduledNotificationsCache();
+    }
 
     public boolean scheduleNotification(SlotApiModel slotApiModel, boolean withToast) {
         final NotificationConfiguration cfg = NotificationConfiguration.create(slotApiModel, withToast);
@@ -84,6 +93,8 @@ public class NotificationsManager {
 
         scheduleTalkNotificationAlarm(cfg);
         schedulePostNotificationAlarm(cfg);
+
+        addInfoToCache(cfg);
 
         if (cfg.isWithToast()) {
             final DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
@@ -145,12 +156,12 @@ public class NotificationsManager {
         if (finishNotification) {
             cancelPostTalkNotificationOnAlarmManager(slotId);
             cancelTalkNotificationOnAlarmManager(slotId);
-
             flagNotificationAsComplete(realm, slotId);
+            removeInfoFromCache(slotId);
         } else {
             cancelTalkNotificationOnAlarmManager(slotId);
-
             flagNotificationAsFiredForTalk(realm, slotId);
+            markAsFiredForTalkInCache(slotId);
         }
         realm.commitTransaction();
     }
@@ -216,23 +227,34 @@ public class NotificationsManager {
     }
 
     public boolean isNotificationAvailable(String slotId) {
-        final Realm realm = realmProvider.getRealm();
-        final RealmNotification notification = realm.where(RealmNotification.class)
-                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
-        final boolean isNotificationLive = notification != null;
-        realm.close();
-        return isNotificationLive;
+        return scheduledNotifications.containsKey(slotId);
     }
 
+    /* key: SLOT_ID, value: IS_FIRED_FOR_TALK */
+    private HashMap<String, Boolean> scheduledNotifications = new HashMap<>();
+
+    private void warmUpScheduledNotificationsCache() {
+        final Realm realm = realmProvider.getRealm();
+        final RealmResults<RealmNotification> rr = realm.where(RealmNotification.class).findAll();
+        for (RealmNotification rn : rr) {
+            scheduledNotifications.put(rn.getSlotId(), rn.isFiredForTalk());
+        }
+    }
 
     public boolean isNotificationScheduled(String slotId) {
-        final Realm realm = realmProvider.getRealm();
-        final RealmNotification notification = realm.where(RealmNotification.class)
-                .equalTo(RealmNotification.Contract.SLOT_ID, slotId).findFirst();
-        final boolean isNotificationLive = notification != null;
-        final boolean result = isNotificationLive && !notification.isFiredForTalk();
-        realm.close();
-        return result;
+        return scheduledNotifications.containsKey(slotId) && !scheduledNotifications.get(slotId);
+    }
+
+    private void addInfoToCache(NotificationConfiguration cfg) {
+        scheduledNotifications.put(cfg.getSlotId(), false);
+    }
+
+    private void removeInfoFromCache(String slotId) {
+        scheduledNotifications.remove(slotId);
+    }
+
+    private void markAsFiredForTalkInCache(String slotId) {
+        scheduledNotifications.put(slotId, true);
     }
 
     private Notification createPostNotification(

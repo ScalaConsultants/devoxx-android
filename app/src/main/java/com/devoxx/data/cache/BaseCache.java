@@ -71,9 +71,10 @@ public class BaseCache implements QueryAwareRawCache {
     }
 
     private CacheObject fetchCacheObject(Realm realm, String query) {
-        return realm.where(CacheObject.class)
+        final CacheObject local = realm.where(CacheObject.class)
                 .equalTo(CacheObject.Contract.QUERY, query)
                 .findFirst();
+        return local != null && local.isValid() ? local : null;
     }
 
     public void clearAllCache() {

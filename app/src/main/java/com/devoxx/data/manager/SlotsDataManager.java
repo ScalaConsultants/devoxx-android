@@ -6,9 +6,11 @@ import com.annimon.stream.Stream;
 import com.annimon.stream.function.Function;
 import com.annimon.stream.function.Predicate;
 import com.devoxx.data.downloader.SlotsDownloader;
+import com.devoxx.utils.Logger;
 import com.devoxx.utils.tuple.TripleTuple;
 
 import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.joda.time.DateTime;
@@ -87,5 +89,24 @@ public class SlotsDataManager extends AbstractDataManager<SlotApiModel> {
         allSlots.clear();
         talks.clear();
         slotDao.clearData();
+    }
+
+    @Background
+    void resyncDataInBackground(String confCode) {
+        try {
+            slotsDownloader.downloadTalks(confCode);
+        } catch (IOException e) {
+            Logger.exc(e);
+        }
+    }
+
+    private boolean isDataUpdateNeeded(String confCode) {
+        return slotsDownloader.isDataUpdateNeeded(confCode);
+    }
+
+    public void updateSlotsIfNeededInBackground(String confCode) {
+        if (isDataUpdateNeeded(confCode)) {
+            resyncDataInBackground(confCode);
+        }
     }
 }

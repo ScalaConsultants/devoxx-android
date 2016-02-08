@@ -23,7 +23,6 @@ import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.BlurTransformation;
 import com.devoxx.utils.FontUtils;
 import com.devoxx.utils.InfoUtil;
-import com.devoxx.utils.Logger;
 import com.devoxx.utils.ViewUtils;
 
 import org.androidannotations.annotations.AfterViews;
@@ -95,8 +94,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @AfterViews
     void afterViews() {
-        conferenceManager.warmUp();
-
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             final int statusBarHeight = viewUtils.getStatusBarHeight();
             mainContainer.setPadding(mainContainer.getPaddingLeft(), statusBarHeight,
@@ -112,8 +109,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     protected void onResume() {
-        Logger.l("Selector.onResume");
-
         super.onResume();
 
         final boolean isLoadingData = conferenceManager.registerConferenceDataListener(this);
@@ -122,6 +117,9 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         if (conferenceManager.isConferenceChoosen()) {
             final RealmConference conference = conferenceManager.getActiveConference();
             setupRequiredApis(conference.getCfpURL(), conference.getVotingURL());
+
+            conferenceManager.updateSlotsIfNeededInBackground();
+
             navigateToHome();
             finish();
         } else if (isLoadingData) {
@@ -131,6 +129,10 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 //            TODO Load image properly from model!
 //            loadBackgroundImage(lastSelectedConference.splashImgURL);
         } else {
+            if (!connection.isOnline()) {
+                conferenceManager.initWitStaticData();
+            }
+
             conferenceManager.fetchAvailableConferences();
             selectorView.setListener(this);
         }
@@ -146,7 +148,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Logger.l("Selector.onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
         lastSelectedConference = (ConferenceApiModel) savedInstanceState
                 .getSerializable(LAST_CONFERENCE_KEY);
@@ -220,11 +221,14 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         } else {
             selectorView.defaultSelection();
         }
+
+        showGoButton();
     }
 
     @Override
     public void onConferencesError() {
-        // TODO
+        conferenceManager.initWitStaticData();
+        conferenceManager.fetchAvailableConferences();
     }
 
     @Override
@@ -236,7 +240,6 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
 
     @Override
     public void onConferenceDataAvailable(boolean isAnyTalks) {
-        Logger.l("SelectorActivity.onConferenceDataAvailable");
         if (isAnyTalks) {
             navigateToHome();
         } else {

@@ -7,7 +7,8 @@ public class ConferenceApiModel implements Serializable {
 
     public String id;
     public String confType;
-    public String description;
+    public String confDescription;
+    public String confIcon;
     public String venue;
     public String address;
     public String country;
@@ -39,7 +40,8 @@ public class ConferenceApiModel implements Serializable {
                 ", cfpVersion='" + cfpVersion + '\'' +
                 ", confType='" + confType + '\'' +
                 ", country='" + country + '\'' +
-                ", description='" + description + '\'' +
+                ", confDescription='" + confDescription + '\'' +
+                ", confIcon='" + confIcon + '\'' +
                 ", fromDate='" + fromDate + '\'' +
                 ", id='" + id + '\'' +
                 ", latitude='" + latitude + '\'' +

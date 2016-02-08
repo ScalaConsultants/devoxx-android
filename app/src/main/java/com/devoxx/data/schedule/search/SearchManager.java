@@ -17,7 +17,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 @EBean
-public class ScheduleLineupSearchManager {
+public class SearchManager {
 
     public static final String SEARCH_INTENT_ACTION = "search_intent_action";
 
@@ -30,16 +30,14 @@ public class ScheduleLineupSearchManager {
     @Pref
     ScheduleSearchStore_ scheduleSearchStore;
 
-    private SearchPredicate searchPredicate = new SearchPredicate();
-
     @NonNull
     public List<ScheduleItem> handleSearchQuery(long lineupDayMs, final String query) {
         final String lastQuery = formatQuery(query);
-        searchPredicate.setQuery(lastQuery);
+        final SlotApiModel.FilterPredicate fp = new SlotApiModel.FilterPredicate(lastQuery);
 
         final List<SlotApiModel> slotsRaw = slotsDataManager.getSlotsForDay(lineupDayMs);
         final List<SlotApiModel> queriedRaw = Stream.of(slotsRaw)
-                .filter(searchPredicate)
+                .filter(fp)
                 .collect(Collectors.<SlotApiModel>toList());
         return scheduleLineupDataCreator.prepareResult(queriedRaw);
     }
@@ -59,32 +57,5 @@ public class ScheduleLineupSearchManager {
 
     public void clearLastQuery() {
         saveLastQuery("");
-    }
-
-    private static class SearchPredicate implements Predicate<SlotApiModel> {
-
-        private String query;
-
-        @Override
-        public boolean test(SlotApiModel value) {
-            return testQuery(value, query);
-        }
-
-        public void setQuery(String query) {
-            this.query = query;
-        }
-
-        public boolean testQuery(SlotApiModel model, String query) {
-            boolean result = false;
-            if (model.isTalk()) {
-                result = model.talk.title.toLowerCase().contains(query)
-                        || model.talk.track.toLowerCase().contains(query)
-                        || model.talk.summary.toLowerCase().contains(query)
-                        || model.talk.getReadableSpeakers().toLowerCase().contains(query);
-            } else if (model.isBreak()) {
-                result = model.slotBreak.nameEN.toLowerCase().contains(query);
-            }
-            return result;
-        }
     }
 }

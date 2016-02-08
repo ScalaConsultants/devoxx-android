@@ -52,6 +52,8 @@ public class TracksDownloader {
     }
 
     public void downloadTracksDescriptions(String confCode) throws IOException {
+        clearTracksData();
+
         final Call<TracksApiModel> tracksCall = connection.getDevoxxApi().tracks(confCode);
         final Realm realm = realmProvider.getRealm();
         final Response<TracksApiModel> response = tracksCall.execute();

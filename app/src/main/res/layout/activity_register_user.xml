@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="16dp">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <View
         android:layout_width="1dp"
@@ -12,39 +10,57 @@
         android:focusable="true"
         android:focusableInTouchMode="true"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:hintAnimationEnabled="true">
-
-        <EditText
-            android:id="@+id/registerUserinput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="User code"/>
-    </android.support.design.widget.TextInputLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <Button
-            android:id="@+id/registerUserSaveCode"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="SAVE"/>
+            android:layout_marginBottom="32dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="Please scan your badge QR Code or enter the code on your badge to authenticate yourself for presentation voting.\nThanks for your feedback!"
+            android:textColor="@color/primary_text_70"
+            android:textSize="16dp"/>
 
-        <Space
-            android:layout_width="4dp"
-            android:layout_height="4dp"/>
-
-        <Button
-            android:id="@+id/registerUserViaQr"
-            android:layout_width="0dp"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="SCAN BADGE"/>
+            app:hintAnimationEnabled="true">
+
+            <EditText
+                android:id="@+id/registerUserinput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="User code"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/registerUserSaveCode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SAVE"/>
+
+            <Space
+                android:layout_width="4dp"
+                android:layout_height="4dp"/>
+
+            <Button
+                android:id="@+id/registerUserViaQr"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SCAN BADGE"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

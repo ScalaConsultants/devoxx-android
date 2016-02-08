@@ -15,6 +15,7 @@ import com.devoxx.data.manager.SpeakersDataManager;
 import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.user.UserManager;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
@@ -47,14 +48,17 @@ public class ConferenceManager {
         void onConferencesAvailable(List<ConferenceApiModel> conferenceS);
 
         void onConferencesError();
+
     }
 
     public interface IConferenceDataListener {
+
         void onConferenceDataStart();
 
         void onConferenceDataAvailable(boolean isAnyTalks);
 
         void onConferenceDataError();
+
     }
 
     @RootContext
@@ -95,10 +99,6 @@ public class ConferenceManager {
         } catch (IOException e) {
             notifyConferencesListenerError(allConferencesDataListener);
         }
-    }
-
-    public void warmUp() {
-        conferenceDownloader.warmUp();
     }
 
     @UiThread
@@ -154,6 +154,17 @@ public class ConferenceManager {
 
     public void unregisterConferenceDataListener() {
         confDataListener.clear();
+    }
+
+    public void initWitStaticData() {
+        conferenceDownloader.initWitStaticData();
+    }
+
+    @Background
+    public void updateSlotsIfNeededInBackground() {
+        final RealmConference conference = getActiveConference();
+        final String confCode = conference.getId();
+        slotsDataManager.updateSlotsIfNeededInBackground(confCode);
     }
 
     @Background

@@ -3,6 +3,7 @@ package com.devoxx.utils;
 import android.content.Context;
 
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,11 +13,14 @@ import java.io.InputStreamReader;
 @EBean
 public class AssetsUtil {
 
-    public String loadStringFromAssets(final Context context, final String path) {
-        return loadString(context, path);
+    @RootContext
+    Context context;
+
+    public String loadStringFromAssets(final String path) {
+        return loadString(path);
     }
 
-    private static String loadString(final Context context, final String path) {
+    private String loadString(final String path) {
         final String result;
         try {
             final StringBuilder buf = new StringBuilder();

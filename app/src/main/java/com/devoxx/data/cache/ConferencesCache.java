@@ -3,11 +3,13 @@ package com.devoxx.data.cache;
 import com.annimon.stream.Optional;
 import com.devoxx.Configuration;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.devoxx.utils.AssetsUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,6 +26,9 @@ public class ConferencesCache implements DataCache<List<ConferenceApiModel>, Str
     @Bean
     BaseCache baseCache;
 
+    @Bean
+    AssetsUtil assetsUtil;
+
     @Override
     public void upsert(List<ConferenceApiModel> rawData) {
         baseCache.upsert(serializeData(rawData), CONFERENCES_CACHE_KEY);
@@ -32,8 +37,7 @@ public class ConferencesCache implements DataCache<List<ConferenceApiModel>, Str
     @Override
     public List<ConferenceApiModel> getData() {
         final Optional<String> optionalCache = baseCache.getData(CONFERENCES_CACHE_KEY);
-        // TODO Handle error from file?
-        return deserializeData(optionalCache.orElse("[]"));
+        return deserializeData(optionalCache.orElse(fallbackData()));
     }
 
     @Override
@@ -44,6 +48,12 @@ public class ConferencesCache implements DataCache<List<ConferenceApiModel>, Str
     @Override
     public void clearCache(String query) {
         baseCache.clearCache(CONFERENCES_CACHE_KEY);
+    }
+
+    public void initWithFallbackData() {
+        clearCache(null);
+        final List<ConferenceApiModel> confs = deserializeData(fallbackData());
+        upsert(confs);
     }
 
     @Override
@@ -61,7 +71,11 @@ public class ConferencesCache implements DataCache<List<ConferenceApiModel>, Str
         throw new IllegalStateException("Not needed here!");
     }
 
-    public List<ConferenceApiModel> deserializeData(String fromCache) {
+    private String fallbackData() {
+        return assetsUtil.loadStringFromAssets("data/cfp.json");
+    }
+
+    private List<ConferenceApiModel> deserializeData(String fromCache) {
         return new Gson().fromJson(fromCache, getType());
     }
 

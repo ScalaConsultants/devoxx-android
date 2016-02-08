@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.support.annotation.MenuRes;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
 import com.devoxx.android.activity.SettingsActivity_;
@@ -26,6 +28,7 @@ import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.InfoUtil;
+import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -49,6 +52,9 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @Bean
     protected ConferenceManager conferenceManager;
+
+    private MaterialDialog filtersDialog;
+    private String lastQuery;
 
     @AfterViews
     protected void afterViews() {
@@ -150,19 +156,19 @@ public abstract class BaseMenuFragment extends BaseFragment
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String s) {
-                        onSearchQuery(validateQuery(s));
+                        onSearchQueryInternal(validateQuery(s));
                         return false;
                     }
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        onSearchQuery(validateQuery(s));
+                        onSearchQueryInternal(validateQuery(s));
                         return false;
                     }
                 });
 
                 searchView.setOnCloseListener(() -> {
-                    onSearchQuery("");
+                    onSearchQueryInternal("");
                     return false;
                 });
 
@@ -171,15 +177,47 @@ public abstract class BaseMenuFragment extends BaseFragment
         }
     }
 
+    private CountDownTimer countDownTimer = new CountDownTimer(350, 1) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+            // Nothing.
+        }
+
+        @Override
+        public void onFinish() {
+            if (getActivity() != null && isAdded()) {
+                onSearchQuery(lastQuery);
+            }
+        }
+    };
+
+    private void onSearchQueryInternal(String query) {
+        lastQuery = query;
+        countDownTimer.cancel();
+        countDownTimer.start();
+    }
+
     private String validateQuery(String query) {
         return query.trim();
+    }
+
+    @Override
+    public void onPause() {
+        closeFilterDialogIfNeeded();
+        super.onPause();
+    }
+
+    protected void closeFilterDialogIfNeeded() {
+        if (filtersDialog != null) {
+            filtersDialog.dismiss();
+        }
     }
 
     @OptionsItem(R.id.action_filter)
     protected void onFilterClicked() {
         final List<RealmScheduleDayItemFilter> dayFilters = scheduleFilterManager.getDayFilters();
         final List<RealmScheduleTrackItemFilter> trackFilters = scheduleFilterManager.getTrackFilters();
-        FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
+        filtersDialog = FiltersDialog.showFiltersDialog(getContext(), dayFilters, trackFilters, this);
     }
 
     @OptionsItem(R.id.action_settings)
@@ -196,11 +234,6 @@ public abstract class BaseMenuFragment extends BaseFragment
     protected void onRegisterClick() {
         final RealmConference conference = conferenceManager.getActiveConference();
         navigator.openRegister(getActivity(), conference.getRegURL());
-    }
-
-    @OptionsItem(R.id.action_credits)
-    protected void onCreditsClick() {
-        infoUtil.showToast("Go to credits..");
     }
 
     @OptionsItem(R.id.action_report_issue)

@@ -52,6 +52,23 @@ public class SlotApiModel implements Serializable {
         }
     }
 
+    public static class FilterPredicate implements Predicate<SlotApiModel> {
+
+        private String query;
+
+        public FilterPredicate(String query) {
+            this.query = query;
+        }
+
+        @Override
+        public boolean test(SlotApiModel value) {
+            return value.isTalk() && (value.talk.track.toLowerCase().contains(query)
+                    || value.talk.title.toLowerCase().contains(query)
+                    || value.talk.getReadableSpeakers().contains(query)
+                    || value.talk.summary.contains(query));
+        }
+    }
+
     @Override
     public String toString() {
         return "SlotApiModel{" +

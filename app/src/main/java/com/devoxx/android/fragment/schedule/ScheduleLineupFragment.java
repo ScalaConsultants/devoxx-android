@@ -16,10 +16,9 @@ import com.devoxx.android.fragment.common.BaseListFragment;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.DataInformation_;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
-import com.devoxx.data.schedule.search.ScheduleLineupSearchManager;
+import com.devoxx.data.schedule.search.SearchManager;
 import com.devoxx.navigation.Navigator;
 import com.devoxx.utils.InfoUtil;
-import com.devoxx.utils.Logger;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
@@ -47,12 +46,6 @@ public class ScheduleLineupFragment extends BaseListFragment {
 
     @Bean
     ScheduleDayLineupAdapter scheduleDayLineupAdapter;
-
-    @Bean
-    ScheduleFilterManager scheduleFilterManager;
-
-    @Bean
-    ScheduleLineupSearchManager scheduleLineupSearchManager;
 
     @Bean
     InfoUtil infoUtil;
@@ -105,12 +98,12 @@ public class ScheduleLineupFragment extends BaseListFragment {
         }
     }
 
-    @Receiver(actions = {ScheduleLineupSearchManager.SEARCH_INTENT_ACTION,
+    @Receiver(actions = {SearchManager.SEARCH_INTENT_ACTION,
             ScheduleFilterManager.FILTERS_CHANGED_ACTION})
     void onRefreshData() {
-        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
-        List<ScheduleItem> items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
-        items = scheduleFilterManager.applyTracksFilter(items);
+        final String lastQuery = searchManager.getLastQuery();
+        List<ScheduleItem> items = searchManager.handleSearchQuery(lineupDayMs, lastQuery);
+        items = filterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
         scheduleDayLineupAdapter.notifyDataSetChanged();
 
@@ -151,14 +144,14 @@ public class ScheduleLineupFragment extends BaseListFragment {
     }
 
     private void initAdapterWithLastQuery() {
-        final String lastQuery = scheduleLineupSearchManager.getLastQuery();
+        final String lastQuery = searchManager.getLastQuery();
         List<ScheduleItem> items;
         if (!TextUtils.isEmpty(lastQuery)) {
-            items = scheduleLineupSearchManager.handleSearchQuery(lineupDayMs, lastQuery);
+            items = searchManager.handleSearchQuery(lineupDayMs, lastQuery);
         } else {
             items = scheduleLineupDataCreator.prepareInitialData(lineupDayMs);
         }
-        items = scheduleFilterManager.applyTracksFilter(items);
+        items = filterManager.applyTracksFilter(items);
         scheduleDayLineupAdapter.setData(items);
         scheduleDayLineupAdapter.notifyDataSetChanged();
 

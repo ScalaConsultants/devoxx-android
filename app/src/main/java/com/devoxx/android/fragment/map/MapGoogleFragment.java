@@ -1,5 +1,12 @@
 package com.devoxx.android.fragment.map;
 
+import android.content.Intent;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
+import android.view.View;
+
 import com.devoxx.R;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.data.conference.ConferenceManager;
@@ -14,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.res.ColorRes;
 
 @EFragment(R.layout.fragment_map_google)
 public class MapGoogleFragment extends BaseFragment {
@@ -23,6 +31,9 @@ public class MapGoogleFragment extends BaseFragment {
 
     @Bean
     ConferenceManager conferenceManager;
+
+    @ColorRes(R.color.primary)
+    int color;
 
     @AfterViews
     void afterViews() {
@@ -36,7 +47,27 @@ public class MapGoogleFragment extends BaseFragment {
 
         mapFragment.getMapAsync(map -> {
             setupConcrete(conference, conferenceLocation, map);
+            if (!isLocationEnabled()) {
+                map.setOnMyLocationButtonClickListener(() -> {
+                    showinfoAboutDisabledLocation(mapFragment.getView());
+                    return false;
+                });
+            }
         });
+
+        if (!isLocationEnabled()) {
+            showinfoAboutDisabledLocation(mapFragment.getView());
+        }
+    }
+
+    private void showinfoAboutDisabledLocation(final View view) {
+        Snackbar.make(view,
+                R.string.disabled_location_info, Snackbar.LENGTH_LONG)
+                .setAction(R.string.open_settings, v -> {
+                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                })
+                .setActionTextColor(color)
+                .show();
     }
 
     private void setupConcrete(RealmConference conference, LatLng conferenceLocation, GoogleMap googleMap) {
@@ -46,10 +77,28 @@ public class MapGoogleFragment extends BaseFragment {
                     .position(conferenceLocation)
                     .title(conference.getVenue())
                     .snippet(conference.getAddress()));
-            googleMap.animateCamera(CameraUpdateFactory
-                    .newLatLngZoom(conferenceLocation, 12.0f));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(conferenceLocation, 12.0f));
         } catch (SecurityException s) {
             infoUtil.showToast(R.string.map_permissions_failure);
+        }
+    }
+
+    public boolean isLocationEnabled() {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode = Settings.Secure.getInt(getActivity()
+                        .getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } catch (final Settings.SettingNotFoundException ignored) {
+                // Nothing.
+            }
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+        } else {
+            locationProviders = Settings.Secure.getString(getActivity()
+                    .getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
         }
     }
 }

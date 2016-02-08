@@ -20,7 +20,7 @@ public class SlotsCache implements DataCache<List<SlotApiModel>, String> {
     private static final String SLOTS_KEY_SUFFIX = "slots_key_suffix";
 
     private static final long CACHE_LIFE_TIME_MS =
-            TimeUnit.MINUTES.toMillis(Configuration.SLOTS_CACHE_TIME_MIN);
+            TimeUnit.SECONDS.toMillis(Configuration.SLOTS_CACHE_TIME_MIN);
 
     @Bean
     BaseCache baseCache;

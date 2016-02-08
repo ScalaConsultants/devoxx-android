@@ -1,6 +1,7 @@
 package com.devoxx.android.fragment.common;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.SystemService;
 import org.androidannotations.annotations.ViewById;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.devoxx.R;
+import com.devoxx.data.schedule.filter.ScheduleFilterManager;
+import com.devoxx.data.schedule.search.SearchManager;
 
 @EFragment
 public abstract class BaseListFragment extends BaseFragment
@@ -24,6 +27,12 @@ public abstract class BaseListFragment extends BaseFragment
 
     @SystemService
     protected InputMethodManager inputMethodManager;
+
+    @Bean
+    protected SearchManager searchManager;
+
+    @Bean
+    protected ScheduleFilterManager filterManager;
 
     @AfterViews
     protected void afterViews() {

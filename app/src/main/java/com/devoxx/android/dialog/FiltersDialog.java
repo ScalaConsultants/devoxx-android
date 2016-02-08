@@ -32,7 +32,7 @@ public class FiltersDialog {
         void onFiltersDefault();
     }
 
-    public static void showFiltersDialog(
+    public static MaterialDialog showFiltersDialog(
             final Context context,
             final List<RealmScheduleDayItemFilter> daysFilters,
             final List<RealmScheduleTrackItemFilter> tracksFilters,
@@ -57,6 +57,8 @@ public class FiltersDialog {
         setupCheckBoxes(context, daysFilters, tracksFilters, globalListener, daysContainer, tracksContainer);
 
         md.show();
+
+        return md;
     }
 
     private static void setupCheckBoxes(
@@ -75,7 +77,7 @@ public class FiltersDialog {
         for (RealmScheduleTrackItemFilter trackFilter : tracksFilters) {
             tracksContainer.addView(createFilterItemView(li, tracksContainer, (buttonView, isChecked) ->
                             globalListener.onTrackFiltersChanged(trackFilter, isChecked),
-                    trackFilter.isActive(), trackFilter.getLabel()));
+                    trackFilter.isActive(), trackFilter.getTrackName()));
         }
     }
 

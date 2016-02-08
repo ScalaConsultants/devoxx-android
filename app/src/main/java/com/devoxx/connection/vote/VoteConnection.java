@@ -3,6 +3,8 @@ package com.devoxx.connection.vote;
 import android.content.Context;
 
 import com.devoxx.BuildConfig;
+import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.utils.Logger;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -10,6 +12,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 
@@ -31,6 +34,9 @@ public class VoteConnection {
     @RootContext
     Context context;
 
+    @Bean
+    ConferenceManager conferenceManager;
+
     private VoteApi voteApi;
 
     public void setupApi(String apiUrl) {
@@ -49,6 +55,10 @@ public class VoteConnection {
     }
 
     public VoteApi getVoteApi() {
+        if (voteApi == null) {
+            final RealmConference conference = conferenceManager.getActiveConference();
+            setupApi(conference.getVotingURL());
+        }
         return voteApi;
     }
 
