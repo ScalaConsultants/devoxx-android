@@ -264,7 +264,7 @@ public class NotificationsManager {
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(desc);
         notificationBuilder.setContentIntent(contentIntent);
-        notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setWhen(realmNotification.getTalkTime());
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         notificationBuilder.setTicker(desc);
@@ -286,7 +286,7 @@ public class NotificationsManager {
         notificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                 .bigText(realmNotification.getTalkTitle()));
         notificationBuilder.setContentIntent(contentIntent);
-        notificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setWhen(realmNotification.getTalkTime());
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         notificationBuilder.setTicker(realmNotification.getTalkTitle());

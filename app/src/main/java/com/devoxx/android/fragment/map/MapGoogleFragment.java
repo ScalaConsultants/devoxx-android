@@ -76,7 +76,9 @@ public class MapGoogleFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        settingsSnackbar.dismiss();
+        if (settingsSnackbar != null) {
+            settingsSnackbar.dismiss();
+        }
         super.onPause();
     }
 

@@ -54,7 +54,7 @@ public class SelectorItemView extends FrameLayout {
     public void setupIcon(String iconUrl) {
         Glide.with(getContext())
                 .load(iconUrl)
-                .error(R.drawable.ic_launcher)
+                .error(R.mipmap.ic_launcher)
                 .fitCenter()
                 .into(icon);
     }
