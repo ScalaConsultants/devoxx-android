@@ -263,7 +263,7 @@ public class MainActivity extends BaseActivity {
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     private void setupToolbar() {

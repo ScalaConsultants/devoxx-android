@@ -35,6 +35,8 @@ public class MapGoogleFragment extends BaseFragment {
     @ColorRes(R.color.primary)
     int color;
 
+    private Snackbar settingsSnackbar;
+
     @AfterViews
     void afterViews() {
         initMap(conferenceManager.getActiveConference());
@@ -61,13 +63,21 @@ public class MapGoogleFragment extends BaseFragment {
     }
 
     private void showinfoAboutDisabledLocation(final View view) {
-        Snackbar.make(view,
+        settingsSnackbar = Snackbar.make(view,
                 R.string.disabled_location_info, Snackbar.LENGTH_LONG)
                 .setAction(R.string.open_settings, v -> {
-                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    if (isAdded()) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
                 })
-                .setActionTextColor(color)
-                .show();
+                .setActionTextColor(color);
+        settingsSnackbar.show();
+    }
+
+    @Override
+    public void onPause() {
+        settingsSnackbar.dismiss();
+        super.onPause();
     }
 
     private void setupConcrete(RealmConference conference, LatLng conferenceLocation, GoogleMap googleMap) {
