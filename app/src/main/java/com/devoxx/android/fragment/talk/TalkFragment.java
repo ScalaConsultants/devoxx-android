@@ -1,6 +1,7 @@
 package com.devoxx.android.fragment.talk;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
@@ -28,6 +29,7 @@ import com.devoxx.android.view.talk.TalkDetailsSectionItem;
 import com.devoxx.android.view.talk.TalkDetailsSectionItem_;
 import com.devoxx.connection.Connection;
 import com.devoxx.connection.model.SlotApiModel;
+import com.devoxx.connection.model.TalkFullApiModel;
 import com.devoxx.connection.model.TalkSpeakerApiModel;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.NotificationsManager;
@@ -53,6 +55,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 @EFragment(R.layout.fragment_talk)
 public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
@@ -157,7 +160,19 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsNotesBtn)
     void onNotesClick() {
-        infoUtil.showToast("Notes TBD.");
+        final String action = "android.intent.action.SEND";
+        final String mimeType = "text/plain";
+        final Intent intent = new Intent(action);
+        intent.setType(mimeType);
+        intent.putExtra("android.intent.extra.TEXT", buildNoteText());
+        intent.setPackage("com.google.android.keep");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private String buildNoteText() {
+        final TalkFullApiModel talk = slotModel.talk;
+        return String.format(Locale.getDefault(), "%s", talk.title);
     }
 
     @Click(R.id.talkDetailsTweetBtn)
