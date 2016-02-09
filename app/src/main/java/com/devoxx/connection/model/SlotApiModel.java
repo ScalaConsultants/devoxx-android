@@ -26,10 +26,6 @@ public class SlotApiModel implements Serializable {
     public long toTimeMillis;
     public int roomCapacity;
 
-    public boolean isSimpleBreak() {
-        return slotBreak == null && talk == null;
-    }
-
     public boolean isBreak() {
         return slotBreak != null && talk == null;
     }
@@ -56,7 +52,15 @@ public class SlotApiModel implements Serializable {
 
         private String query;
 
+        public FilterPredicate() {
+
+        }
+
         public FilterPredicate(String query) {
+            this.query = query;
+        }
+
+        public void setQuery(String query) {
             this.query = query;
         }
 
@@ -64,8 +68,8 @@ public class SlotApiModel implements Serializable {
         public boolean test(SlotApiModel value) {
             return value.isTalk() && (value.talk.track.toLowerCase().contains(query)
                     || value.talk.title.toLowerCase().contains(query)
-                    || value.talk.getReadableSpeakers().contains(query)
-                    || value.talk.summary.contains(query));
+                    || value.talk.getReadableSpeakers().toLowerCase().contains(query)
+                    || value.talk.summary.toLowerCase().contains(query));
         }
     }
 

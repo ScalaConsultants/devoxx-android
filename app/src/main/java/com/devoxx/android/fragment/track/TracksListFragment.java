@@ -2,6 +2,7 @@ package com.devoxx.android.fragment.track;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.Predicate;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.adapter.track.TracksAdapter;
 import com.devoxx.android.fragment.common.BaseListFragment;
@@ -28,6 +29,7 @@ import android.view.View;
 import java.util.List;
 
 import com.devoxx.R;
+import com.devoxx.utils.Logger;
 
 @EFragment(R.layout.fragment_list)
 public class TracksListFragment extends BaseListFragment {
@@ -95,12 +97,20 @@ public class TracksListFragment extends BaseListFragment {
         scrollToFirstActiveItem();
     }
 
+    private SlotApiModel.FilterPredicate filterPredicate = new SlotApiModel.FilterPredicate();
+
     private List<SlotApiModel> filterSlotsByDayWithLastQuery(String lastQuery) {
+        filterPredicate.setQuery(lastQuery);
+
         final List<SlotApiModel> slots =
                 Stream.of(slotsDataManager.getLastTalks())
-                        .filter(slot -> slot.talk != null &&
-                                slot.talk.trackId.equalsIgnoreCase(trackId))
-                        .filter(new SlotApiModel.FilterPredicate(lastQuery))
+                        .filter(slot -> {
+                            final boolean properTrack = slot.talk != null
+                                    && slot.talk.trackId.equalsIgnoreCase(trackId);
+                            final boolean properTalk = filterPredicate.test(slot);
+
+                            return properTrack && properTalk;
+                        })
                         .collect(Collectors.<SlotApiModel>toList());
 
         final List<RealmScheduleDayItemFilter> dayFilters

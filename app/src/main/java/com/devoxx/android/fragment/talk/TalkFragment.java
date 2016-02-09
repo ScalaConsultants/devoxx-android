@@ -1,7 +1,9 @@
 package com.devoxx.android.fragment.talk;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
@@ -160,14 +162,29 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsNotesBtn)
     void onNotesClick() {
-        final String action = "android.intent.action.SEND";
-        final String mimeType = "text/plain";
-        final Intent intent = new Intent(action);
-        intent.setType(mimeType);
-        intent.putExtra("android.intent.extra.TEXT", buildNoteText());
-        intent.setPackage("com.google.android.keep");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        openGoogleKeepIfExists();
+    }
+
+    private void openGoogleKeepIfExists() {
+        final String keepPackageName = "com.google.android.keep";
+        try {
+            final String action = "android.intent.action.SEND";
+            final String mimeType = "text/plain";
+            final Intent intent = new Intent(action);
+            intent.setType(mimeType);
+            intent.putExtra("android.intent.extra.TEXT", buildNoteText());
+            intent.setPackage(keepPackageName);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            infoUtil.showToast("Plase install the Google Keep app to store your notes.");
+
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + keepPackageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + keepPackageName)));
+            }
+        }
     }
 
     private String buildNoteText() {
