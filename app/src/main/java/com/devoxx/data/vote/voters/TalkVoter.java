@@ -55,7 +55,7 @@ public class TalkVoter implements ITalkVoter {
         final MaterialDialog.Builder builder = new MaterialDialog.Builder(context);
         final MaterialDialog dialog = builder
                 .customView(R.layout.talk_rating_layout, true)
-                .positiveText("Vote!")
+                .positiveText(R.string.vote)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {

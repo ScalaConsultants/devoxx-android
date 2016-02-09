@@ -51,7 +51,8 @@
             android:windowSoftInputMode="adjustPan"/>
 
         <activity
-            android:name="com.devoxx.android.activity.RegisterUserActivity_"/>
+            android:name="com.devoxx.android.activity.RegisterUserActivity_"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
             android:name="com.devoxx.android.activity.TalkDetailsHostActivity_"

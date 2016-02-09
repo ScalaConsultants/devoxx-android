@@ -22,7 +22,7 @@ public class BaseCache implements QueryAwareRawCache {
         CacheObject cacheObject = fetchCacheObject(realm, query);
 
         realm.beginTransaction();
-        if (cacheObject == null) {
+        if (cacheObject == null || !cacheObject.isValid()) {
             cacheObject = realm.createObject(CacheObject.class);
             cacheObject.setQuery(query);
         }
@@ -37,7 +37,7 @@ public class BaseCache implements QueryAwareRawCache {
     public Optional<String> getData(String query) {
         final Realm realm = realmProvider.getRealm();
         final CacheObject object = fetchCacheObject(realm, query);
-        final Optional<String> result = Optional.ofNullable((object != null)
+        final Optional<String> result = Optional.ofNullable((object != null && object.isValid())
                 ? object.getRawData() : null);
 
         realm.close();
@@ -49,7 +49,7 @@ public class BaseCache implements QueryAwareRawCache {
     public boolean isValid(String query, long timestamp) {
         final Realm realm = realmProvider.getRealm();
         final CacheObject object = fetchCacheObject(realm, query);
-        final boolean isCacheAvailable = object != null;
+        final boolean isCacheAvailable = object != null && object.isValid();
         final long cacheTime = isCacheAvailable ? object.getTimestamp() : 0;
         realm.close();
 

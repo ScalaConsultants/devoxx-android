@@ -57,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Content feedback"
+            android:imeOptions="actionNext"
             android:nextFocusDown="@+id/talkRatingDeliveryRemarks"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -71,6 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Delivery remarks"
+            android:imeOptions="actionNext"
             android:nextFocusDown="@+id/talkRatingOther"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -84,6 +86,7 @@
             android:id="@+id/talkRatingOther"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Other"/>
+            android:hint="Other"
+            android:imeOptions="actionDone"/>
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

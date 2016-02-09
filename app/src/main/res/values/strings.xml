@@ -63,6 +63,7 @@
     <string name="internet_connection_is_needed">Internet connection is needed</string>
     <string name="disabled_location_info">Location is disabled</string>
     <string name="open_settings">Open Settings</string>
+    <string name="vote">Vote!</string>
 
     <string-array name="drawer_menu_schedule_time_label">
         <item>Schedule by event time</item>
