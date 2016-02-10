@@ -10,9 +10,16 @@ public class TalkFullApiModel extends TalkBaseApiModel {
     public String summary;
     public List<TalkSpeakerApiModel> speakers;
 
-    private transient LazyField<String> lazySpeakersReadable = new LazyField<>(this::createSpeakersReadable);
+    // We don't need to serialize this field.
+    private transient LazyField<String> lazySpeakersReadable =
+            new LazyField<>(this::createSpeakersReadable);
 
     public String getReadableSpeakers() {
+        // This object might be serialized, reinitialize lazy field.
+        if (lazySpeakersReadable == null) {
+            lazySpeakersReadable = new LazyField<>(this::createSpeakersReadable);
+        }
+
         return lazySpeakersReadable.getValue();
     }
 
