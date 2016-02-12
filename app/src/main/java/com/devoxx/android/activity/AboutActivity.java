@@ -71,6 +71,6 @@ public class AboutActivity extends BaseActivity {
         final String message = String.format("Check Devoxx %s conference! %s",
                 conference.getCountry(),
                 conference.getWwwURL());
-        navigator.openWwwLink(this, message);
+        navigator.tweetMessage(this, message);
     }
 }

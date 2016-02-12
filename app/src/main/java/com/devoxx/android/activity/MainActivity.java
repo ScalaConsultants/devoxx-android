@@ -91,6 +91,7 @@ public class MainActivity extends BaseActivity {
     @ColorRes(R.color.tab_text_unselected)
     int unselectedTablColor;
 
+
     private String fromNotificationSlotId;
     private boolean isSavedInstanceState;
     private int lastClickedMenuId;

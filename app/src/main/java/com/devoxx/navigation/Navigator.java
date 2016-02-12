@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import com.devoxx.R;
 import com.devoxx.android.activity.MainActivity;
@@ -80,13 +79,13 @@ public class Navigator {
         activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(finalUrl)));
     }
 
-    public void openTwitterUser(FragmentActivity activity, String twitterName) {
+    public void openTwitterUser(Activity activity, String twitterName) {
         String formattedTwitterAddress = "http://twitter.com/" + twitterName.replace("@", "");
         Intent browseTwitter = new Intent(Intent.ACTION_VIEW, Uri.parse(formattedTwitterAddress));
         activity.startActivity(browseTwitter);
     }
 
-    public void tweetMessage(FragmentActivity activity, String twitterMessage) {
+    public void tweetMessage(Activity activity, String twitterMessage) {
         final String tweetUrl = "https://twitter.com/intent/tweet?text=" + Uri.encode(twitterMessage);
         final Uri uri = Uri.parse(tweetUrl);
         activity.startActivity(new Intent(Intent.ACTION_VIEW, uri));

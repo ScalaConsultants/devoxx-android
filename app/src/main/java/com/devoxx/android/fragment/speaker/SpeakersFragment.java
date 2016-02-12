@@ -143,14 +143,14 @@ public class SpeakersFragment extends BaseMenuFragment {
         return value -> {
             final List<RealmSpeakerShort> list =
                     Stream.of(value.getValue())
-                            .sortBy(RealmSpeakerShort::getFirstName)
+                            .sortBy(value1 -> value1.getFirstName().toLowerCase())
                             .collect(Collectors.<RealmSpeakerShort>toList());
             return new SpeakersGroup(value.getKey(), list);
         };
     }
 
     private static Function<RealmSpeakerShort, String> speakerFirstLetterGroupping() {
-        return value -> value.getFirstName().substring(0, 1);
+        return value -> value.getFirstName().substring(0, 1).toLowerCase();
     }
 
     class ItemAdapter extends BaseAdapter {

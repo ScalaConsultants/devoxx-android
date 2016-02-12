@@ -56,10 +56,6 @@ public class MapGoogleFragment extends BaseFragment {
                 });
             }
         });
-
-        if (!isLocationEnabled()) {
-            showinfoAboutDisabledLocation(mapFragment.getView());
-        }
     }
 
     private void showinfoAboutDisabledLocation(final View view) {

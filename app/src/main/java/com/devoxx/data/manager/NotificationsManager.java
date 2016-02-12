@@ -317,14 +317,13 @@ public class NotificationsManager {
         wakeLock.acquire();
 
         final List<RealmNotification> notificationsList = getAlarms();
-
-        if (!notificationsList.isEmpty()) {
-            for (RealmNotification model : notificationsList) {
-                final NotificationConfiguration cfg = NotificationConfiguration.create(model);
-                cancelPostTalkNotificationOnAlarmManager(cfg.getSlotId());
-                cancelTalkNotificationOnAlarmManager(cfg.getSlotId());
-                scheduleNotificationFromConfiguration(cfg);
-            }
+        final int size = notificationsList.size();
+        for (int i = 0; i < size; i++) {
+            final RealmNotification model = notificationsList.get(i);
+            final NotificationConfiguration cfg = NotificationConfiguration.create(model);
+            cancelPostTalkNotificationOnAlarmManager(cfg.getSlotId());
+            cancelTalkNotificationOnAlarmManager(cfg.getSlotId());
+            scheduleNotificationFromConfiguration(cfg);
         }
 
         wakeLock.release();
