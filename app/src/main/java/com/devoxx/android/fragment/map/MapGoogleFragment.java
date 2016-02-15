@@ -49,12 +49,12 @@ public class MapGoogleFragment extends BaseFragment {
 
         mapFragment.getMapAsync(map -> {
             setupConcrete(conference, conferenceLocation, map);
-            if (!isLocationEnabled()) {
-                map.setOnMyLocationButtonClickListener(() -> {
+            map.setOnMyLocationButtonClickListener(() -> {
+                if (!isLocationEnabled()) {
                     showinfoAboutDisabledLocation(mapFragment.getView());
-                    return false;
-                });
-            }
+                }
+                return false;
+            });
         });
     }
 
