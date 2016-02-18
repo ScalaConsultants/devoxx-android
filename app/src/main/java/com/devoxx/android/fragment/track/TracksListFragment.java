@@ -12,6 +12,7 @@ import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.search.SearchManager;
 import com.devoxx.navigation.Navigator;
+import com.devoxx.navigation.NeededUpdateListener;
 import com.devoxx.utils.DateUtils;
 
 import org.androidannotations.annotations.AfterInject;
@@ -32,7 +33,7 @@ import com.devoxx.R;
 import com.devoxx.utils.Logger;
 
 @EFragment(R.layout.fragment_list)
-public class TracksListFragment extends BaseListFragment {
+public class TracksListFragment extends BaseListFragment implements NeededUpdateListener {
 
     @Bean
     SlotsDataManager slotsDataManager;
@@ -77,17 +78,6 @@ public class TracksListFragment extends BaseListFragment {
         return tracksAdapter;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /** Called from TracksMainFragment.onActivityResult() */
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE &&
-                resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
-            onRefreshData();
-        }
-    }
-
     @Receiver(actions = {SearchManager.SEARCH_INTENT_ACTION})
     void onRefreshData() {
         final String lastQuery = searchManager.getLastQuery();
@@ -130,5 +120,10 @@ public class TracksListFragment extends BaseListFragment {
                     return false;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void refreshData() {
+        onRefreshData();
     }
 }

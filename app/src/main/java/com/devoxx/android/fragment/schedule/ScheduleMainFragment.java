@@ -15,6 +15,7 @@ import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleDayItemFilter;
 import com.devoxx.data.schedule.search.SearchManager;
+import com.devoxx.navigation.NeededUpdateListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -69,19 +70,23 @@ public class ScheduleMainFragment extends BaseMenuFragment
         return R.menu.schedule_menu;
     }
 
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
-                && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
-            notifyRestScheduleLineupFragments(requestCode, resultCode, data);
+    public void onResume() {
+        super.onResume();
+
+        if (navigator.isUpdateNeeded()) {
+            notifyRestScheduleLineupFragments();
         }
     }
 
-    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
+    private void notifyRestScheduleLineupFragments() {
         final List<Fragment> fragments = getChildFragmentManager().getFragments();
-        for (Fragment fragment : fragments) {
-            if (fragment instanceof ScheduleLineupFragment) {
-                fragment.onActivityResult(requestCode, resultCode, data);
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof ScheduleLineupFragment) {
+                    ((NeededUpdateListener) fragment).refreshData();
+                }
             }
         }
     }

@@ -17,7 +17,9 @@ import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.DataInformation_;
 import com.devoxx.data.schedule.filter.ScheduleFilterManager;
 import com.devoxx.data.schedule.search.SearchManager;
+import com.devoxx.navigation.NavigationHelper_;
 import com.devoxx.navigation.Navigator;
+import com.devoxx.navigation.NeededUpdateListener;
 import com.devoxx.utils.InfoUtil;
 
 import org.androidannotations.annotations.AfterInject;
@@ -31,7 +33,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @EFragment(R.layout.fragment_list)
-public class ScheduleLineupFragment extends BaseListFragment {
+public class ScheduleLineupFragment extends BaseListFragment implements NeededUpdateListener {
 
     public static final String REFRESH_ACTION = "com.devoxx.android.intent.REFRESH_ACTION";
 
@@ -123,17 +125,6 @@ public class ScheduleLineupFragment extends BaseListFragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /** Called from ScheduleMainFragment.onActivityResult() */
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE &&
-                resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
-            onRefreshData();
-        }
-    }
-
     @Receiver(actions = {REFRESH_ACTION})
     void onTalkNotification() {
         onRefreshData();
@@ -170,5 +161,10 @@ public class ScheduleLineupFragment extends BaseListFragment {
                 lm.scrollToPosition(runningIndex);
             }
         }
+    }
+
+    @Override
+    public void refreshData() {
+        onRefreshData();
     }
 }

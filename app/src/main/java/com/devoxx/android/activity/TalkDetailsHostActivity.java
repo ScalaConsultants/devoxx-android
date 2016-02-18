@@ -20,8 +20,8 @@ import com.devoxx.utils.InfoUtil;
 @EActivity(R.layout.activity_talk_details_host)
 public class TalkDetailsHostActivity extends BaseActivity {
 
-    public static final int REQUEST_CODE = 1;
-    public static final int RESULT_CODE_SUCCESS = 2;
+//    public static final int REQUEST_CODE = 1;
+//    public static final int RESULT_CODE_SUCCESS = 2;
 
     @Extra
     SlotApiModel slotApiModel;
@@ -53,8 +53,7 @@ public class TalkDetailsHostActivity extends BaseActivity {
         super.onNewIntent(intent);
 
         if (intent.hasExtra(NotificationsManager.EXTRA_TALK_ID)) {
-            final String incoming = intent.getStringExtra(
-                    NotificationsManager.EXTRA_TALK_ID);
+            final String incoming = intent.getStringExtra(NotificationsManager.EXTRA_TALK_ID);
             final Optional<SlotApiModel> opt = slotsDataManager.getSlotByTalkId(incoming);
             if (opt.isPresent()) {
                 talkFragment.setupFragment(opt.get(), true);
@@ -62,6 +61,10 @@ public class TalkDetailsHostActivity extends BaseActivity {
                 infoUtil.showToast(R.string.no_talk_foud);
                 onBackClick();
             }
+        } else if (intent.hasExtra(TalkDetailsHostActivity_.SLOT_API_MODEL_EXTRA)) {
+            final SlotApiModel apiModel = ((SlotApiModel) intent.getExtras()
+                    .getSerializable(TalkDetailsHostActivity_.SLOT_API_MODEL_EXTRA));
+            talkFragment.setupFragment(apiModel, true);
         }
     }
 }

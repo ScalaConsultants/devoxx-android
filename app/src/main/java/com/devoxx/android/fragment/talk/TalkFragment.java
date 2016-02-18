@@ -276,8 +276,7 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
     }
 
     private void notifyHostActivityAboutChangeOccured() {
-        final Activity activity = getActivity();
-        activity.setResult(TalkDetailsHostActivity.RESULT_CODE_SUCCESS);
+        navigator.setUpdateNeeded();
     }
 
     private void setupScheduleButton() {

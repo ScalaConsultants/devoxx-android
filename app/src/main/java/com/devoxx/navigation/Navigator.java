@@ -19,12 +19,32 @@ import com.devoxx.utils.DeviceUtil;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 @EBean
 public class Navigator {
 
     @Bean
     DeviceUtil deviceUtil;
+
+    @Pref
+    NavigationHelper_ navigationHelper;
+
+    public void setUpdateNeeded() {
+        navigationHelper.edit().isUpdateNeeded().put(true).apply();
+    }
+
+    private void clearUpdateNeeded() {
+        navigationHelper.edit().isUpdateNeeded().put(false).apply();
+    }
+
+    public boolean isUpdateNeeded() {
+        final boolean result = navigationHelper.isUpdateNeeded().get();
+        if (result) {
+            clearUpdateNeeded();
+        }
+        return result;
+    }
 
     public void openTalkDetails(
             MainActivity mainActivity, SlotApiModel slotApiModel, Fragment fragment, boolean notifyAboutChange) {
@@ -35,8 +55,7 @@ public class Navigator {
                     false, R.id.content_frame_second);
         } else {
             TalkDetailsHostActivity_.intent(fragment).
-                    slotApiModel(slotApiModel)
-                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
+                    slotApiModel(slotApiModel).start();
         }
     }
 
@@ -48,8 +67,7 @@ public class Navigator {
                     false, R.id.content_frame_second);
         } else {
             TalkDetailsHostActivity_.intent(mainActivity).
-                    slotApiModel(slotApiModel)
-                    .startForResult(TalkDetailsHostActivity.REQUEST_CODE);
+                    slotApiModel(slotApiModel).start();
         }
     }
 

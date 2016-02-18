@@ -17,6 +17,7 @@ import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.schedule.filter.model.RealmScheduleTrackItemFilter;
 import com.devoxx.data.schedule.search.SearchManager;
+import com.devoxx.navigation.NeededUpdateListener;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
@@ -78,10 +79,11 @@ public class TracksMainFragment extends BaseMenuFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == TalkDetailsHostActivity.REQUEST_CODE
-                && resultCode == TalkDetailsHostActivity.RESULT_CODE_SUCCESS) {
-            notifyRestScheduleLineupFragments(requestCode, resultCode, data);
+    public void onResume() {
+        super.onResume();
+
+        if (navigator.isUpdateNeeded()) {
+            notifyRestScheduleLineupFragments();
         }
     }
 
@@ -159,11 +161,11 @@ public class TracksMainFragment extends BaseMenuFragment
                 .collect(Collectors.toList());
     }
 
-    private void notifyRestScheduleLineupFragments(int requestCode, int resultCode, Intent data) {
+    private void notifyRestScheduleLineupFragments() {
         final List<Fragment> fragments = getChildFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
             if (fragment instanceof TracksListFragment) {
-                fragment.onActivityResult(requestCode, resultCode, data);
+                ((NeededUpdateListener) fragment).refreshData();
             }
         }
     }
