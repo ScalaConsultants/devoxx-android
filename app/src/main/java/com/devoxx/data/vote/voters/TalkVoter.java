@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -36,8 +37,8 @@ import retrofit.Response;
 @EBean
 public class TalkVoter implements ITalkVoter {
 
-    private static final int NOT_READY_VOTE_CODE = 500;
-    private static final int ALREADY_VOTED_CODE = 409;
+    private static final int NOT_READY_VOTE_HTTP_CODE = 500;
+    private static final int ALREADY_VOTED_HTTP_CODE = 409;
     @Bean
     VoteConnection voteConnection;
 
@@ -67,6 +68,7 @@ public class TalkVoter implements ITalkVoter {
                     }
                 })
                 .build();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.show();
 
         final View customView = dialog.getCustomView();
@@ -111,9 +113,9 @@ public class TalkVoter implements ITalkVoter {
             if (response.isSuccess()) {
                 rememberVote(realm, talkId);
                 notifyAboutSuccess(listener);
-            } else if (response.code() == NOT_READY_VOTE_CODE) {
+            } else if (response.code() == NOT_READY_VOTE_HTTP_CODE) {
                 notifyAboutCantVote(listener);
-            } else if (response.code() == ALREADY_VOTED_CODE) {
+            } else if (response.code() == ALREADY_VOTED_HTTP_CODE) {
                 rememberVote(realm, talkId);
                 notifyAboutCantVoteMore(listener);
             } else {

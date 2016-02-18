@@ -47,8 +47,7 @@
 
         <activity
             android:name="com.devoxx.android.activity.MainActivity_"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan"/>
+            android:launchMode="singleTask"/>
 
         <activity
             android:name="com.devoxx.android.activity.RegisterUserActivity_"
@@ -56,9 +55,9 @@
 
         <activity
             android:name="com.devoxx.android.activity.TalkDetailsHostActivity_"
-
             android:launchMode="singleTask"
-            android:theme="@style/TalkDetailsTheme"/>
+            android:theme="@style/TalkDetailsTheme"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name="com.devoxx.android.activity.SpeakerDetailsHostActivity_"
