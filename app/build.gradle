@@ -16,7 +16,7 @@ apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 def PACKAGE_NAME = "com.devoxx"
-def VERSION_CODE = 15
+def VERSION_CODE = 16
 def VERSION_NAME = "1.0.${VERSION_CODE}"
 def SUPPORT_VERSION = "23.1.1"
 
