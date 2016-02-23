@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.annimon.stream.Optional;
 import com.devoxx.BuildConfig;
 import com.devoxx.Configuration;
 import com.devoxx.connection.cfp.CfpApi;
@@ -70,8 +71,10 @@ public class Connection {
 
     public DevoxxApi getDevoxxApi() {
         if (devoxxApi == null) {
-            final RealmConference conference = conferenceManager.getActiveConference();
-            setupConferenceApi(conference.getCfpURL());
+            final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+            if (conference.isPresent()) {
+                setupConferenceApi(conference.get().getCfpURL());
+            }
         }
         return devoxxApi;
     }

@@ -10,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.connection.model.SlotApiModel;
 import com.devoxx.connection.vote.VoteApi;
@@ -17,6 +18,7 @@ import com.devoxx.connection.vote.VoteConnection;
 import com.devoxx.connection.vote.model.VoteApiModel;
 import com.devoxx.data.RealmProvider;
 import com.devoxx.data.conference.ConferenceManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.user.UserManager;
 import com.devoxx.data.vote.VotedTalkModel;
 import com.devoxx.data.vote.interfaces.IOnVoteForTalkListener;
@@ -86,7 +88,8 @@ public class TalkVoter implements ITalkVoter {
 
     @Override
     public boolean isVotingEnabled() {
-        return Boolean.parseBoolean(conferenceManager.getActiveConference().getVotingEnabled());
+        final Optional<RealmConference> conferenceOptional = conferenceManager.getActiveConference();
+        return conferenceOptional.isPresent() && Boolean.parseBoolean(conferenceOptional.get().getVotingEnabled());
     }
 
     @Override
@@ -99,7 +102,7 @@ public class TalkVoter implements ITalkVoter {
     }
 
     private String getConfCode() {
-        return conferenceManager.getActiveConferenceId();
+        return conferenceManager.getActiveConferenceId().get();
     }
 
     @Background

@@ -12,4 +12,7 @@ public interface Settings {
 
     @DefaultBoolean(false)
     boolean filterTalksBySchedule();
+
+    @DefaultBoolean(false)
+    boolean requestedConferenceChange();
 }

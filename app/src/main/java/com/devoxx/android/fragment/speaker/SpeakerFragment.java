@@ -27,6 +27,7 @@ import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.manager.AbstractDataManager;
 import com.devoxx.data.manager.SlotsDataManager;
 import com.devoxx.data.manager.SpeakersDataManager;
+import com.devoxx.data.model.RealmConference;
 import com.devoxx.data.model.RealmSpeaker;
 import com.devoxx.data.model.RealmTalk;
 import com.devoxx.navigation.Navigator;
@@ -157,7 +158,8 @@ public class SpeakerFragment extends BaseFragment implements AppBarLayout.OnOffs
     public void setupFragment(final String uuid) {
         Logger.l("SpeakerFragment.setupFragment");
 
-        speakersDataManager.fetchSpeakerAsync(conferenceManager.getActiveConferenceId(), uuid,
+        final String id = conferenceManager.getActiveConferenceId().get();
+        speakersDataManager.fetchSpeakerAsync(id, uuid,
                 new AbstractDataManager.IDataManagerListener<RealmSpeaker>() {
                     @Override
                     public void onDataStartFetching() {

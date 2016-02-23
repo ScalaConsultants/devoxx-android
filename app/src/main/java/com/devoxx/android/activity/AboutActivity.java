@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
@@ -51,7 +52,10 @@ public class AboutActivity extends BaseActivity {
         collapsingToolbarLayout.setTitle(getString(R.string.about));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        description.setText(conferenceManager.getActiveConference().getDescription());
+        final Optional<RealmConference> optConf = conferenceManager.getActiveConference();
+        if (optConf.isPresent()) {
+            description.setText(optConf.get().getDescription());
+        }
     }
 
     @OptionsItem(android.R.id.home)
@@ -61,16 +65,22 @@ public class AboutActivity extends BaseActivity {
 
     @Click(R.id.aboutWebButton)
     void onWebButtonClick() {
-        final String www = conferenceManager.getActiveConference().getWwwURL();
-        navigator.openWwwLink(this, www);
+        final Optional<RealmConference> optConf = conferenceManager.getActiveConference();
+        if (optConf.isPresent()) {
+            final String www = optConf.get().getWwwURL();
+            navigator.openWwwLink(this, www);
+        }
     }
 
     @Click(R.id.aboutTwitterButton)
     void onTwitterButtonClick() {
-        final RealmConference conference = conferenceManager.getActiveConference();
-        final String message = String.format("Check Devoxx %s conference! %s",
-                conference.getCountry(),
-                conference.getWwwURL());
-        navigator.tweetMessage(this, message);
+        final Optional<RealmConference> optConf = conferenceManager.getActiveConference();
+        if (optConf.isPresent()) {
+            final RealmConference conference = optConf.get();
+            final String message = String.format("Check Devoxx %s conference! %s",
+                    conference.getCountry(),
+                    conference.getWwwURL());
+            navigator.tweetMessage(this, message);
+        }
     }
 }

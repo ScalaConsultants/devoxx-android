@@ -22,6 +22,7 @@
             android:layout_marginRight="32dp"
             android:fontFamily="sans-serif-medium"
             android:lines="1"
+            android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/primary"
             tools:text="J"/>

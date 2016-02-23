@@ -153,9 +153,9 @@ public class ScheduleFilterManager {
                         if (value.isTalk()) {
                             for (RealmScheduleTrackItemFilter filter : activeFilters) {
                                 if (value.talk.track.toLowerCase()
-                                        .equalsIgnoreCase(filter.getTrackId().toLowerCase())
+                                        .contains(filter.getTrackId().toLowerCase())
                                         || value.talk.track.toLowerCase()
-                                        .equalsIgnoreCase(filter.getTrackName().toLowerCase())) {
+                                        .contains(filter.getTrackName().toLowerCase())) {
                                     return true;
                                 }
                             }

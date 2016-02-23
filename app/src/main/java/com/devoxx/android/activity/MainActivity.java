@@ -271,8 +271,11 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         final TextView title = (TextView) toolbar.findViewById(R.id.toolbarTitle);
         fontUtils.applyTypeface(title, FontUtils.Font.REGULAR);
-        final RealmConference conference = conferenceManager.getActiveConference();
-        title.setText(conference.getCountry());
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            title.setText(conference.get().getCountry());
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setTitle("");
     }

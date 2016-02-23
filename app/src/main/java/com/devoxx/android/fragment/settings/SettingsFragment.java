@@ -7,6 +7,8 @@ import android.support.v4.app.ActivityCompat;
 
 import com.devoxx.R;
 import com.devoxx.android.activity.SelectorActivity_;
+import com.devoxx.data.Settings;
+import com.devoxx.data.Settings_;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.user.UserManager;
 import com.devoxx.utils.InfoUtil;
@@ -15,6 +17,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.PreferenceClick;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 @EFragment
 public class SettingsFragment extends PreferenceFragment {
@@ -27,6 +30,9 @@ public class SettingsFragment extends PreferenceFragment {
 
     @Bean
     InfoUtil infoUtil;
+
+    @Pref
+    Settings_ settings;
 
     @AfterViews
     void afterViews() {
@@ -52,9 +58,9 @@ public class SettingsFragment extends PreferenceFragment {
 
     @PreferenceClick(R.string.settings_change_conf_key)
     void onChangeConferenceClick() {
-        conferenceManager.clearCurrentConferenceData();
-
         ActivityCompat.finishAffinity(getActivity());
+
+        conferenceManager.requestConferenceChange();
 
         SelectorActivity_.intent(this)
                 .flags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

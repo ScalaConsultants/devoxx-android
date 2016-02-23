@@ -48,6 +48,7 @@
         <activity
             android:name="com.devoxx.android.activity.MainActivity_"
             android:launchMode="singleTask"
+            android:theme="@style/MainTheme"
             android:windowSoftInputMode="stateUnchanged|adjustPan"/>
 
         <activity

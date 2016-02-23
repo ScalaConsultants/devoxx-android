@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.activity.TalkDetailsHostActivity;
 import com.devoxx.android.fragment.common.BaseFragment;
@@ -194,12 +195,14 @@ public class TalkFragment extends BaseFragment implements AppBarLayout.OnOffsetC
 
     @Click(R.id.talkDetailsTweetBtn)
     void onTweetClick() {
-        final RealmConference conference = conferenceManager.getActiveConference();
-        final String twitterMessage = String.format("%s\n%s %s %s", slotModel.talk.title,
-                slotModel.talk.getReadableSpeakers(),
-                createWebLink(conference, slotModel),
-                conference.getHashtag());
-        navigator.tweetMessage(getActivity(), twitterMessage);
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            final String twitterMessage = String.format("%s\n%s %s %s", slotModel.talk.title,
+                    slotModel.talk.getReadableSpeakers(),
+                    createWebLink(conference.get(), slotModel),
+                    conference.get().getHashtag());
+            navigator.tweetMessage(getActivity(), twitterMessage);
+        }
     }
 
     private String createWebLink(RealmConference conference, SlotApiModel slot) {

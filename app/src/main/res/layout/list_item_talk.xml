@@ -41,7 +41,10 @@
                 android:id="@+id/list_item_talk_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
+                android:lines="3"
+                android:maxLines="3"
                 android:textColor="@color/primary_text_90"
                 android:textSize="14dp"/>
 

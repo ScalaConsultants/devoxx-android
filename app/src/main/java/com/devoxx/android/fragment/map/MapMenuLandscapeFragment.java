@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.fragment.common.BaseMenuFragment;
 import com.devoxx.data.conference.ConferenceManager;
@@ -78,28 +79,30 @@ public class MapMenuLandscapeFragment extends BaseMenuFragment {
 
     private void setupMenu(boolean withMap) {
         menuContaier.removeAllViews();
-        final RealmConference conference = conferenceManager.getActiveConference();
-        final String res = deviceUtil.isTablet() ? "tablet" : "phone";
-        final List<RealmFloor> floors = RealmConference.extractFloors(conference, res);
-        final int floorsCount = floors.size();
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            final String res = deviceUtil.isTablet() ? "tablet" : "phone";
+            final List<RealmFloor> floors = RealmConference.extractFloors(conference.get(), res);
+            final int floorsCount = floors.size();
 
-        boolean mapOpened = false;
-        if (withMap) {
-            final View mapMenuItem = createMenuItem(getString(R.string.venue), this::openMap);
-            menuContaier.addView(mapMenuItem);
-            mapMenuItem.performClick();
-            mapOpened = true;
-        }
+            boolean mapOpened = false;
+            if (withMap) {
+                final View mapMenuItem = createMenuItem(getString(R.string.venue), this::openMap);
+                menuContaier.addView(mapMenuItem);
+                mapMenuItem.performClick();
+                mapOpened = true;
+            }
 
-        View floorMenuItem = null;
-        for (int i = 0; i < floorsCount; i++) {
-            final RealmFloor floor = floors.get(i);
-            floorMenuItem = createMenuItem(floor.getTitle(), () -> openFloor(floor.getImg()));
-            menuContaier.addView(floorMenuItem);
-        }
+            View floorMenuItem = null;
+            for (int i = 0; i < floorsCount; i++) {
+                final RealmFloor floor = floors.get(i);
+                floorMenuItem = createMenuItem(floor.getTitle(), () -> openFloor(floor.getImg()));
+                menuContaier.addView(floorMenuItem);
+            }
 
-        if (!mapOpened && floorMenuItem != null) {
-            floorMenuItem.performClick();
+            if (!mapOpened && floorMenuItem != null) {
+                floorMenuItem.performClick();
+            }
         }
     }
 

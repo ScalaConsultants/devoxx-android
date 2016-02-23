@@ -58,12 +58,13 @@ public class TracksDownloader {
         final Realm realm = realmProvider.getRealm();
         final Response<TracksApiModel> response = tracksCall.execute();
         final TracksApiModel tracksApiModel = response.body();
-        realm.beginTransaction();
-        for (TrackApiModel apiModel : tracksApiModel.tracks) {
-            realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
+        if (tracksApiModel != null) {
+            realm.beginTransaction();
+            for (TrackApiModel apiModel : tracksApiModel.tracks) {
+                realm.copyToRealmOrUpdate(RealmTrack.createFromApi(apiModel));
+            }
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
-
         final List<RealmTrack> tracks = realm.allObjects(RealmTrack.class);
         scheduleFilterManager.createTrackFiltersDefinition(tracks);
 

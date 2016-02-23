@@ -5,7 +5,11 @@ import android.content.Context;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devoxx.connection.cfp.model.ConferenceApiModel;
+import com.devoxx.data.DataInformation;
+import com.devoxx.data.DataInformation_;
 import com.devoxx.data.RealmProvider;
+import com.devoxx.data.Settings;
+import com.devoxx.data.Settings_;
 import com.devoxx.data.cache.BaseCache;
 import com.devoxx.data.conference.model.ConferenceDay;
 import com.devoxx.data.downloader.ConferenceDownloader;
@@ -22,6 +26,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
@@ -40,6 +45,7 @@ import io.realm.Realm;
 public class ConferenceManager {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 
     public interface IConferencesListener {
 
@@ -88,6 +94,9 @@ public class ConferenceManager {
     @Bean
     UserManager userManager;
 
+    @Pref
+    Settings_ settings;
+
     private List<ConferenceDay> conferenceDays;
 
     @Background
@@ -130,6 +139,30 @@ public class ConferenceManager {
         }
     }
 
+    public void openLastConference() {
+        notifyConferenceListenerStart(confDataListener);
+        notifyConferenceListenerSuccess(confDataListener, true);
+    }
+
+    public boolean isLastSelectedConference(ConferenceApiModel selectedConference) {
+        final Optional<String> id = getActiveConferenceId();
+        return id.isPresent() && id.get().equalsIgnoreCase(selectedConference.id);
+    }
+
+    public void requestConferenceChange() {
+        settings.edit().requestedConferenceChange().put(true).apply();
+    }
+
+    public boolean requestedChangeConference() {
+        final boolean result = settings.requestedConferenceChange().get();
+        settings.edit().requestedConferenceChange().put(false).apply();
+        return result;
+    }
+
+    public boolean isConferenceChoosen() {
+        return getActiveConference().isPresent();
+    }
+
     private boolean isDownloadingAllConferencesData = false;
 
     private WeakReference<IConferencesListener> allConferencesDataListener;
@@ -162,9 +195,11 @@ public class ConferenceManager {
 
     @Background
     public void updateSlotsIfNeededInBackground() {
-        final RealmConference conference = getActiveConference();
-        final String confCode = conference.getId();
-        slotsDataManager.updateSlotsIfNeededInBackground(confCode);
+        final Optional<RealmConference> conference = getActiveConference();
+        if (conference.isPresent()) {
+            final String confCode = conference.get().getId();
+            slotsDataManager.updateSlotsIfNeededInBackground(confCode);
+        }
     }
 
     @Background
@@ -217,7 +252,10 @@ public class ConferenceManager {
     }
 
     public List<ConferenceDay> getConferenceDays() {
-        final RealmConference realmConference = getActiveConference();
+//        final Optional<RealmConference> realmConference = getActiveConference();
+//        if (realmConference.isPresent()) {
+//
+//        }
 
         // TODO Take dates from model!
         final String fromDate = "2015-11-09T01:00:00.000Z";
@@ -245,20 +283,19 @@ public class ConferenceManager {
         return result;
     }
 
-    public boolean isConferenceChoosen() {
-        return getActiveConference() != null;
-    }
-
-    public RealmConference getActiveConference() {
+    public Optional<RealmConference> getActiveConference() {
         final Realm realm = realmProvider.getRealm();
-        return realm.where(RealmConference.class).findFirst();
+        return Optional.ofNullable(realm.where(RealmConference.class).findFirst());
     }
 
-    public String getActiveConferenceId() {
-        return getActiveConference().getId();
+    public Optional<String> getActiveConferenceId() {
+        final RealmConference conference = getActiveConference().orElse(null);
+        return Optional.ofNullable(conference != null ? conference.getId() : null);
     }
 
     public void clearCurrentConferenceData() {
+        Logger.l("clearCurrentConferenceData");
+
         clearCurrentConference();
         clearSlotsData();
         clearTracksData();

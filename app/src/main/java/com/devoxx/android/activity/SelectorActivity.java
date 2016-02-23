@@ -10,6 +10,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
 import com.bumptech.glide.Glide;
 import com.devoxx.R;
 import com.devoxx.android.view.selector.SelectorValues;
@@ -114,9 +115,13 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
         final boolean isLoadingData = conferenceManager.registerConferenceDataListener(this);
         conferenceManager.registerAllConferencesDataListener(this);
 
-        if (conferenceManager.isConferenceChoosen()) {
-            final RealmConference conference = conferenceManager.getActiveConference();
-            setupRequiredApis(conference.getCfpURL(), conference.getVotingURL());
+        if (conferenceManager.isConferenceChoosen()
+                && !conferenceManager.requestedChangeConference()) {
+            final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+            if (conference.isPresent()) {
+                setupRequiredApis(conference.get().getCfpURL(),
+                        conference.get().getVotingURL());
+            }
 
             conferenceManager.updateSlotsIfNeededInBackground();
 
@@ -163,8 +168,14 @@ public class SelectorActivity extends BaseActivity implements ConferenceManager.
     @Click(R.id.selectorGo)
     void onGoClick() {
         if (connection.isOnline()) {
+            if (!conferenceManager.isLastSelectedConference(lastSelectedConference)) {
+                conferenceManager.clearCurrentConferenceData();
+            }
+
             setupRequiredApis(lastSelectedConference.cfpURL, lastSelectedConference.votingURL);
             conferenceManager.fetchConferenceData(lastSelectedConference);
+        } else if (conferenceManager.isLastSelectedConference(lastSelectedConference)) {
+            conferenceManager.openLastConference();
         } else {
             infoUtil.showToast(R.string.no_internet_connection);
         }

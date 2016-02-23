@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.fragment.common.BaseFragment;
 import com.devoxx.data.conference.ConferenceManager;
@@ -39,7 +40,10 @@ public class MapGoogleFragment extends BaseFragment {
 
     @AfterViews
     void afterViews() {
-        initMap(conferenceManager.getActiveConference());
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            initMap(conference.get());
+        }
     }
 
     private void initMap(RealmConference conference) {

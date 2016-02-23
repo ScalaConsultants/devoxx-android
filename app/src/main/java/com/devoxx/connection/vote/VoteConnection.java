@@ -2,6 +2,7 @@ package com.devoxx.connection.vote;
 
 import android.content.Context;
 
+import com.annimon.stream.Optional;
 import com.devoxx.BuildConfig;
 import com.devoxx.data.conference.ConferenceManager;
 import com.devoxx.data.model.RealmConference;
@@ -56,8 +57,10 @@ public class VoteConnection {
 
     public VoteApi getVoteApi() {
         if (voteApi == null) {
-            final RealmConference conference = conferenceManager.getActiveConference();
-            setupApi(conference.getVotingURL());
+            final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+            if (conference.isPresent()) {
+                setupApi(conference.get().getVotingURL());
+            }
         }
         return voteApi;
     }

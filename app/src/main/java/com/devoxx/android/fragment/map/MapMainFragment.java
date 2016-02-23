@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.devoxx.R;
 import com.devoxx.android.adapter.map.MapPagerAdapter;
@@ -65,9 +66,11 @@ public class MapMainFragment extends BaseMenuFragment
     @SuppressLint("DefaultLocale")
     protected void afterViewsInner() {
         setHasOptionsMenu(true);
-        final RealmConference conference = conferenceManager.getActiveConference();
-        confTitle.setText(conference.getVenue());
-        confSubitle.setText(conference.getAddress());
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            confTitle.setText(conference.get().getVenue());
+            confSubitle.setText(conference.get().getAddress());
+        }
 
         checkPermissions();
     }
@@ -122,33 +125,35 @@ public class MapMainFragment extends BaseMenuFragment
     }
 
     private void setupPager(boolean withMap) {
-        final RealmConference conference = conferenceManager.getActiveConference();
-        final String res = deviceUtil.isTablet() ? "tablet" : "phone";
-        final List<RealmFloor> floors = RealmConference.extractFloors(conference, res);
-        final int floorsCount = floors.size();
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            final String res = deviceUtil.isTablet() ? "tablet" : "phone";
+            final List<RealmFloor> floors = RealmConference.extractFloors(conference.get(), res);
+            final int floorsCount = floors.size();
 
-        final List<String> floorsImages = Stream.of(floors)
-                .map(RealmFloor::getImg).collect(Collectors.toList());
+            final List<String> floorsImages = Stream.of(floors)
+                    .map(RealmFloor::getImg).collect(Collectors.toList());
 
-        final MapPagerAdapter adapter = new MapPagerAdapter(
-                getChildFragmentManager(), floorsCount, withMap, floorsImages);
-        tabLayout.removeAllTabs();
-        tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
-        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        tabLayout.setSelectedTabIndicatorColor(tabStripColor);
+            final MapPagerAdapter adapter = new MapPagerAdapter(
+                    getChildFragmentManager(), floorsCount, withMap, floorsImages);
+            tabLayout.removeAllTabs();
+            tabLayout.setTabTextColors(unselectedTablColor, selectedTablColor);
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            tabLayout.setSelectedTabIndicatorColor(tabStripColor);
 
-        if (withMap) {
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.venue));
+            if (withMap) {
+                tabLayout.addTab(tabLayout.newTab().setText(R.string.venue));
+            }
+
+            for (int i = 0; i < floorsCount; i++) {
+                final RealmFloor floor = floors.get(i);
+                tabLayout.addTab(tabLayout.newTab().setText(floor.getTitle()));
+            }
+
+            tabLayout.setOnTabSelectedListener(this);
+
+            pager.setAdapter(adapter);
         }
-
-        for (int i = 0; i < floorsCount; i++) {
-            final RealmFloor floor = floors.get(i);
-            tabLayout.addTab(tabLayout.newTab().setText(floor.getTitle()));
-        }
-
-        tabLayout.setOnTabSelectedListener(this);
-
-        pager.setAdapter(adapter);
     }
 
     public static boolean isGranted(int[] grantResults) {

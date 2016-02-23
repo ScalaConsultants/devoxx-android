@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.annimon.stream.Optional;
 import com.devoxx.R;
 import com.devoxx.android.activity.AboutActivity_;
 import com.devoxx.android.activity.SettingsActivity_;
@@ -238,8 +239,10 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @OptionsItem(R.id.action_purchase_ticket)
     protected void onRegisterClick() {
-        final RealmConference conference = conferenceManager.getActiveConference();
-        navigator.openRegister(getActivity(), conference.getRegURL());
+        final Optional<RealmConference> conference = conferenceManager.getActiveConference();
+        if (conference.isPresent()) {
+            navigator.openRegister(getActivity(), conference.get().getRegURL());
+        }
     }
 
     @OptionsItem(R.id.action_report_issue)
