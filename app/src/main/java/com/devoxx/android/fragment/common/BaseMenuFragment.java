@@ -93,9 +93,15 @@ public abstract class BaseMenuFragment extends BaseFragment
 
     @Override
     public void onFiltersDismissed() {
-        getActivity().supportInvalidateOptionsMenu();
-        getMainActivity().sendBroadcast(new Intent(
-                ScheduleFilterManager.FILTERS_CHANGED_ACTION));
+        if (isActivityLive()) {
+            getActivity().supportInvalidateOptionsMenu();
+            getMainActivity().sendBroadcast(new Intent(
+                    ScheduleFilterManager.FILTERS_CHANGED_ACTION));
+        }
+    }
+
+    protected boolean isActivityLive() {
+        return getActivity() != null && !getActivity().isFinishing();
     }
 
     @Override
@@ -185,7 +191,7 @@ public abstract class BaseMenuFragment extends BaseFragment
 
         @Override
         public void onFinish() {
-            if (getActivity() != null && isAdded()) {
+            if (isActivityLive() && isAdded()) {
                 onSearchQuery(lastQuery);
             }
         }

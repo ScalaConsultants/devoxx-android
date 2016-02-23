@@ -101,19 +101,26 @@ public class ScheduleMainFragment extends BaseMenuFragment
     @Override
     public void onFiltersCleared() {
         super.onFiltersCleared();
-        invalidateViewPager();
+        if (isActivityLive()) {
+            invalidateViewPager();
+        }
     }
 
     @Override
     public void onFiltersDismissed() {
         super.onFiltersDismissed();
-        invalidateViewPager();
+
+        if (isActivityLive()) {
+            invalidateViewPager();
+        }
     }
 
     @Override
     public void onFiltersDefault() {
         super.onFiltersDefault();
-        invalidateViewPager();
+        if (isActivityLive()) {
+            invalidateViewPager();
+        }
     }
 
     private void invalidateViewPager() {
